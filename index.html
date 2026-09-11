@@ -1770,7 +1770,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <div class="rp-details-body">
           <div class="rp-table-wrap">
             <table class="rp-table" id="tblConsAtivos">
-              <thead><tr><th>Ativo</th><th>Segmento</th><th>Em quais carteiras</th><th>Saldo somado</th><th>% do casal</th><th>Result.</th></tr></thead>
+              <thead><tr><th>Ativo</th><th>Segmento</th><th>Em quais carteiras</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia</th><th>Var. Dia R$</th><th>Investido</th><th>Saldo somado</th><th>% do casal</th><th>Result.</th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
@@ -12306,12 +12306,18 @@ function coletarConsolidado() {
       const classe = tr.dataset.classe === 'rf' ? 'Renda Fixa' : 'Ações BR';
       const seg = tr.dataset.segmento || 'Sem segmento';
       const grupo = tr.dataset.classe === 'rf' ? 'rf' : (tr.dataset.grupo || 'sem-grupo');
+      // Mesmo ticker rende o mesmo % hoje nas duas carteiras (é a mesma ação no mercado) — só
+      // o efeito em R$ muda por causa da quantidade, por isso soma o R$ mas só guarda o %.
+      const varDiaTxt = (tr.querySelector('.cw-vardia')?.textContent || '').trim();
+      const varDia = varDiaTxt && varDiaTxt !== '—' ? _consNum(varDiaTxt) : null;
+      const varDiaRS = _consNum(tr.querySelector('.cw-vardia-rs')?.textContent);
 
       subtotal += saldo;
-      porTicker[ticker] = porTicker[ticker] || { ticker, saldo: 0, investido: 0, preco, seg, grupo, classe, donos: {} };
+      porTicker[ticker] = porTicker[ticker] || { ticker, saldo: 0, investido: 0, qtd: 0, varDiaRS: 0, temVarDia: false, preco, varDia: null, seg, grupo, classe, donos: {} };
       const t = porTicker[ticker];
-      t.saldo += saldo; t.investido += investido; t.donos[c.nome] = (t.donos[c.nome] || 0) + saldo;
+      t.saldo += saldo; t.investido += investido; t.qtd += qtd; t.donos[c.nome] = (t.donos[c.nome] || 0) + saldo;
       if (preco > 0) t.preco = preco;
+      if (varDia !== null) { t.varDia = varDia; t.varDiaRS += varDiaRS; t.temVarDia = true; }
       porSegmento[seg] = (porSegmento[seg] || 0) + saldo;
       porClasse[classe] = (porClasse[classe] || 0) + saldo;
       porGrupo[grupo] = (porGrupo[grupo] || 0) + saldo;
@@ -12397,20 +12403,38 @@ function renderConsolidado() {
   // ── Tabela por ativo, com quem detém o quê ──
   const tb = document.querySelector('#tblConsAtivos tbody');
   if (tb) {
+    let totInvestido = 0, totVarDiaRS = 0, algumTemVar = false, totSaldoComVar = 0;
     tb.innerHTML = d.ativos.map(a => {
       const donos = Object.entries(a.donos).sort((x, y) => y[1] - x[1]);
       const ambos = donos.length > 1;
       const res = a.investido > 0 ? (a.saldo - a.investido) / a.investido * 100 : null;
+      const pm = a.qtd > 0 ? a.investido / a.qtd : 0;
+      totInvestido += a.investido;
+      if (a.temVarDia) { totVarDiaRS += a.varDiaRS; totSaldoComVar += a.saldo; algumTemVar = true; }
       return `<tr>
         <td class="rp-bold">${a.ticker}</td>
         <td>${a.seg}</td>
         <td>${donos.map(([n, v]) => `<span style="display:inline-block;background:${ambos ? '#eef3fb' : '#fff'};border:1px solid #e0e0e0;border-radius:6px;padding:2px 7px;margin:0 4px 3px 0;font-size:11px;white-space:nowrap;"><b>${n}</b> ${_consR0(v)}</span>`).join('')}${ambos ? '<span class="rp-tag rp-tag-yellow" style="font-size:10px;">nos dois</span>' : ''}</td>
+        <td>${a.qtd > 0 ? a.qtd.toLocaleString('pt-BR') : '—'}</td>
+        <td>${a.qtd > 0 ? _consR(pm) : '—'}</td>
+        <td>${a.preco > 0 ? _consR(a.preco) : '—'}</td>
+        <td style="color:${a.varDia === null ? '#888' : (a.varDia >= 0 ? '#0a5c35' : '#9c1c1c')};">${a.varDia === null ? '—' : (a.varDia >= 0 ? '+' : '') + a.varDia.toFixed(2).replace('.', ',') + '%'}</td>
+        <td style="color:${!a.temVarDia ? '#888' : (a.varDiaRS >= 0 ? '#0a5c35' : '#9c1c1c')};">${!a.temVarDia ? '—' : (a.varDiaRS >= 0 ? '+' : '') + _consR(a.varDiaRS)}</td>
+        <td>${_consR(a.investido)}</td>
         <td>${_consR(a.saldo)}</td>
         <td>${_consPct(a.saldo / d.totalGeral * 100)}</td>
         <td style="color:${res === null ? '#888' : (res >= 0 ? '#0a5c35' : '#9c1c1c')};">${res === null ? '—' : (res >= 0 ? '+' : '') + res.toFixed(2).replace('.', ',') + '%'}</td>
       </tr>`;
-    }).join('') + `<tr style="background:#1e1a2e;color:#fff;font-weight:700;">
-        <td>Total</td><td></td><td></td><td>${_consR(d.totalGeral)}</td><td>100%</td><td></td></tr>`;
+    }).join('') + (() => {
+      const saldoOntemComVar = totSaldoComVar - totVarDiaRS;
+      const pctTotal = algumTemVar && saldoOntemComVar > 0 ? totVarDiaRS / saldoOntemComVar * 100 : null;
+      return `<tr style="background:#1e1a2e;color:#fff;font-weight:700;">
+        <td>Total</td><td></td><td></td><td></td><td></td><td></td>
+        <td style="color:${pctTotal === null ? '#fff' : (pctTotal >= 0 ? '#4ecdc4' : '#ff6b6b')};">${pctTotal === null ? '—' : (pctTotal >= 0 ? '+' : '') + pctTotal.toFixed(2).replace('.', ',') + '%'}</td>
+        <td style="color:${!algumTemVar ? '#fff' : (totVarDiaRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${!algumTemVar ? '—' : (totVarDiaRS >= 0 ? '+' : '') + _consR(totVarDiaRS)}</td>
+        <td>${_consR(totInvestido)}</td>
+        <td>${_consR(d.totalGeral)}</td><td>100%</td><td></td></tr>`;
+    })();
   }
 
   // ── Carteira Ideal do casal ──
