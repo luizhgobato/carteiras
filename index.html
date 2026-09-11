@@ -1374,7 +1374,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
               <td><input type="text" class="cw-pm" value="124,83" style="width:65px;font:inherit;"></td>
               <td class="cw-preco">R$ 126,16</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 501.317,28</td><td class="cw-saldo">R$ 506.658,56</td><td class="cw-result" style="color:#0a5c35;">+5.341,28 (+1,07%)</td><td class="cw-pct-cart">70,26%</td><td class="cw-pct-classe">100%</td>
             </tr>
-            <tr style="background:#1e1a2e;color:#fff;font-weight:700;" data-role="total-flaviaPosBody"><td>TOTAL</td><td></td><td></td><td></td><td></td><td></td><td class="cw-tot-investido">R$ 708.332,10</td><td class="cw-tot-saldo">R$ 718.835,01</td><td class="cw-tot-result" style="color:#4ecdc4;">+10.502,91 (+1,48%)</td><td>100%</td><td></td></tr>
+            <tr style="background:#1e1a2e;color:#fff;font-weight:700;" data-role="total-flaviaPosBody"><td>TOTAL</td><td></td><td></td><td></td><td class="cw-tot-vardia"></td><td class="cw-tot-vardia-rs"></td><td class="cw-tot-investido">R$ 708.332,10</td><td class="cw-tot-saldo">R$ 718.835,01</td><td class="cw-tot-result" style="color:#4ecdc4;">+10.502,91 (+1,48%)</td><td>100%</td><td></td></tr>
           </tbody>
         </table>
       </div>
@@ -1597,7 +1597,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
             <tr data-ticker="ALOS3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Shoppings"><td class="rp-bold">ALOS3</td><td class="cw-pct-cart">2,57%</td><td class="cw-pct-classe">3,58%</td><td>12,50%</td><td style="color:#9c1c1c;">-0,63%</td><td>posição nova</td><td><input type="text" class="cw-qtd" value="777" style="width:55px;font:inherit;"></td><td><input type="text" class="cw-pm" value="26,18" style="width:60px;font:inherit;"></td><td class="cw-preco">R$ 26,02</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-saldo">R$ 20.217,54</td></tr>
             <tr data-ticker="BBAS3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Bancos"><td class="rp-bold">BBAS3</td><td class="cw-pct-cart">0,86%</td><td class="cw-pct-classe">1,20%</td><td>12,50%</td><td style="color:#0a5c35;">+155,60%</td><td>reduzida sem registro</td><td><input type="text" class="cw-qtd" value="367" style="width:55px;font:inherit;"></td><td><input type="text" class="cw-pm" value="7,21" style="width:60px;font:inherit;"></td><td class="cw-preco">R$ 18,43</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-saldo">R$ 6.763,81</td></tr>
             <tr data-ticker="LFTB11.SA" data-classe="rf" data-segmento="Renda Fixa"><td class="rp-bold">LFTB11</td><td class="cw-pct-cart">9,49%</td><td class="cw-pct-classe">100%</td><td>15,00%</td><td style="color:#0a5c35;">+6,58%</td><td>abaixo do ideal</td><td><input type="text" class="cw-qtd" value="594" style="width:55px;font:inherit;"></td><td><input type="text" class="cw-pm" value="117,90" style="width:60px;font:inherit;"></td><td class="cw-preco">R$ 125,66</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-saldo">R$ 74.642,04</td></tr>
-            <tr style="background:#1e1a2e;color:#fff;font-weight:700;" data-role="total-luizPosBody"><td>TOTAL (ações + LFTB11, linhas preenchidas)</td><td></td><td>100%</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="cw-tot-saldo">R$ 639.643,41</td></tr>
+            <tr style="background:#1e1a2e;color:#fff;font-weight:700;" data-role="total-luizPosBody"><td>TOTAL (ações + LFTB11, linhas preenchidas)</td><td></td><td>100%</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="cw-tot-vardia"></td><td class="cw-tot-vardia-rs"></td><td class="cw-tot-saldo">R$ 639.643,41</td></tr>
           </tbody>
         </table>
       </div>
@@ -9440,6 +9440,10 @@ async function atualizarCotacaoCarteira(tbodyId, statusId, outrosFixos) {
 // um fetch real (nunca no recálculo manual de Qtd/PM) — sem cotação nova, o valor do dia
 // anterior continua sendo o correto e não deve ser apagado nem recalculado.
 function _cwAtualizarVarDia(tbody, full) {
+  // Soma o efeito em R$ de todas as linhas com variação válida, e o saldo-de-hoje só dessas
+  // mesmas linhas (saldo total − variação de hoje = valor de ontem) — dá pra achar o % da
+  // carteira inteira sem widget novo, só ponderando pelo que cada posição vale.
+  let somaVarRS = 0, somaSaldoHoje = 0, temVar = false;
   tbody.querySelectorAll('tr[data-ticker]').forEach(row => {
     const cell = row.querySelector('.cw-vardia');
     const cellRS = row.querySelector('.cw-vardia-rs');
@@ -9454,22 +9458,45 @@ function _cwAtualizarVarDia(tbody, full) {
       cell.textContent = (v >= 0 ? '+' : '') + v.toFixed(2).replace('.', ',') + '%';
       cell.style.color = v >= 0 ? '#0a5c35' : '#9c1c1c';
     }
-    if (cellRS) {
-      // Quanto essa posição ganhou/perdeu hoje: qtd × variação por ação (não é % da posição
-      // sobre o total — é o efeito em reais só do movimento de preço de hoje).
-      const qtdInput = row.querySelector('.cw-qtd');
-      const qtd = qtdInput ? _cwParseNum(qtdInput.value) : 0;
-      const varRS = typeof info.varDiaRS === 'number' ? info.varDiaRS : null;
-      if (qtd > 0 && varRS !== null) {
-        const totalRS = qtd * varRS;
+    // Quanto essa posição ganhou/perdeu hoje: qtd × variação por ação (não é % da posição
+    // sobre o total — é o efeito em reais só do movimento de preço de hoje).
+    const qtdInput = row.querySelector('.cw-qtd');
+    const qtd = qtdInput ? _cwParseNum(qtdInput.value) : 0;
+    const varRS = typeof info.varDiaRS === 'number' ? info.varDiaRS : null;
+    if (qtd > 0 && varRS !== null) {
+      const totalRS = qtd * varRS;
+      if (cellRS) {
         cellRS.textContent = (totalRS >= 0 ? '+' : '') + totalRS.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         cellRS.style.color = totalRS >= 0 ? '#0a5c35' : '#9c1c1c';
-      } else {
-        cellRS.textContent = '—';
-        cellRS.style.color = '#888';
       }
+      somaVarRS += totalRS;
+      temVar = true;
+      const saldoCell = row.querySelector('.cw-saldo');
+      const saldoHoje = saldoCell ? _cwParseNum(saldoCell.textContent) : 0;
+      if (saldoHoje > 0) somaSaldoHoje += saldoHoje;
+    } else if (cellRS) {
+      cellRS.textContent = '—';
+      cellRS.style.color = '#888';
     }
   });
+
+  const totRow = tbody.querySelector('tr[data-role^="total-"]');
+  const totRS = totRow ? totRow.querySelector('.cw-tot-vardia-rs') : null;
+  const totPct = totRow ? totRow.querySelector('.cw-tot-vardia') : null;
+  if (totRS) {
+    if (temVar) {
+      totRS.textContent = (somaVarRS >= 0 ? '+' : '') + somaVarRS.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      totRS.style.color = somaVarRS >= 0 ? '#4ecdc4' : '#ff6b6b';
+    } else { totRS.textContent = '—'; totRS.style.color = ''; }
+  }
+  if (totPct) {
+    const saldoOntem = somaSaldoHoje - somaVarRS;
+    if (temVar && saldoOntem > 0) {
+      const pctTotal = somaVarRS / saldoOntem * 100;
+      totPct.textContent = (pctTotal >= 0 ? '+' : '') + pctTotal.toFixed(2).replace('.', ',') + '%';
+      totPct.style.color = pctTotal >= 0 ? '#4ecdc4' : '#ff6b6b';
+    } else { totPct.textContent = '—'; totPct.style.color = ''; }
+  }
 }
 
 // Recalcula a carteira SEM buscar cotação — reaproveita o preço já exibido em cada linha.
