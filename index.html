@@ -1307,7 +1307,6 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <span id="flaviaSaveStatus" style="font-size:11px;font-weight:600;"></span>
         <button type="button" onclick="restaurarPosicoesOriginais('flaviaPosBody')" style="background:none;border:none;padding:0;font:inherit;font-size:11px;color:#888;text-decoration:underline;cursor:pointer;" title="Descarta o que você digitou e volta aos valores que vieram no arquivo">restaurar valores originais</button>
       </div>
-      <p class="rp-estim" style="margin:0 0 0.75rem;font-size:11px;line-height:1.6;">💾 <b>Qtd e PM são editáveis.</b> Ao digitar, a página recalcula na hora (saldo, totais, Patrimônio, Carteira Ideal e gráficos) e grava o valor <b>no seu navegador</b>. As <b>cotações buscadas também ficam gravadas</b>: ao reabrir o arquivo — inclusive numa versão nova que eu te mandar — a página já abre com o último preço obtido, e não com o preço da data-base. Como é um arquivo local sem servidor, a gravação não acompanha outro computador nem navegação anônima; se limpar os dados do site, volta ao original.</p>
       <div class="rp-table-wrap">
         <table class="rp-table">
           <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Investido</th><th>Saldo</th><th>Result.</th><th>% Cart.</th><th>% Classe</th></tr></thead>
@@ -1571,7 +1570,6 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <button type="button" onclick="restaurarPosicoesOriginais('luizPosBody')" style="background:none;border:none;padding:0;font:inherit;font-size:11px;color:#888;text-decoration:underline;cursor:pointer;" title="Descarta o que você digitou e volta aos valores que vieram no arquivo">restaurar valores originais</button>
       </div>
       <p class="rp-estim" style="margin:0 0 0.75rem;font-size:11px;line-height:1.6;">⚠️ Qtd e PM abaixo são <b>implícitos</b>, derivados do valor de cada posição na data-base ÷ cotação da data-base (e o PM, da rentabilidade informada) — não vêm de extrato de corretora. Servem para o patrimônio reagir à cotação ao vivo; corrija-os se tiver os números reais.</p>
-      <p class="rp-estim" style="margin:0 0 0.75rem;font-size:11px;line-height:1.6;">💾 <b>Qtd e PM são editáveis.</b> Ao digitar, a página recalcula na hora (saldo, totais, Patrimônio, Carteira Ideal e gráficos) e grava o valor <b>no seu navegador</b>. As <b>cotações buscadas também ficam gravadas</b>: ao reabrir o arquivo — inclusive numa versão nova que eu te mandar — a página já abre com o último preço obtido, e não com o preço da data-base. Como é um arquivo local sem servidor, a gravação não acompanha outro computador nem navegação anônima; se limpar os dados do site, volta ao original.</p>
       <div class="rp-table-wrap">
         <table class="rp-table">
           <thead><tr><th>Ticker</th><th>% Carteira</th><th>% Classe</th><th>% Ideal</th><th>Rentab.</th><th>Situação</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Valor Atual</th></tr></thead>
@@ -11336,6 +11334,15 @@ const _showPageOrig = showPage;
     }
   };
 })();
+
+// A aba "flavia" já começa ativa direto no HTML (não passa pelo showPage() acima), então o
+// gatilho de inicialização dela nunca disparava — os gráficos de Patrimônio/Segmento/Posição
+// ficavam vazios até o usuário trocar de aba e voltar. Dispara aqui, uma vez, no load.
+if(!_flaviaChartsIniciados && typeof initRpCharts==='function'){
+  _flaviaChartsIniciados = true;
+  initRpCharts('Flavia');
+  if(typeof initCarteiraEditavel==='function') initCarteiraEditavel('flaviaPosBody');
+}
 
 // A propagação pós-cotação (gráfico de posição, Patrimônio, Carteira Ideal, Segmento e os
 // números do topo) vive em _cwPropagar(), em js/carteira-manual.js — assim vale tanto para
