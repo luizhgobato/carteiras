@@ -416,47 +416,62 @@ thead tr.col-header,#fundTable thead tr{overflow:visible;}
    e o Radar reusam as mesmas classes .rp-*, e não devem mudar de tamanho junto.
    !important em quase tudo porque cada classe .rp-* tinha seu próprio font-size fixo — sem
    isso a regra de baixo (mais específica) continuaria vencendo a de cima. */
-#page-flavia, #page-resumoluiz,
-#page-flavia .rp-section-title, #page-resumoluiz .rp-section-title,
-#page-flavia .rp-table, #page-resumoluiz .rp-table,
-#page-flavia .rp-table thead th, #page-resumoluiz .rp-table thead th,
-#page-flavia .rp-r-label, #page-resumoluiz .rp-r-label,
-#page-flavia .rp-r-value, #page-resumoluiz .rp-r-value,
-#page-flavia .rp-v-value, #page-resumoluiz .rp-v-value,
-#page-flavia .rp-info-label, #page-resumoluiz .rp-info-label,
-#page-flavia .rp-info-value, #page-resumoluiz .rp-info-value,
-#page-flavia .rp-exec-label, #page-resumoluiz .rp-exec-label,
-#page-flavia .rp-tag, #page-resumoluiz .rp-tag,
-#page-flavia .rp-badge, #page-resumoluiz .rp-badge,
-#page-flavia .rp-estim, #page-resumoluiz .rp-estim,
-#page-flavia .rp-exec-alert, #page-resumoluiz .rp-exec-alert,
-#page-flavia .rp-details summary, #page-resumoluiz .rp-details summary,
-#page-flavia .rp-sub-title, #page-resumoluiz .rp-sub-title,
-#page-flavia .rp-header-left p, #page-resumoluiz .rp-header-left p{
+#page-flavia, #page-resumoluiz, #page-familia,
+#page-flavia .rp-section-title, #page-resumoluiz .rp-section-title, #page-familia .rp-section-title,
+#page-flavia .rp-table, #page-resumoluiz .rp-table, #page-familia .rp-table,
+#page-flavia .rp-table thead th, #page-resumoluiz .rp-table thead th, #page-familia .rp-table thead th,
+#page-flavia .rp-r-label, #page-resumoluiz .rp-r-label, #page-familia .rp-r-label,
+#page-flavia .rp-r-value, #page-resumoluiz .rp-r-value, #page-familia .rp-r-value,
+#page-flavia .rp-v-value, #page-resumoluiz .rp-v-value, #page-familia .rp-v-value,
+#page-flavia .rp-info-label, #page-resumoluiz .rp-info-label, #page-familia .rp-info-label,
+#page-flavia .rp-info-value, #page-resumoluiz .rp-info-value, #page-familia .rp-info-value,
+#page-flavia .rp-exec-label, #page-resumoluiz .rp-exec-label, #page-familia .rp-exec-label,
+#page-flavia .rp-tag, #page-resumoluiz .rp-tag, #page-familia .rp-tag,
+#page-flavia .rp-badge, #page-resumoluiz .rp-badge, #page-familia .rp-badge,
+#page-flavia .rp-estim, #page-resumoluiz .rp-estim, #page-familia .rp-estim,
+#page-flavia .rp-exec-alert, #page-resumoluiz .rp-exec-alert, #page-familia .rp-exec-alert,
+#page-flavia .rp-details summary, #page-resumoluiz .rp-details summary, #page-familia .rp-details summary,
+#page-flavia .rp-sub-title, #page-resumoluiz .rp-sub-title, #page-familia .rp-sub-title,
+#page-flavia .rp-header-left p, #page-resumoluiz .rp-header-left p, #page-familia .rp-header-left p{
   font-size:16px !important;line-height:1.5;
 }
-#page-flavia .rp-table tbody td,#page-resumoluiz .rp-table tbody td{padding:12px 14px;}
+#page-flavia .rp-table tbody td,#page-resumoluiz .rp-table tbody td,#page-familia .rp-table tbody td{padding:12px 14px;}
 #page-flavia input.cw-qtd,#page-resumoluiz input.cw-qtd,
 #page-flavia input.cw-pm,#page-resumoluiz input.cw-pm{font-size:16px !important;}
 /* Bullets de Objetivo/Diagnóstico/Ressalvas usam font-size:12px direto no style="" do HTML —
    precisa !important pra vencer a especificidade do inline sem reescrever cada <li>/<p>. */
-#page-flavia li[style*="font-size:12px"],#page-resumoluiz li[style*="font-size:12px"],
-#page-flavia p[style*="font-size:12px"],#page-resumoluiz p[style*="font-size:12px"]{font-size:16px !important;line-height:1.7 !important;}
+#page-flavia li[style*="font-size:12px"],#page-resumoluiz li[style*="font-size:12px"],#page-familia li[style*="font-size:12px"],
+#page-flavia p[style*="font-size:12px"],#page-resumoluiz p[style*="font-size:12px"],#page-familia p[style*="font-size:12px"]{font-size:16px !important;line-height:1.7 !important;}
 /* Exceções de propósito: título da página e os 3-4 números grandes de destaque do topo
    (Patrimônio total, % da meta, Renda 2026) seguem maiores — são cabeçalho/chamada, não
    corpo de texto, e achatar tudo pro mesmo tamanho aí tiraria a hierarquia visual da página. */
-#page-flavia .rp-header-left h1,#page-resumoluiz .rp-header-left h1{font-size:26px !important;}
-#page-flavia .rp-exec-value,#page-resumoluiz .rp-exec-value{font-size:22px !important;}
+#page-flavia .rp-header-left h1,#page-resumoluiz .rp-header-left h1,#page-familia .rp-header-left h1{font-size:26px !important;}
+#page-flavia .rp-exec-value,#page-resumoluiz .rp-exec-value,#page-familia .rp-exec-value{font-size:22px !important;}
 /* Texto dentro dos gráficos SVG (donut, barras) e da barra de progresso — ficaram pequenos
    demais (9-11px) perto do resto do texto já aumentado; aqui não dá pra usar classe porque
    é gerado como atributo font-size no próprio <text>/<svg>, então o alvo é o elemento SVG. */
-#page-flavia svg text,#page-resumoluiz svg text{font-size:13px !important;}
+#page-flavia svg text,#page-resumoluiz svg text,#page-familia svg text{font-size:13px !important;}
 /* A legenda do donut e a barra de progresso são HTML normal (não SVG), mas cada linha/rótulo
    tem seu PRÓPRIO font-size inline (JS) — inherit não vence estilo inline do próprio elemento,
-   por isso o "*" aqui precisa alcançar cada nó, não só o container. */
+   por isso o "*" aqui precisa alcançar cada nó, não só o container. Mesmo tamanho nas 3 abas
+   (Flavia/Luiz/Consolidada) — antes só Flavia e Luiz tinham esse ajuste. */
 #page-flavia #chartFlaviaClasse *,#page-resumoluiz #chartLuizClasse *,
-#page-flavia #chartFlaviaSegmento *,#page-resumoluiz #chartLuizSegmento *{font-size:14px !important;}
+#page-flavia #chartFlaviaSegmento *,#page-resumoluiz #chartLuizSegmento *,
+#page-familia #chartConsTitular *,#page-familia #chartConsClasse *,#page-familia #chartConsSegmento *,#page-familia #chartConsAtivo *{font-size:14px !important;}
 #page-flavia #progFlaviaTempo *,#page-resumoluiz #progLuizTempo *{font-size:14px !important;}
+/* Legenda dos donuts corta no mobile: valor+% em nowrap dentro de flex:1 min-width:0 extrapola
+   a tela e, como html/body ganharam overflow-x:hidden (nav fix), fica invisível em vez de
+   rolar. Deixa a legenda quebrar linha e o svg encolher em vez de estourar a largura. */
+@media(max-width:768px){
+  /* Pega tanto a linha externa (svg + coluna da legenda) quanto cada linha interna da legenda
+     (quadradinho + rótulo + valor) — as duas são flex sem wrap geradas inline pelo JS. */
+  #page-flavia [id^="chart"] div[style*="display:flex"],#page-resumoluiz [id^="chart"] div[style*="display:flex"],#page-familia [id^="chart"] div[style*="display:flex"]{flex-wrap:wrap;row-gap:4px;}
+  /* Sem isso o svg (altura fixa) fica centralizado contra uma legenda bem mais alta (cada
+     item agora quebra em 3 linhas) e sobra um vão vazio enorme entre topo e o donut. */
+  #page-flavia [id^="chart"]>div,#page-resumoluiz [id^="chart"]>div,#page-familia [id^="chart"]>div{align-items:flex-start !important;}
+  #page-flavia [id^="chart"] svg,#page-resumoluiz [id^="chart"] svg,#page-familia [id^="chart"] svg{max-width:100%;height:auto;}
+  #page-flavia [id^="chart"] span,#page-resumoluiz [id^="chart"] span,#page-familia [id^="chart"] span{white-space:normal !important;}
+}
 .rp-code{background:#1a1a2e;color:#e2e8f0;border-radius:8px;padding:1rem 1.1rem;font-family:'SF Mono',Consolas,monospace;font-size:11px;line-height:1.6;white-space:pre-wrap;word-break:break-word;overflow-x:auto;}
 @media(max-width:700px){.rp-bull-bear{grid-template-columns:1fr;}.report-body{padding:1rem;}}
 .radar-controls{padding:0.75rem 2rem;display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:56px;z-index:50;}
