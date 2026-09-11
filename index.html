@@ -433,32 +433,32 @@ thead tr.col-header,#fundTable thead tr{overflow:visible;}
 #page-flavia .rp-details summary, #page-resumoluiz .rp-details summary, #page-familia .rp-details summary,
 #page-flavia .rp-sub-title, #page-resumoluiz .rp-sub-title, #page-familia .rp-sub-title,
 #page-flavia .rp-header-left p, #page-resumoluiz .rp-header-left p, #page-familia .rp-header-left p{
-  font-size:16px !important;line-height:1.5;
+  font-size:13px !important;line-height:1.45;
 }
-#page-flavia .rp-table tbody td,#page-resumoluiz .rp-table tbody td,#page-familia .rp-table tbody td{padding:12px 14px;}
+#page-flavia .rp-table tbody td,#page-resumoluiz .rp-table tbody td,#page-familia .rp-table tbody td{padding:8px 10px;}
 #page-flavia input.cw-qtd,#page-resumoluiz input.cw-qtd,
-#page-flavia input.cw-pm,#page-resumoluiz input.cw-pm{font-size:16px !important;}
+#page-flavia input.cw-pm,#page-resumoluiz input.cw-pm{font-size:16px !important;} /* 16px fixo: abaixo disso o Safari iOS dá zoom automático ao focar o campo */
 /* Bullets de Objetivo/Diagnóstico/Ressalvas usam font-size:12px direto no style="" do HTML —
    precisa !important pra vencer a especificidade do inline sem reescrever cada <li>/<p>. */
 #page-flavia li[style*="font-size:12px"],#page-resumoluiz li[style*="font-size:12px"],#page-familia li[style*="font-size:12px"],
-#page-flavia p[style*="font-size:12px"],#page-resumoluiz p[style*="font-size:12px"],#page-familia p[style*="font-size:12px"]{font-size:16px !important;line-height:1.7 !important;}
+#page-flavia p[style*="font-size:12px"],#page-resumoluiz p[style*="font-size:12px"],#page-familia p[style*="font-size:12px"]{font-size:13px !important;line-height:1.5 !important;}
 /* Exceções de propósito: título da página e os 3-4 números grandes de destaque do topo
    (Patrimônio total, % da meta, Renda 2026) seguem maiores — são cabeçalho/chamada, não
    corpo de texto, e achatar tudo pro mesmo tamanho aí tiraria a hierarquia visual da página. */
-#page-flavia .rp-header-left h1,#page-resumoluiz .rp-header-left h1,#page-familia .rp-header-left h1{font-size:26px !important;}
-#page-flavia .rp-exec-value,#page-resumoluiz .rp-exec-value,#page-familia .rp-exec-value{font-size:22px !important;}
-/* Texto dentro dos gráficos SVG (donut, barras) e da barra de progresso — ficaram pequenos
-   demais (9-11px) perto do resto do texto já aumentado; aqui não dá pra usar classe porque
-   é gerado como atributo font-size no próprio <text>/<svg>, então o alvo é o elemento SVG. */
-#page-flavia svg text,#page-resumoluiz svg text,#page-familia svg text{font-size:13px !important;}
+#page-flavia .rp-header-left h1,#page-resumoluiz .rp-header-left h1,#page-familia .rp-header-left h1{font-size:20px !important;}
+#page-flavia .rp-exec-value,#page-resumoluiz .rp-exec-value,#page-familia .rp-exec-value{font-size:18px !important;}
+/* Texto dentro dos gráficos SVG (donut, barras) e da barra de progresso — aqui não dá pra usar
+   classe porque é gerado como atributo font-size no próprio <text>/<svg>, então o alvo é o
+   elemento SVG. */
+#page-flavia svg text,#page-resumoluiz svg text,#page-familia svg text{font-size:11px !important;}
 /* A legenda do donut e a barra de progresso são HTML normal (não SVG), mas cada linha/rótulo
    tem seu PRÓPRIO font-size inline (JS) — inherit não vence estilo inline do próprio elemento,
    por isso o "*" aqui precisa alcançar cada nó, não só o container. Mesmo tamanho nas 3 abas
-   (Flavia/Luiz/Consolidada) — antes só Flavia e Luiz tinham esse ajuste. */
+   (Flavia/Luiz/Consolidada). */
 #page-flavia #chartFlaviaClasse *,#page-resumoluiz #chartLuizClasse *,
 #page-flavia #chartFlaviaSegmento *,#page-resumoluiz #chartLuizSegmento *,
-#page-familia #chartConsTitular *,#page-familia #chartConsClasse *,#page-familia #chartConsSegmento *,#page-familia #chartConsAtivo *{font-size:14px !important;}
-#page-flavia #progFlaviaTempo *,#page-resumoluiz #progLuizTempo *{font-size:14px !important;}
+#page-familia #chartConsTitular *,#page-familia #chartConsClasse *,#page-familia #chartConsSegmento *,#page-familia #chartConsAtivo *{font-size:12px !important;}
+#page-flavia #progFlaviaTempo *,#page-resumoluiz #progLuizTempo *{font-size:12px !important;}
 /* Legenda dos donuts corta no mobile: valor+% em nowrap dentro de flex:1 min-width:0 extrapola
    a tela e, como html/body ganharam overflow-x:hidden (nav fix), fica invisível em vez de
    rolar. Deixa a legenda quebrar linha e o svg encolher em vez de estourar a largura. */
