@@ -7,7 +7,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Research · Carteiras — Luiz e Flavia</title>
 <style>
 /* Fontes do sistema — sem dependência externa */
@@ -757,6 +757,29 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
 
   /* OUTROS cards mobile */
   .outros-table tbody td,.outros-table thead th{padding:6px 10px;font-size:11px;}
+
+  /* ── AJUSTES iPHONE/SAFARI (evitar zoom automático, respeitar notch/Dynamic Island,
+     melhorar toque e rolagem em tabelas largas) ── */
+  .nav{padding-top:env(safe-area-inset-top,0px);min-height:calc(52px + env(safe-area-inset-top,0px));}
+  body{padding-bottom:env(safe-area-inset-bottom,0px);}
+
+  /* Safari iOS dá zoom automático em campos com font-size < 16px — forçar 16px aqui */
+  input,select,textarea,.search-input{font-size:16px!important;}
+
+  /* rolagem por inércia + indicação visual de que a tabela rola na horizontal */
+  .table-wrap,.fund-table-wrap,.pos-table-wrap{
+    -webkit-overflow-scrolling:touch;
+    scroll-snap-type:x proximity;
+  }
+
+  /* alvos de toque maiores — botões e ícones pequenos ficam difíceis de acertar com o dedo */
+  .expand-btn{width:28px;height:28px;font-size:13px;}
+  .nav-tab,button,.btn-update,.btn-olho,.filter-btn{touch-action:manipulation;}
+  .btn-update,.btn-olho,.filter-btn{min-height:40px;}
+  th.sortable{padding-top:10px;padding-bottom:10px;}
+
+  /* remove o destaque cinza padrão do Safari ao tocar em elementos clicáveis */
+  a,button,.nav-tab,.expand-btn,th.sortable{-webkit-tap-highlight-color:transparent;}
 }
 </style>
 </head>
