@@ -669,8 +669,11 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
 
 /* ── MOBILE RESPONSIVO ── */
 @media(max-width:768px){
-  /* NAV mobile */
-  .nav{padding:0 1rem;}
+  /* NAV mobile — vira uma faixa com scroll horizontal próprio, nunca alarga a página */
+  html,body{overflow-x:hidden;}
+  .nav{padding:0 1rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .nav::-webkit-scrollbar{display:none;}
+  .nav-brand,.nav-tabs,.nav-right{flex-shrink:0;}
   .nav-brand{padding:0 1rem 0 0;margin-right:0.5rem;}
   .nav-brand-sub{display:none;}
   .nav-tab{padding:0 0.85rem;font-size:11px;min-height:48px;}
