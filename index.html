@@ -1289,31 +1289,6 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
     </div>
 
     <div class="rp-section">
-      <div class="rp-section-title">💼 Patrimônio</div>
-      <div id="chartFlaviaClasse" style="margin-bottom:0.5rem;"></div>
-      <details class="rp-details">
-        <summary>📋 Ver tabela</summary>
-        <div class="rp-details-body">
-          <div class="rp-table-wrap">
-            <table class="rp-table" id="tblFlaviaClasse">
-              <thead><tr><th>Classe</th><th>Valor</th><th>% do Patrimônio</th></tr></thead>
-              <tbody>
-                <tr><td class="rp-bold">Ações BR</td><td>R$ 213.782,85</td><td>29,74%</td></tr>
-                <tr><td class="rp-bold">Renda Fixa (LFTB11)</td><td>R$ 505.052,16</td><td>70,26%</td></tr>
-                <tr style="background:#1e1a2e;color:#fff;font-weight:700;"><td>Total</td><td>R$ 718.835,01</td><td>100%</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </details>
-    </div>
-
-    <div class="rp-section">
-      <div class="rp-section-title">🏷️ Segmento</div>
-      <div id="chartFlaviaSegmento" style="margin-bottom:0.5rem;"></div>
-    </div>
-
-    <div class="rp-section">
       <div class="rp-section-title">Posição Atual</div>
       <div id="chartFlaviaPos" style="margin-bottom:0.75rem;"></div>
       <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap;">
@@ -1378,6 +1353,31 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
           </tbody>
         </table>
       </div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-section-title">💼 Patrimônio</div>
+      <div id="chartFlaviaClasse" style="margin-bottom:0.5rem;"></div>
+      <details class="rp-details">
+        <summary>📋 Ver tabela</summary>
+        <div class="rp-details-body">
+          <div class="rp-table-wrap">
+            <table class="rp-table" id="tblFlaviaClasse">
+              <thead><tr><th>Classe</th><th>Valor</th><th>% do Patrimônio</th></tr></thead>
+              <tbody>
+                <tr><td class="rp-bold">Ações BR</td><td>R$ 213.782,85</td><td>29,74%</td></tr>
+                <tr><td class="rp-bold">Renda Fixa (LFTB11)</td><td>R$ 505.052,16</td><td>70,26%</td></tr>
+                <tr style="background:#1e1a2e;color:#fff;font-weight:700;"><td>Total</td><td>R$ 718.835,01</td><td>100%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-section-title">🏷️ Segmento</div>
+      <div id="chartFlaviaSegmento" style="margin-bottom:0.5rem;"></div>
     </div>
 
     <div class="rp-section">
@@ -1538,6 +1538,90 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
     </div>
 
     <div class="rp-section">
+      <div class="rp-section-title">Posição Atual</div>
+      <div id="chartLuizPos" style="margin:0.5rem 0;"></div>
+      <div style="display:flex;align-items:center;gap:0.75rem;margin:0.5rem 0 0.75rem;flex-wrap:wrap;">
+        <button class="btn-olho" id="btnUpdateLuiz" onclick="atualizarCotacaoCarteira('luizPosBody','luizUpdateStatus',146768.22)" style="cursor:pointer;">🔄 Atualizar Cotação</button>
+        <span id="luizUpdateStatus" style="font-size:11px;color:#888;">Clique para atualizar cotações e recalcular o patrimônio</span>
+        <span id="luizSaveStatus" style="font-size:11px;font-weight:600;"></span>
+        <button type="button" onclick="restaurarPosicoesOriginais('luizPosBody')" style="background:none;border:none;padding:0;font:inherit;font-size:11px;color:#888;text-decoration:underline;cursor:pointer;" title="Descarta o que você digitou e volta aos valores que vieram no arquivo">restaurar valores originais</button>
+      </div>
+      <p class="rp-estim" style="margin:0 0 0.75rem;font-size:11px;line-height:1.6;">⚠️ Qtd e PM abaixo são <b>implícitos</b>, derivados do valor de cada posição na data-base ÷ cotação da data-base (e o PM, da rentabilidade informada) — não vêm de extrato de corretora. Servem para o patrimônio reagir à cotação ao vivo; corrija-os se tiver os números reais.</p>
+      <div class="rp-table-wrap">
+        <table class="rp-table">
+          <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia<span class="col-tip" data-tip="Variação do preço hoje vs. o fechamento de ontem&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Var. Dia R$<span class="col-tip" data-tip="Quanto essa posição ganhou/perdeu hoje: Qtd × variação do preço&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Investido</th><th>Saldo</th><th>Result.</th><th>% Cart.</th><th>% Classe</th></tr></thead>
+          <tbody id="luizPosBody" data-outros-fixos="146768.22">
+            <tr data-ticker="IRBR3.SA" data-classe="acao" data-grupo="crescimento" data-segmento="Resseguros">
+              <td class="rp-bold">IRBR3</td>
+              <td><input type="text" class="cw-qtd" value="3580" style="width:55px;font:inherit;"></td>
+              <td><input type="text" class="cw-pm" value="38,95" style="width:60px;font:inherit;"></td>
+              <td class="cw-preco">R$ 51,16</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 139.441,00</td><td class="cw-saldo">R$ 183.152,80</td><td class="cw-result" style="color:#0a5c35;">+43.711,80 (+31,35%)</td><td class="cw-pct-cart">23,29%</td><td class="cw-pct-classe">32,41%</td>
+            </tr>
+            <tr data-ticker="BBSE3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Seguros">
+              <td class="rp-bold">BBSE3</td>
+              <td><input type="text" class="cw-qtd" value="3575" style="width:55px;font:inherit;"></td>
+              <td><input type="text" class="cw-pm" value="27,14" style="width:60px;font:inherit;"></td>
+              <td class="cw-preco">R$ 37,19</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 97.025,50</td><td class="cw-saldo">R$ 132.954,25</td><td class="cw-result" style="color:#0a5c35;">+35.928,75 (+37,03%)</td><td class="cw-pct-cart">16,91%</td><td class="cw-pct-classe">23,53%</td>
+            </tr>
+            <tr data-ticker="CXSE3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Seguros">
+              <td class="rp-bold">CXSE3</td>
+              <td><input type="text" class="cw-qtd" value="4215" style="width:55px;font:inherit;"></td>
+              <td><input type="text" class="cw-pm" value="6,57" style="width:60px;font:inherit;"></td>
+              <td class="cw-preco">R$ 18,59</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 27.692,55</td><td class="cw-saldo">R$ 78.356,85</td><td class="cw-result" style="color:#0a5c35;">+50.664,30 (+182,95%)</td><td class="cw-pct-cart">9,96%</td><td class="cw-pct-classe">13,87%</td>
+            </tr>
+            <tr data-ticker="ITUB3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Bancos">
+              <td class="rp-bold">ITUB3</td>
+              <td><input type="text" class="cw-qtd" value="1799" style="width:55px;font:inherit;"></td>
+              <td><input type="text" class="cw-pm" value="21,13" style="width:60px;font:inherit;"></td>
+              <td class="cw-preco">R$ 41,66</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 38.012,87</td><td class="cw-saldo">R$ 74.946,34</td><td class="cw-result" style="color:#0a5c35;">+36.933,47 (+97,16%)</td><td class="cw-pct-cart">9,53%</td><td class="cw-pct-classe">13,27%</td>
+            </tr>
+            <tr data-ticker="RANI3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Papel e Celulose">
+              <td class="rp-bold">RANI3</td>
+              <td><input type="text" class="cw-qtd" value="4486" style="width:55px;font:inherit;"></td>
+              <td><input type="text" class="cw-pm" value="5,23" style="width:60px;font:inherit;"></td>
+              <td class="cw-preco">R$ 7,79</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 23.461,78</td><td class="cw-saldo">R$ 34.945,94</td><td class="cw-result" style="color:#0a5c35;">+11.484,16 (+48,95%)</td><td class="cw-pct-cart">4,44%</td><td class="cw-pct-classe">6,19%</td>
+            </tr>
+            <tr data-ticker="GMAT3.SA" data-classe="acao" data-grupo="crescimento" data-segmento="Varejo">
+              <td class="rp-bold">GMAT3</td>
+              <td><input type="text" class="cw-qtd" value="7224" style="width:55px;font:inherit;"></td>
+              <td><input type="text" class="cw-pm" value="6,57" style="width:60px;font:inherit;"></td>
+              <td class="cw-preco">R$ 4,66</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 47.461,68</td><td class="cw-saldo">R$ 33.663,84</td><td class="cw-result" style="color:#9c1c1c;">-13.797,84 (-29,07%)</td><td class="cw-pct-cart">4,28%</td><td class="cw-pct-classe">5,96%</td>
+            </tr>
+            <tr data-ticker="ALOS3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Shoppings">
+              <td class="rp-bold">ALOS3</td>
+              <td><input type="text" class="cw-qtd" value="777" style="width:55px;font:inherit;"></td>
+              <td><input type="text" class="cw-pm" value="26,18" style="width:60px;font:inherit;"></td>
+              <td class="cw-preco">R$ 26,02</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 20.341,86</td><td class="cw-saldo">R$ 20.217,54</td><td class="cw-result" style="color:#9c1c1c;">-124,32 (-0,61%)</td><td class="cw-pct-cart">2,57%</td><td class="cw-pct-classe">3,58%</td>
+            </tr>
+            <tr data-ticker="BBAS3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Bancos">
+              <td class="rp-bold">BBAS3</td>
+              <td><input type="text" class="cw-qtd" value="367" style="width:55px;font:inherit;"></td>
+              <td><input type="text" class="cw-pm" value="7,21" style="width:60px;font:inherit;"></td>
+              <td class="cw-preco">R$ 18,43</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 2.646,07</td><td class="cw-saldo">R$ 6.763,81</td><td class="cw-result" style="color:#0a5c35;">+4.117,74 (+155,63%)</td><td class="cw-pct-cart">0,86%</td><td class="cw-pct-classe">1,20%</td>
+            </tr>
+            <tr data-ticker="LFTB11.SA" data-classe="rf" data-segmento="Renda Fixa">
+              <td class="rp-bold">LFTB11</td>
+              <td><input type="text" class="cw-qtd" value="594" style="width:55px;font:inherit;"></td>
+              <td><input type="text" class="cw-pm" value="117,90" style="width:60px;font:inherit;"></td>
+              <td class="cw-preco">R$ 125,66</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 70.032,60</td><td class="cw-saldo">R$ 74.642,04</td><td class="cw-result" style="color:#0a5c35;">+4.609,44 (+6,58%)</td><td class="cw-pct-cart">9,49%</td><td class="cw-pct-classe">100%</td>
+            </tr>
+            <tr style="background:#1e1a2e;color:#fff;font-weight:700;" data-role="total-luizPosBody"><td>TOTAL</td><td></td><td></td><td></td><td class="cw-tot-vardia"></td><td class="cw-tot-vardia-rs"></td><td class="cw-tot-investido">R$ 466.115,91</td><td class="cw-tot-saldo">R$ 639.643,41</td><td class="cw-tot-result" style="color:#4ecdc4;">+173.527,50 (+37,23%)</td><td>100%</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="rp-r-label" style="margin-top:1rem;">ETFs Internacionais</p>
+      <div class="rp-table-wrap" style="margin-top:0.5rem;">
+        <table class="rp-table">
+          <thead><tr><th>ETF</th><th>Rentabilidade</th><th>Observação</th></tr></thead>
+          <tbody>
+            <tr><td class="rp-bold">SOLT</td><td style="color:#9c1c1c;">-63,96%</td><td></td></tr>
+            <tr><td class="rp-bold">TXXS</td><td style="color:#9c1c1c;">-83,67%</td><td class="rp-estim">⚠️ possível grupamento a confirmar</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="rp-section">
       <div class="rp-section-title">💼 Patrimônio</div>
       <div id="chartLuizClasse" style="margin-bottom:0.5rem;"></div>
       <details class="rp-details">
@@ -1564,53 +1648,6 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
     <div class="rp-section">
       <div class="rp-section-title">🏷️ Segmento</div>
       <div id="chartLuizSegmento" style="margin-bottom:0.5rem;"></div>
-    </div>
-
-    <div class="rp-section">
-      <div class="rp-section-title">Posição Atual</div>
-      <div class="rp-resumo-grid" style="margin-bottom:1rem;">
-        <div class="rp-resumo-item"><div class="rp-r-label">Ações BR</div><div class="rp-r-value" style="font-size:16px;font-weight:700;">R$ 564.984,49</div><div class="rp-r-value">71,85%</div></div>
-        <div class="rp-resumo-item"><div class="rp-r-label">Renda Fixa (LFTB11)</div><div class="rp-r-value" style="font-size:16px;font-weight:700;">R$ 74.642,04</div><div class="rp-r-value">9,49%</div></div>
-        <div class="rp-resumo-item"><div class="rp-r-label">Previdência Privada</div><div class="rp-r-value" style="font-size:16px;font-weight:700;">R$ 131.616,44</div><div class="rp-r-value">16,74%</div></div>
-        <div class="rp-resumo-item"><div class="rp-r-label">ETFs BR</div><div class="rp-r-value" style="font-size:16px;font-weight:700;">R$ 8.521,76</div><div class="rp-r-value">1,08%</div></div>
-        <div class="rp-resumo-item"><div class="rp-r-label">ETFs Internacionais</div><div class="rp-r-value" style="font-size:16px;font-weight:700;">R$ 6.630,02</div><div class="rp-r-value">0,84%</div></div>
-      </div>
-      <p class="rp-r-label">Ações + Renda Fixa (9 ativos)</p>
-      <div id="chartLuizPos" style="margin:0.5rem 0;"></div>
-      <div style="display:flex;align-items:center;gap:0.75rem;margin:0.5rem 0 0.75rem;flex-wrap:wrap;">
-        <button class="btn-olho" id="btnUpdateLuiz" onclick="atualizarCotacaoCarteira('luizPosBody','luizUpdateStatus',146768.22)" style="cursor:pointer;">🔄 Atualizar Cotação</button>
-        <span id="luizUpdateStatus" style="font-size:11px;color:#888;">Clique para atualizar cotações e recalcular o patrimônio</span>
-        <span id="luizSaveStatus" style="font-size:11px;font-weight:600;"></span>
-        <button type="button" onclick="restaurarPosicoesOriginais('luizPosBody')" style="background:none;border:none;padding:0;font:inherit;font-size:11px;color:#888;text-decoration:underline;cursor:pointer;" title="Descarta o que você digitou e volta aos valores que vieram no arquivo">restaurar valores originais</button>
-      </div>
-      <p class="rp-estim" style="margin:0 0 0.75rem;font-size:11px;line-height:1.6;">⚠️ Qtd e PM abaixo são <b>implícitos</b>, derivados do valor de cada posição na data-base ÷ cotação da data-base (e o PM, da rentabilidade informada) — não vêm de extrato de corretora. Servem para o patrimônio reagir à cotação ao vivo; corrija-os se tiver os números reais.</p>
-      <div class="rp-table-wrap">
-        <table class="rp-table">
-          <thead><tr><th>Ticker</th><th>% Carteira</th><th>% Classe</th><th>% Ideal</th><th>Rentab.</th><th>Situação</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia<span class="col-tip" data-tip="Variação do preço hoje vs. o fechamento de ontem&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Var. Dia R$<span class="col-tip" data-tip="Quanto essa posição ganhou/perdeu hoje: Qtd × variação do preço&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Investido</th><th>Valor Atual</th></tr></thead>
-          <tbody id="luizPosBody" data-outros-fixos="146768.22">
-            <tr data-ticker="IRBR3.SA" data-classe="acao" data-grupo="crescimento" data-segmento="Resseguros"><td class="rp-bold">IRBR3</td><td class="cw-pct-cart">23,29%</td><td class="cw-pct-classe">32,41%</td><td>12,50%</td><td style="color:#0a5c35;">+31,34%</td><td><span class="rp-tag rp-tag-red">🔴 2x sobredim.</span></td><td><input type="text" class="cw-qtd" value="3580" style="width:55px;font:inherit;"></td><td><input type="text" class="cw-pm" value="38,95" style="width:60px;font:inherit;"></td><td class="cw-preco">R$ 51,16</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 139.441,00</td><td class="cw-saldo">R$ 183.152,80</td></tr>
-            <tr data-ticker="BBSE3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Seguros"><td class="rp-bold">BBSE3</td><td class="cw-pct-cart">16,91%</td><td class="cw-pct-classe">23,53%</td><td>12,50%</td><td style="color:#0a5c35;">+37,03%</td><td><span class="rp-tag rp-tag-yellow">🟡 acima do ideal</span></td><td><input type="text" class="cw-qtd" value="3575" style="width:55px;font:inherit;"></td><td><input type="text" class="cw-pm" value="27,14" style="width:60px;font:inherit;"></td><td class="cw-preco">R$ 37,19</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 97.025,50</td><td class="cw-saldo">R$ 132.954,25</td></tr>
-            <tr data-ticker="CXSE3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Seguros"><td class="rp-bold">CXSE3</td><td class="cw-pct-cart">9,96%</td><td class="cw-pct-classe">13,87%</td><td>12,50%</td><td style="color:#0a5c35;">+182,99%</td><td><span class="rp-tag rp-tag-green">✅</span></td><td><input type="text" class="cw-qtd" value="4215" style="width:55px;font:inherit;"></td><td><input type="text" class="cw-pm" value="6,57" style="width:60px;font:inherit;"></td><td class="cw-preco">R$ 18,59</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 27.692,55</td><td class="cw-saldo">R$ 78.356,85</td></tr>
-            <tr data-ticker="ITUB3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Bancos"><td class="rp-bold">ITUB3</td><td class="cw-pct-cart">9,53%</td><td class="cw-pct-classe">13,27%</td><td>12,50%</td><td style="color:#0a5c35;">+97,19%</td><td><span class="rp-tag rp-tag-green">✅</span></td><td><input type="text" class="cw-qtd" value="1799" style="width:55px;font:inherit;"></td><td><input type="text" class="cw-pm" value="21,13" style="width:60px;font:inherit;"></td><td class="cw-preco">R$ 41,66</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 38.012,87</td><td class="cw-saldo">R$ 74.946,34</td></tr>
-            <tr data-ticker="RANI3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Papel e Celulose"><td class="rp-bold">RANI3</td><td class="cw-pct-cart">4,44%</td><td class="cw-pct-classe">6,19%</td><td>12,50%</td><td style="color:#0a5c35;">+48,94%</td><td>abaixo do ideal</td><td><input type="text" class="cw-qtd" value="4486" style="width:55px;font:inherit;"></td><td><input type="text" class="cw-pm" value="5,23" style="width:60px;font:inherit;"></td><td class="cw-preco">R$ 7,79</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 23.461,78</td><td class="cw-saldo">R$ 34.945,94</td></tr>
-            <tr data-ticker="GMAT3.SA" data-classe="acao" data-grupo="crescimento" data-segmento="Varejo"><td class="rp-bold">GMAT3</td><td class="cw-pct-cart">4,28%</td><td class="cw-pct-classe">5,96%</td><td>12,50%</td><td style="color:#9c1c1c;">-29,11%</td><td>zero proventos</td><td><input type="text" class="cw-qtd" value="7224" style="width:55px;font:inherit;"></td><td><input type="text" class="cw-pm" value="6,57" style="width:60px;font:inherit;"></td><td class="cw-preco">R$ 4,66</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 47.461,68</td><td class="cw-saldo">R$ 33.663,84</td></tr>
-            <tr data-ticker="ALOS3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Shoppings"><td class="rp-bold">ALOS3</td><td class="cw-pct-cart">2,57%</td><td class="cw-pct-classe">3,58%</td><td>12,50%</td><td style="color:#9c1c1c;">-0,63%</td><td>posição nova</td><td><input type="text" class="cw-qtd" value="777" style="width:55px;font:inherit;"></td><td><input type="text" class="cw-pm" value="26,18" style="width:60px;font:inherit;"></td><td class="cw-preco">R$ 26,02</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 20.341,86</td><td class="cw-saldo">R$ 20.217,54</td></tr>
-            <tr data-ticker="BBAS3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Bancos"><td class="rp-bold">BBAS3</td><td class="cw-pct-cart">0,86%</td><td class="cw-pct-classe">1,20%</td><td>12,50%</td><td style="color:#0a5c35;">+155,60%</td><td>reduzida sem registro</td><td><input type="text" class="cw-qtd" value="367" style="width:55px;font:inherit;"></td><td><input type="text" class="cw-pm" value="7,21" style="width:60px;font:inherit;"></td><td class="cw-preco">R$ 18,43</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 2.646,07</td><td class="cw-saldo">R$ 6.763,81</td></tr>
-            <tr data-ticker="LFTB11.SA" data-classe="rf" data-segmento="Renda Fixa"><td class="rp-bold">LFTB11</td><td class="cw-pct-cart">9,49%</td><td class="cw-pct-classe">100%</td><td>15,00%</td><td style="color:#0a5c35;">+6,58%</td><td>abaixo do ideal</td><td><input type="text" class="cw-qtd" value="594" style="width:55px;font:inherit;"></td><td><input type="text" class="cw-pm" value="117,90" style="width:60px;font:inherit;"></td><td class="cw-preco">R$ 125,66</td><td class="cw-vardia">—</td><td class="cw-vardia-rs">—</td><td class="cw-investido">R$ 70.032,60</td><td class="cw-saldo">R$ 74.642,04</td></tr>
-            <tr style="background:#1e1a2e;color:#fff;font-weight:700;" data-role="total-luizPosBody"><td>TOTAL (ações + LFTB11, linhas preenchidas)</td><td></td><td>100%</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="cw-tot-vardia"></td><td class="cw-tot-vardia-rs"></td><td class="cw-tot-investido">R$ 466.115,91</td><td class="cw-tot-saldo">R$ 639.643,41</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="rp-r-label" style="margin-top:1rem;">ETFs Internacionais</p>
-      <div class="rp-table-wrap" style="margin-top:0.5rem;">
-        <table class="rp-table">
-          <thead><tr><th>ETF</th><th>Rentabilidade</th><th>Observação</th></tr></thead>
-          <tbody>
-            <tr><td class="rp-bold">SOLT</td><td style="color:#9c1c1c;">-63,96%</td><td></td></tr>
-            <tr><td class="rp-bold">TXXS</td><td style="color:#9c1c1c;">-83,67%</td><td class="rp-estim">⚠️ possível grupamento a confirmar</td></tr>
-          </tbody>
-        </table>
-      </div>
     </div>
 
     <div class="rp-section">
@@ -8813,7 +8850,7 @@ function makeSVGHBar(el, labels, values, colors, fmt, wideLabels) {
   el.innerHTML = `<svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" style="overflow:visible;">${bars}</svg>`;
 }
 // Lê % Carteira (posição atual) por ativo de uma tabela de posição e desenha barra horizontal.
-// pctSelector: '.cw-pct-cart' (Flavia, dinâmico) ou 'td:nth-child(2)' (Luiz, texto estático).
+// pctSelector: '.cw-pct-cart' — Flavia e Luiz usam a mesma classe, mesmas colunas nas duas.
 // O rótulo de cada barra mostra "R$ X · Y%" quando a linha já tem saldo calculado (cw-saldo);
 // se a Qtd/PM ainda não foram preenchidos, cai de volta para só o percentual.
 function renderRpPosicaoBar(tbodyId, containerId, pctSelector) {
@@ -9170,7 +9207,7 @@ function atualizarResumoPatrimonio(prefix) {
       renderRpSegmentoChart('flaviaPosBody', 'chartFlaviaSegmento', { pctSelector: '.cw-pct-cart', totalTableId: 'tblFlaviaClasse' });
     } else {
       renderRpSegmentoChart('luizPosBody', 'chartLuizSegmento', {
-        pctSelector: 'td:nth-child(2)',
+        pctSelector: '.cw-pct-cart',
         classeTableId: 'tblLuizClasse',
         totalTableId: 'tblLuizClasse',
         skipLabels: ['Ações BR', 'Renda Fixa (LFTB11)']
@@ -9184,15 +9221,16 @@ function initRpCharts(prefix) {
   const P = prefix; // 'Flavia' | 'Luiz'
   renderRpDonut(`tbl${P}Classe`, `chart${P}Classe`, 0, 1);
   renderRpDesvioChart(`tbl${P}Ideal`, `chart${P}Ideal`);
-  const pctSel = P === 'Flavia' ? '.cw-pct-cart' : 'td:nth-child(2)';
-  renderRpPosicaoBar(`${prefix.toLowerCase()}PosBody`, `chart${P}Pos`, pctSel);
+  // Tabelas da Flavia e do Luiz têm exatamente as mesmas colunas agora — não precisa mais
+  // diferenciar seletor por pessoa, as duas usam a mesma classe .cw-pct-cart.
+  renderRpPosicaoBar(`${prefix.toLowerCase()}PosBody`, `chart${P}Pos`, '.cw-pct-cart');
   renderRpTableHBar(`tbl${P}Renda`, `chart${P}Renda`, 0, 4, v => 'R$ ' + Math.round(v).toLocaleString('pt-BR'));
   renderRpProgress(`tbl${P}Tempo`, `prog${P}Tempo`);
   if (P === 'Flavia') {
     renderRpSegmentoChart('flaviaPosBody', 'chartFlaviaSegmento', { pctSelector: '.cw-pct-cart', totalTableId: 'tblFlaviaClasse' });
   } else {
     renderRpSegmentoChart('luizPosBody', 'chartLuizSegmento', {
-      pctSelector: 'td:nth-child(2)',
+      pctSelector: '.cw-pct-cart',
       classeTableId: 'tblLuizClasse',
       totalTableId: 'tblLuizClasse',
       skipLabels: ['Ações BR', 'Renda Fixa (LFTB11)']
@@ -9689,7 +9727,7 @@ function _cwPropagar(tbodyId) {
   const prefix = tbodyId === 'flaviaPosBody' ? 'Flavia' : (tbodyId === 'luizPosBody' ? 'Luiz' : null);
   if (!prefix) return;
   if (typeof renderRpPosicaoBar === 'function') {
-    renderRpPosicaoBar(tbodyId, `chart${prefix}Pos`, prefix === 'Flavia' ? '.cw-pct-cart' : 'td:nth-child(2)');
+    renderRpPosicaoBar(tbodyId, `chart${prefix}Pos`, '.cw-pct-cart');
   }
   if (typeof atualizarResumoPatrimonio === 'function') atualizarResumoPatrimonio(prefix);
 }
