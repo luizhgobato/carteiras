@@ -9299,13 +9299,25 @@ async function fetchCotacoesBatch(tickers){
 // Mesma chamada do brapi.dev acima, mas também guarda a variação do dia (regularMarketChangePercent
 // já vem pronta da API — preço de agora vs. fechamento de ontem — não precisa armazenar nada
 // à parte). Usado só pelas carteiras da Flavia/Luiz, que têm coluna própria de Var. Dia.
+// Devolve {map, falhas}: falhas[ticker] = motivo (status HTTP, 'timeout', 'rede' ou 'sem-preco'),
+// pra dar pra distinguir "limite de requisições do plano free" (status 429) de outro problema —
+// antes um ticker que falhasse virava só "Erro" sem pista nenhuma do porquê.
 async function fetchCotacoesBatchComVar(tickers){
-  const map={};
-  await Promise.all(tickers.map(async t=>{
+  const map={}, falhas={};
+  async function tentar(t, jaTentouDeNovo){
     const clean=t.replace('.SA','');
     try{
       const res=await fetch(`https://brapi.dev/api/quote/${clean}?token=${BRAPI_TOKEN}`,{signal:AbortSignal.timeout(12000)});
-      if(!res.ok)return;
+      if(!res.ok){
+        // 429 = estourou o limite de requisições/minuto do plano free — espera um pouco e
+        // tenta mais uma vez antes de desistir (só uma vez, pra não travar a página inteira).
+        if(res.status===429&&!jaTentouDeNovo){
+          await new Promise(r=>setTimeout(r,1500));
+          return tentar(t,true);
+        }
+        falhas[t]=res.status;
+        return;
+      }
       const json=await res.json();
       const r=json?.results?.[0];
       if(r&&r.regularMarketPrice>0){
@@ -9318,10 +9330,15 @@ async function fetchCotacoesBatchComVar(tickers){
           varDiaRS=r.regularMarketPrice-precoAnterior;
         }
         map[t]={preco:r.regularMarketPrice,varDia,varDiaRS};
+      } else {
+        falhas[t]='sem-preco';
       }
-    }catch{}
-  }));
-  return map;
+    }catch(e){
+      falhas[t]=(e&&e.name==='TimeoutError')?'timeout':'rede';
+    }
+  }
+  await Promise.all(tickers.map(t=>tentar(t,false)));
+  return {map, falhas};
 }
 function margemTag(pct){
   if(pct===null) return '<span class="muted">—</span>';
@@ -9463,15 +9480,34 @@ async function atualizarCotacaoCarteira(tbodyId, statusId, outrosFixos) {
   if (statusEl) statusEl.textContent = 'Buscando cotações...';
 
   const tickers = rows.map(r => r.dataset.ticker);
-  let full = {};
+  let full = {}, falhas = {};
   try {
-    full = await fetchCotacoesBatchComVar(tickers);
+    const resultado = await fetchCotacoesBatchComVar(tickers);
+    full = resultado.map;
+    falhas = resultado.falhas;
   } catch (e) { /* segue com map vazio, trata como erro por linha */ }
   const map = {};
   Object.keys(full).forEach(t => { map[t] = full[t].preco; });
 
   _cwCalcular(tbodyId, outrosFixos, map, statusEl);
   _cwAtualizarVarDia(tbody, full);
+  _cwAnexarMotivoFalha(statusEl, falhas);
+}
+
+// Acrescenta ao texto de status (já escrito por _cwCalcular, tipo "6 ok · 2 erro(s) às 14:32")
+// o motivo das falhas, resumido por tipo — "429" quase sempre quer dizer limite de requisições
+// do plano free do brapi.dev batido (comum quando dá pra atualizar de novo rápido demais).
+function _cwAnexarMotivoFalha(statusEl, falhas) {
+  const tickers = Object.keys(falhas);
+  if (!statusEl || !tickers.length) return;
+  const contagem = {};
+  tickers.forEach(t => { const m = falhas[t]; contagem[m] = (contagem[m] || 0) + 1; });
+  const partes = Object.entries(contagem).map(([motivo, n]) => {
+    const rotulo = motivo === '429' || motivo === 429 ? 'limite da API' : (motivo === 'timeout' ? 'timeout' : (motivo === 'rede' ? 'rede' : (motivo === 'sem-preco' ? 'sem preço' : 'HTTP ' + motivo)));
+    return `${n}× ${rotulo}`;
+  });
+  statusEl.textContent += ` (${partes.join(', ')})`;
+  statusEl.title = 'Tickers com erro: ' + tickers.map(t => t.replace('.SA', '')).join(', ');
 }
 
 // Preenche a coluna "Var. Dia" com o que veio de fetchCotacoesBatchComVar. Só roda depois de
@@ -12613,8 +12649,19 @@ if (typeof initCarteiraEditavel === 'function') {
   initCarteiraEditavel('flaviaPosBody');
   initCarteiraEditavel('luizPosBody');
 }
+// Limita a busca automática a 1x a cada 5 min por navegador — sem isso, cada F5/reabertura
+// da aba disparava as 17 buscas de novo, e o plano free do brapi.dev tem limite de
+// requisições/minuto: era isso que fazia "algumas" cotações voltarem com erro (429) sem
+// motivo aparente. O botão "Atualizar Cotação" continua manual e sem esse limite.
+const CW_AUTOFETCH_KEY = 'carteira_ultimo_autofetch';
+const CW_AUTOFETCH_INTERVALO_MS = 5 * 60 * 1000;
 if (typeof atualizarCotacaoFamilia === 'function') {
-  atualizarCotacaoFamilia();
+  let ultimoAutoFetch = 0;
+  try { ultimoAutoFetch = parseInt(localStorage.getItem(CW_AUTOFETCH_KEY) || '0', 10) || 0; } catch {}
+  if (Date.now() - ultimoAutoFetch > CW_AUTOFETCH_INTERVALO_MS) {
+    atualizarCotacaoFamilia();
+    try { localStorage.setItem(CW_AUTOFETCH_KEY, String(Date.now())); } catch {}
+  }
 }
 </script>
 </body>
