@@ -9302,18 +9302,27 @@ async function fetchCotacoesBatch(tickers){
 // Devolve {map, falhas}: falhas[ticker] = motivo (status HTTP, 'timeout', 'rede' ou 'sem-preco'),
 // pra dar pra distinguir "limite de requisições do plano free" (status 429) de outro problema —
 // antes um ticker que falhasse virava só "Erro" sem pista nenhuma do porquê.
+//
+// Manda no máximo CW_FETCH_CONCORRENCIA requisições por vez (não Promise.all direto em tudo):
+// disparar as ~17 de uma vez só é o que mais estourava o limite por segundo do plano free do
+// brapi.dev, mesmo com o retry — o retry sozinho não adiantava porque a rajada inicial já
+// derrubava várias ao mesmo tempo. Em rajadas menores, espaçadas, cada uma tem folga pra
+// passar (ou pro retry dela resolver) antes da próxima rajada começar.
+const CW_FETCH_CONCORRENCIA = 4;
+const CW_FETCH_INTERVALO_RAJADA_MS = 600;
 async function fetchCotacoesBatchComVar(tickers){
   const map={}, falhas={};
-  async function tentar(t, jaTentouDeNovo){
+  const unicos=[...new Set(tickers)]; // Flavia+Luiz repetem ticker (ex. BBSE3) — não busca 2x
+  async function tentar(t, tentativa){
     const clean=t.replace('.SA','');
     try{
       const res=await fetch(`https://brapi.dev/api/quote/${clean}?token=${BRAPI_TOKEN}`,{signal:AbortSignal.timeout(12000)});
       if(!res.ok){
-        // 429 = estourou o limite de requisições/minuto do plano free — espera um pouco e
-        // tenta mais uma vez antes de desistir (só uma vez, pra não travar a página inteira).
-        if(res.status===429&&!jaTentouDeNovo){
-          await new Promise(r=>setTimeout(r,1500));
-          return tentar(t,true);
+        // 429 = estourou o limite de requisições do plano free — espera (crescente) e tenta
+        // de novo, até 2 vezes, antes de desistir desse ticker.
+        if(res.status===429&&tentativa<2){
+          await new Promise(r=>setTimeout(r,1500*(tentativa+1)));
+          return tentar(t,tentativa+1);
         }
         falhas[t]=res.status;
         return;
@@ -9337,7 +9346,11 @@ async function fetchCotacoesBatchComVar(tickers){
       falhas[t]=(e&&e.name==='TimeoutError')?'timeout':'rede';
     }
   }
-  await Promise.all(tickers.map(t=>tentar(t,false)));
+  for(let i=0;i<unicos.length;i+=CW_FETCH_CONCORRENCIA){
+    const rajada=unicos.slice(i,i+CW_FETCH_CONCORRENCIA);
+    await Promise.all(rajada.map(t=>tentar(t,0)));
+    if(i+CW_FETCH_CONCORRENCIA<unicos.length) await new Promise(r=>setTimeout(r,CW_FETCH_INTERVALO_RAJADA_MS));
+  }
   return {map, falhas};
 }
 function margemTag(pct){
@@ -9469,7 +9482,12 @@ function _cwFmtResult(saldo, investido, cellEl, positiveColor, negativeColor) {
   cellEl.style.color = result >= 0 ? (positiveColor || '#0a5c35') : (negativeColor || '#9c1c1c');
 }
 
-async function atualizarCotacaoCarteira(tbodyId, statusId, outrosFixos) {
+// prefetched (opcional): {map, falhas} já buscado por fora (atualizarCotacaoFamilia busca uma
+// vez só pras duas carteiras, já que vários tickers — BBSE3, IRBR3 etc. — se repetem entre
+// Flavia e Luiz; sem isso cada botão buscava os mesmos tickers de novo, dobrando requisições
+// à toa e piorando o limite do plano free). O clique manual em cada carteira continua sem
+// prefetched, busca só os tickers dela mesma.
+async function atualizarCotacaoCarteira(tbodyId, statusId, outrosFixos, prefetched) {
   outrosFixos = outrosFixos || 0;
   const tbody = document.getElementById(tbodyId);
   const statusEl = statusId ? document.getElementById(statusId) : null;
@@ -9481,17 +9499,26 @@ async function atualizarCotacaoCarteira(tbodyId, statusId, outrosFixos) {
 
   const tickers = rows.map(r => r.dataset.ticker);
   let full = {}, falhas = {};
-  try {
-    const resultado = await fetchCotacoesBatchComVar(tickers);
-    full = resultado.map;
-    falhas = resultado.falhas;
-  } catch (e) { /* segue com map vazio, trata como erro por linha */ }
+  if (prefetched) {
+    full = prefetched.map;
+    falhas = prefetched.falhas;
+  } else {
+    try {
+      const resultado = await fetchCotacoesBatchComVar(tickers);
+      full = resultado.map;
+      falhas = resultado.falhas;
+    } catch (e) { /* segue com map vazio, trata como erro por linha */ }
+  }
   const map = {};
   Object.keys(full).forEach(t => { map[t] = full[t].preco; });
 
   _cwCalcular(tbodyId, outrosFixos, map, statusEl);
   _cwAtualizarVarDia(tbody, full);
-  _cwAnexarMotivoFalha(statusEl, falhas);
+  // Falhas relevantes pra ESTA carteira — se veio de um prefetched que cobre as duas, filtra
+  // pra não mostrar na Flavia um erro de ticker que só existe na carteira do Luiz.
+  const falhasDaqui = {};
+  tickers.forEach(t => { if (t in falhas) falhasDaqui[t] = falhas[t]; });
+  _cwAnexarMotivoFalha(statusEl, falhasDaqui);
 }
 
 // Acrescenta ao texto de status (já escrito por _cwCalcular, tipo "6 ok · 2 erro(s) às 14:32")
@@ -12595,10 +12622,23 @@ const CW_STATUS_ID_POR_BODY = { luizPosBody: 'luizUpdateStatus', flaviaPosBody: 
 async function atualizarCotacaoFamilia() {
   const st = document.getElementById('consUpdateStatus');
   if (st) st.textContent = 'Buscando cotações das duas carteiras...';
+
+  // Busca cada ticker uma única vez pras duas carteiras — Flavia e Luiz repetem vários
+  // (BBSE3, IRBR3, CXSE3, ITUB3, BBAS3, ALOS3, LFTB11), então isso já corta perto de metade
+  // das requisições reais ao brapi.dev nessa atualização conjunta.
+  const todosTickers = [];
+  CONS_CARTEIRAS.forEach(c => {
+    document.getElementById(c.bodyId)?.querySelectorAll('tr[data-ticker]').forEach(tr => {
+      if (tr.dataset.ticker) todosTickers.push(tr.dataset.ticker);
+    });
+  });
+  let prefetched = null;
+  try { prefetched = await fetchCotacoesBatchComVar(todosTickers); } catch { /* cada carteira cai no fallback dela */ }
+
   for (const c of CONS_CARTEIRAS) {
     const cfg = (typeof RP_PATRIMONIO_CFG !== 'undefined') ? RP_PATRIMONIO_CFG[c.prefix] : null;
     const outros = document.getElementById(c.bodyId)?.dataset.outrosFixos || 0;
-    try { await atualizarCotacaoCarteira(c.bodyId, CW_STATUS_ID_POR_BODY[c.bodyId] || null, parseFloat(outros) || 0); } catch { /* segue para a outra */ }
+    try { await atualizarCotacaoCarteira(c.bodyId, CW_STATUS_ID_POR_BODY[c.bodyId] || null, parseFloat(outros) || 0, prefetched); } catch { /* segue para a outra */ }
     if (cfg && typeof atualizarResumoPatrimonio === 'function') atualizarResumoPatrimonio(c.prefix);
   }
   renderConsolidado();
