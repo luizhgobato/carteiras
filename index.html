@@ -1530,19 +1530,19 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
 
     <div class="rp-exec">
       <div class="rp-exec-grid">
-        <div class="rp-exec-item"><div class="rp-exec-label">Patrimônio total</div><div class="rp-exec-value">R$ 786.394,75</div></div>
-        <div class="rp-exec-item"><div class="rp-exec-label">Progresso vs. marco R$ 2MM</div><div class="rp-exec-value yellow">39,3%</div></div>
+        <div class="rp-exec-item"><div class="rp-exec-label">Patrimônio total</div><div class="rp-exec-value">R$ 837.388,05</div></div>
+        <div class="rp-exec-item"><div class="rp-exec-label">Progresso vs. marco R$ 2MM</div><div class="rp-exec-value yellow">41,9%</div></div>
         <div class="rp-exec-item"><div class="rp-exec-label">Renda ações 2026 (est.)</div><div class="rp-exec-value">R$ 3.186/mês</div></div>
-        <div class="rp-exec-item"><div class="rp-exec-label">Financeiro/seguros BR</div><div class="rp-exec-value red">60,50%</div></div>
+        <div class="rp-exec-item"><div class="rp-exec-label">Financeiro/seguros BR</div><div class="rp-exec-value red">61,37%</div></div>
       </div>
-      <div class="rp-exec-alert">⚠️ Maior risco agora: IRBR3 em 23,29% da carteira (~1,9x o % Ideal) com veredicto 🟡 Aguardar/acima do teto — ver Diagnóstico.</div>
+      <div class="rp-exec-alert">⚠️ Maior risco agora: IRBR3 em 23,89% da carteira (~1,9x o % Ideal) com veredicto 🟡 Aguardar/acima do teto — ver Diagnóstico.</div>
     </div>
 
     <div class="rp-section">
       <div class="rp-section-title">Posição Atual</div>
       <div id="chartLuizPos" style="margin:0.5rem 0;"></div>
       <div style="display:flex;align-items:center;gap:0.75rem;margin:0.5rem 0 0.75rem;flex-wrap:wrap;">
-        <button class="btn-olho" id="btnUpdateLuiz" onclick="atualizarCotacaoCarteira('luizPosBody','luizUpdateStatus',146768.22)" style="cursor:pointer;">🔄 Atualizar Cotação</button>
+        <button class="btn-olho" id="btnUpdateLuiz" onclick="atualizarCotacaoCarteira('luizPosBody','luizUpdateStatus',159518.24)" style="cursor:pointer;">🔄 Atualizar Cotação</button>
         <span id="luizUpdateStatus" style="font-size:11px;color:#888;">Clique para atualizar cotações e recalcular o patrimônio</span>
         <span id="luizSaveStatus" style="font-size:11px;font-weight:600;"></span>
         <button type="button" onclick="restaurarPosicoesOriginais('luizPosBody')" style="background:none;border:none;padding:0;font:inherit;font-size:11px;color:#888;text-decoration:underline;cursor:pointer;" title="Descarta o que você digitou e volta aos valores que vieram no arquivo">restaurar valores originais</button>
@@ -1551,7 +1551,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       <div class="rp-table-wrap">
         <table class="rp-table">
           <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia<span class="col-tip" data-tip="Variação do preço hoje vs. o fechamento de ontem&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Var. Dia R$<span class="col-tip" data-tip="Quanto essa posição ganhou/perdeu hoje: Qtd × variação do preço&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Investido</th><th>Saldo</th><th>Result.</th><th>% Cart.</th><th>% Classe</th></tr></thead>
-          <tbody id="luizPosBody" data-outros-fixos="146768.22">
+          <tbody id="luizPosBody" data-outros-fixos="159518.24">
             <tr data-ticker="IRBR3.SA" data-classe="acao" data-grupo="crescimento" data-segmento="Resseguros">
               <td class="rp-bold">IRBR3</td>
               <td><input type="text" class="cw-qtd" value="3229" style="width:55px;font:inherit;"></td>
@@ -1615,8 +1615,8 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <table class="rp-table">
           <thead><tr><th>ETF</th><th>Rentabilidade</th><th>Observação</th></tr></thead>
           <tbody>
-            <tr><td class="rp-bold">SOLT</td><td style="color:#9c1c1c;">-36,47%</td><td></td></tr>
-            <tr><td class="rp-bold">TXXS</td><td style="color:#9c1c1c;">-82,06%</td><td class="rp-estim">Grupamento confirmado (158→21,30 cotas)</td></tr>
+            <tr><td class="rp-bold">SOLT</td><td style="color:#9c1c1c;">-40,17%</td><td></td></tr>
+            <tr><td class="rp-bold">TXXS</td><td style="color:#9c1c1c;">-83,59%</td><td class="rp-estim">Grupamento confirmado (158→21,30 cotas)</td></tr>
           </tbody>
         </table>
       </div>
@@ -1634,16 +1634,16 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
               <tbody>
                 <tr><td class="rp-bold">Ações BR</td><td>R$ 564.984,49</td><td>71,85%</td></tr>
                 <tr><td class="rp-bold">Renda Fixa (LFTB11)</td><td>R$ 74.642,04</td><td>9,49%</td></tr>
-                <tr><td class="rp-bold">Previdência Privada</td><td>R$ 131.616,44</td><td>16,74%</td></tr>
-                <tr><td class="rp-bold">ETFs BR</td><td>R$ 8.521,76</td><td>1,08%</td></tr>
-                <tr><td class="rp-bold">ETFs Internacionais</td><td>R$ 6.630,02</td><td>0,84%</td></tr>
+                <tr><td class="rp-bold">Previdência Privada</td><td>R$ 141.448,47</td><td>16,89%</td></tr>
+                <tr><td class="rp-bold">ETFs BR</td><td>R$ 8.521,76</td><td>1,02%</td></tr>
+                <tr><td class="rp-bold">ETFs Internacionais</td><td>R$ 9.548,01</td><td>1,14%</td></tr>
                 <tr style="background:#1e1a2e;color:#fff;font-weight:700;"><td>Total</td><td>R$ 786.394,75</td><td>100%</td></tr>
               </tbody>
             </table>
           </div>
         </div>
       </details>
-      <p class="rp-estim" style="margin:-0.25rem 0 0.75rem;font-size:11px;line-height:1.6;">ℹ️ Ações e LFTB11 são recalculados pela cotação ao vivo no botão "Atualizar Cotação". <b>Previdência Privada (R$ 131.616), ETFs BR (R$ 8.522) e ETFs Internacionais (R$ 6.630) ficam estáticos</b> — não têm ticker/quantidade cadastrados aqui. Me passe o ticker e a quantidade de cada um que eu os coloco no motor também.</p>
+      <p class="rp-estim" style="margin:-0.25rem 0 0.75rem;font-size:11px;line-height:1.6;">ℹ️ Ações e LFTB11 são recalculados pela cotação ao vivo no botão "Atualizar Cotação". <b>Previdência Privada (R$ 141.448), ETFs BR (R$ 8.522) e ETFs Internacionais (R$ 9.548) ficam estáticos</b> — não têm ticker/quantidade cadastrados aqui. Me passe o ticker e a quantidade de cada um que eu os coloco no motor também.</p>
     </div>
 
     <div class="rp-section">
@@ -1708,7 +1708,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <li style="margin-bottom:10px;font-size:12px;line-height:1.65;"><b>LFTB11 adicionado como Renda Fixa</b> (594 cotas, R$ 74.642,04, 9,49% da carteira) — reduz o desvio de Renda Fixa/Reserva de −15,00pp para −5,51pp frente à meta de 15%, o maior avanço estrutural da carteira nesta atualização.</li>
         <li style="margin-bottom:10px;font-size:12px;line-height:1.65;"><b>44% da carteira sem tese registrada</b> (CXSE3, ITUB3, RANI3, BBAS3) — sem veredicto/preço-teto formal no Radar.</li>
         <li style="margin-bottom:10px;font-size:12px;line-height:1.65;"><b>GMAT3</b> (zero proventos, -29,11%): sem projeção de dividendo futuro — retorno depende só de valorização.</li>
-        <li style="margin-bottom:10px;font-size:12px;line-height:1.65;"><b>Previdência Privada</b> (16,74%, R$ 131.616,44): composição desconhecida — caixa-preta na régua da Carteira Ideal.</li>
+        <li style="margin-bottom:10px;font-size:12px;line-height:1.65;"><b>Previdência Privada</b> (16,89%, R$ 141.448,47): consolidada em um único fundo — Itaú FlexPrev Privilège RF Referenciado DI FICFI (82.237,48 cotas, cota R$ 1,72) — composição ainda caixa-preta na régua da Carteira Ideal.</li>
         <li style="margin-bottom:0;font-size:12px;line-height:1.65;">Exposição internacional de apenas 0,93% — não é obrigatório corrigir, mas é uma opção de diversificação em aberto.</li>
       </ol>
     </div>
@@ -9054,9 +9054,9 @@ const RP_PATRIMONIO_CFG = {
     classeTableId: 'tblLuizClasse',
     idealTableId: 'tblLuizIdeal',
     fixos: [
-      { label: 'Previdência Privada', valor: 131616.44 },
+      { label: 'Previdência Privada', valor: 141448.47 },
       { label: 'ETFs BR', valor: 8521.76 },
-      { label: 'ETFs Internacionais', valor: 6630.02 },
+      { label: 'ETFs Internacionais', valor: 9548.01 },
     ],
     dividendosBaseline: 348189.43,
     crescimentoBaseline: 216799.87,
