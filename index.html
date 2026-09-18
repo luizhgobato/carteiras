@@ -9280,11 +9280,53 @@ async function fetchCotacao(ticker){
   return null;
 }
 
-// Fetch via brapi.dev — 1 ticker por requisição (plano free NÃO aceita batch),
-// em paralelo via Promise.all. Nome mantido p/ compatibilidade com atualizarCotacoes.
+// Busca preço + variação do dia no Yahoo Finance via proxies (mesma técnica de fetchCotacao,
+// mas lendo também o fechamento anterior pra calcular a variação). Usada como fonte PRIMÁRIA
+// pelas duas funções abaixo; brapi.dev entra só como fallback de quem o Yahoo não resolver
+// (ver histórico: proxies gratuitos às vezes ficam instáveis, por isso mantém plano B).
+async function fetchCotacaoYahooComVar(ticker){
+  const chartUrls=[
+    `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=5d`,
+    `https://query2.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=5d`,
+  ];
+  const proxies=[
+    u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
+    u=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+    u=>`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+  ];
+  for(const proxyFn of proxies){
+    for(const yUrl of chartUrls){
+      try{
+        const isAO=proxyFn===proxies[2];
+        const res=await fetch(proxyFn(yUrl),{signal:AbortSignal.timeout(7000)});
+        if(!res.ok)continue;
+        const raw=await res.text();
+        let json;try{json=isAO?JSON.parse(JSON.parse(raw).contents):JSON.parse(raw);}catch{continue;}
+        const m=json?.chart?.result?.[0]?.meta;
+        const preco=m?.regularMarketPrice;
+        const fechAnterior=m?.chartPreviousClose||m?.previousClose;
+        if(preco&&preco>0){
+          let varDia=null,varDiaRS=null;
+          if(fechAnterior&&fechAnterior>0){
+            varDiaRS=preco-fechAnterior;
+            varDia=(varDiaRS/fechAnterior)*100;
+          }
+          return {preco,varDia,varDiaRS};
+        }
+      }catch{continue;}
+    }
+  }
+  return null;
+}
+
+// Yahoo Finance primeiro (via proxies, em paralelo); brapi.dev só como fallback do que sobrar.
+// Nome mantido p/ compatibilidade com atualizarCotacoes.
 async function fetchCotacoesBatch(tickers){
   const map={};
-  await Promise.all(tickers.map(async t=>{
+  const unicos=[...new Set(tickers)];
+  await Promise.all(unicos.map(async t=>{
+    const y=await fetchCotacaoYahooComVar(t);
+    if(y&&y.preco>0){map[t]=y.preco;return;}
     const clean=t.replace('.SA','');
     try{
       const res=await fetch(`https://brapi.dev/api/quote/${clean}?token=${BRAPI_TOKEN}`,{signal:AbortSignal.timeout(12000)});
@@ -9314,7 +9356,7 @@ const CW_FETCH_INTERVALO_RAJADA_MS = 600;
 async function fetchCotacoesBatchComVar(tickers){
   const map={}, falhas={};
   const unicos=[...new Set(tickers)]; // Flavia+Luiz repetem ticker (ex. BBSE3) — não busca 2x
-  async function tentar(t, tentativa){
+  async function tentarBrapi(t, tentativa){
     const clean=t.replace('.SA','');
     try{
       const res=await fetch(`https://brapi.dev/api/quote/${clean}?token=${BRAPI_TOKEN}`,{signal:AbortSignal.timeout(12000)});
@@ -9323,7 +9365,7 @@ async function fetchCotacoesBatchComVar(tickers){
         // de novo, até 2 vezes, antes de desistir desse ticker.
         if(res.status===429&&tentativa<2){
           await new Promise(r=>setTimeout(r,1500*(tentativa+1)));
-          return tentar(t,tentativa+1);
+          return tentarBrapi(t,tentativa+1);
         }
         falhas[t]=res.status;
         return;
@@ -9347,9 +9389,16 @@ async function fetchCotacoesBatchComVar(tickers){
       falhas[t]=(e&&e.name==='TimeoutError')?'timeout':'rede';
     }
   }
+  // Yahoo Finance primeiro (via proxies); só cai pro brapi.dev (com o retry/429 acima) se o
+  // Yahoo não devolver preço pra aquele ticker.
+  async function tentar(t){
+    const y=await fetchCotacaoYahooComVar(t);
+    if(y&&y.preco>0){map[t]=y;return;}
+    await tentarBrapi(t,0);
+  }
   for(let i=0;i<unicos.length;i+=CW_FETCH_CONCORRENCIA){
     const rajada=unicos.slice(i,i+CW_FETCH_CONCORRENCIA);
-    await Promise.all(rajada.map(t=>tentar(t,0)));
+    await Promise.all(rajada.map(t=>tentar(t)));
     if(i+CW_FETCH_CONCORRENCIA<unicos.length) await new Promise(r=>setTimeout(r,CW_FETCH_INTERVALO_RAJADA_MS));
   }
   return {map, falhas};
@@ -9395,8 +9444,8 @@ async function atualizarCotacoes(){
   arr.forEach(r=>{const c=r.querySelector('.cotacao-cell');if(c){c.classList.add('loading');c.textContent='...';}});
   let ok=0,errs=0;
 
-  // brapi primeiro (1 ticker/req em paralelo — plano free não aceita batch);
-  // Yahoo via proxies só como fallback (proxies gratuitos estão instáveis)
+  // Yahoo Finance primeiro (via proxies); brapi.dev só como fallback de quem o Yahoo
+  // não resolver (mantido por segurança — proxies gratuitos às vezes ficam instáveis)
   statusText.textContent='Buscando cotações...';
   const batchMap=await fetchCotacoesBatch(arr.map(r=>r.dataset.ticker));
   const fallbackRows=[];
