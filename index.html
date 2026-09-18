@@ -9351,7 +9351,7 @@ async function fetchCotacoesBatch(tickers){
 // brapi.dev, mesmo com o retry — o retry sozinho não adiantava porque a rajada inicial já
 // derrubava várias ao mesmo tempo. Em rajadas menores, espaçadas, cada uma tem folga pra
 // passar (ou pro retry dela resolver) antes da próxima rajada começar.
-const CW_FETCH_CONCORRENCIA = 4;
+const CW_FETCH_CONCORRENCIA = 3; // reduzido de 4: menos carga simultanea nos proxies gratuitos do Yahoo
 const CW_FETCH_INTERVALO_RAJADA_MS = 600;
 async function fetchCotacoesBatchComVar(tickers){
   const map={}, falhas={};
@@ -9390,11 +9390,21 @@ async function fetchCotacoesBatchComVar(tickers){
     }
   }
   // Yahoo Finance primeiro (via proxies); só cai pro brapi.dev (com o retry/429 acima) se o
-  // Yahoo não devolver preço pra aquele ticker.
-  async function tentar(t){
+  // Yahoo não devolver preço pra aquele ticker. Se as duas fontes falharem por erro de
+  // conexão (proxy gratuito sobrecarregado, rede instável no celular etc. -- não "sem preço"),
+  // tenta o ciclo inteiro mais uma vez depois de uma pequena espera antes de desistir.
+  async function tentarCiclo(t){
     const y=await fetchCotacaoYahooComVar(t);
-    if(y&&y.preco>0){map[t]=y;return;}
+    if(y&&y.preco>0){map[t]=y;return true;}
     await tentarBrapi(t,0);
+    return !!map[t];
+  }
+  async function tentar(t){
+    const ok=await tentarCiclo(t);
+    if(ok)return;
+    delete falhas[t];
+    await new Promise(r=>setTimeout(r,1200));
+    await tentarCiclo(t);
   }
   for(let i=0;i<unicos.length;i+=CW_FETCH_CONCORRENCIA){
     const rajada=unicos.slice(i,i+CW_FETCH_CONCORRENCIA);
