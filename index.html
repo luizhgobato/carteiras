@@ -9285,38 +9285,37 @@ async function fetchCotacao(ticker){
 // pelas duas funções abaixo; brapi.dev entra só como fallback de quem o Yahoo não resolver
 // (ver histórico: proxies gratuitos às vezes ficam instáveis, por isso mantém plano B).
 async function fetchCotacaoYahooComVar(ticker){
-  const chartUrls=[
-    `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=5d`,
-    `https://query2.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=5d`,
-  ];
+  const yUrl=`https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=5d`;
   const proxies=[
     u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
     u=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
     u=>`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
   ];
-  for(const proxyFn of proxies){
-    for(const yUrl of chartUrls){
-      try{
-        const isAO=proxyFn===proxies[2];
-        const res=await fetch(proxyFn(yUrl),{signal:AbortSignal.timeout(7000)});
-        if(!res.ok)continue;
-        const raw=await res.text();
-        let json;try{json=isAO?JSON.parse(JSON.parse(raw).contents):JSON.parse(raw);}catch{continue;}
-        const m=json?.chart?.result?.[0]?.meta;
-        const preco=m?.regularMarketPrice;
-        const fechAnterior=m?.chartPreviousClose||m?.previousClose;
-        if(preco&&preco>0){
-          let varDia=null,varDiaRS=null;
-          if(fechAnterior&&fechAnterior>0){
-            varDiaRS=preco-fechAnterior;
-            varDia=(varDiaRS/fechAnterior)*100;
-          }
-          return {preco,varDia,varDiaRS};
-        }
-      }catch{continue;}
+  // Dispara os 3 proxies em PARALELO (não em sequência) e fica só com o primeiro que responder
+  // com preço válido — em sequência isso podia levar 40s+ por ticker (3 proxies × 2 URLs ×
+  // timeout de 7s cada) e travava a tela parecendo loop infinito.
+  const tentativas=proxies.map(async(proxyFn,i)=>{
+    const isAO=i===2;
+    const res=await fetch(proxyFn(yUrl),{signal:AbortSignal.timeout(6000)});
+    if(!res.ok)throw new Error('http-'+res.status);
+    const raw=await res.text();
+    const json=isAO?JSON.parse(JSON.parse(raw).contents):JSON.parse(raw);
+    const m=json?.chart?.result?.[0]?.meta;
+    const preco=m?.regularMarketPrice;
+    const fechAnterior=m?.chartPreviousClose||m?.previousClose;
+    if(!(preco>0))throw new Error('sem-preco');
+    let varDia=null,varDiaRS=null;
+    if(fechAnterior&&fechAnterior>0){
+      varDiaRS=preco-fechAnterior;
+      varDia=(varDiaRS/fechAnterior)*100;
     }
+    return {preco,varDia,varDiaRS};
+  });
+  try{
+    return await Promise.any(tentativas);
+  }catch{
+    return null;
   }
-  return null;
 }
 
 // Yahoo Finance primeiro (via proxies, em paralelo); brapi.dev só como fallback do que sobrar.
@@ -9403,7 +9402,6 @@ async function fetchCotacoesBatchComVar(tickers){
     const ok=await tentarCiclo(t);
     if(ok)return;
     delete falhas[t];
-    await new Promise(r=>setTimeout(r,1200));
     await tentarCiclo(t);
   }
   for(let i=0;i<unicos.length;i+=CW_FETCH_CONCORRENCIA){
