@@ -12594,7 +12594,7 @@ function renderConsolidado() {
       const pctTotal = algumTemVar && saldoOntemComVar > 0 ? totVarDiaRS / saldoOntemComVar * 100 : null;
       const ganhoTotalRS = totInvestido > 0 ? d.totalGeral - totInvestido : null;
       const pctGanhoTotal = totInvestido > 0 ? ganhoTotalRS / totInvestido * 100 : null;
-      return `<tr style="background:#1e1a2e;color:#fff;font-weight:700;">
+      return `<tr style="background:#1e1a2e;color:#fff;font-weight:700;" data-role="total">
         <td>Total</td><td></td><td></td><td></td><td></td>
         <td style="color:${pctTotal === null ? '#fff' : (pctTotal >= 0 ? '#4ecdc4' : '#ff6b6b')};">${pctTotal === null ? '—' : (pctTotal >= 0 ? '+' : '') + pctTotal.toFixed(2).replace('.', ',') + '%'}</td>
         <td style="color:${!algumTemVar ? '#fff' : (totVarDiaRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${!algumTemVar ? '—' : (totVarDiaRS >= 0 ? '+' : '') + _consR(totVarDiaRS)}</td>
@@ -12818,8 +12818,8 @@ function attachSortHandlers(tableEl, skipCols) {
       th.classList.add('rp-sort-active');
       icon.textContent = asc ? '▲' : '▼';
       const rows = Array.from(tbody.querySelectorAll('tr'));
-      const dataRows = rows.filter(r => r.hasAttribute('data-ticker'));
-      const otherRows = rows.filter(r => !r.hasAttribute('data-ticker'));
+      const otherRows = rows.filter(r => (r.dataset.role || '').indexOf('total') === 0);
+      const dataRows = rows.filter(r => (r.dataset.role || '').indexOf('total') !== 0);
       dataRows.sort((a, b) => {
         const av = _cwSortCellValue(a.children[idx]);
         const bv = _cwSortCellValue(b.children[idx]);
