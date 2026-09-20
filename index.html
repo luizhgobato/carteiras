@@ -10031,44 +10031,14 @@ function _cwPropagar(tbodyId) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════════════════
-// GRAVAÇÃO DAS POSIÇÕES (Qtd / PM)
+// EDIÇÃO DE Qtd/PM NA TELA (sem persistência entre sessões)
 // ══════════════════════════════════════════════════════════════════════════════════════════
-// Os campos Qtd e PM são editáveis, mas o arquivo HTML é estático — não há servidor para
-// gravar. A persistência é feita no localStorage do próprio navegador: o que o usuário digita
-// fica salvo naquele navegador e volta sozinho ao reabrir o arquivo. Guardamos por
-// carteira → ticker, e só o que o usuário de fato alterou; o resto continua vindo do HTML,
-// então uma atualização futura do arquivo não fica presa a valores velhos.
-const CW_POS_KEY = 'carteira_posicoes_v1';
-
-function _cwLerStore() {
-  try { return JSON.parse(localStorage.getItem(CW_POS_KEY) || '{}') || {}; }
-  catch { return {}; }
-}
-function _cwGravarStore(store) {
-  try { localStorage.setItem(CW_POS_KEY, JSON.stringify(store)); return true; }
-  catch { return false; } // modo anônimo / storage cheio: segue funcionando, só não persiste
-}
-
-// Salva Qtd/PM de uma linha. Se o valor voltar a ser igual ao original do HTML, remove a
-// entrada — assim o usuário "desfaz" simplesmente digitando o número de volta.
-function _cwSalvarLinha(tbodyId, row) {
-  const ticker = row.dataset.ticker;
-  if (!ticker) return;
-  const qtdInput = row.querySelector('.cw-qtd');
-  const pmInput = row.querySelector('.cw-pm');
-  const qtd = qtdInput ? qtdInput.value.trim() : '';
-  const pm = pmInput ? pmInput.value.trim() : '';
-  const origQtd = qtdInput ? (qtdInput.dataset.original || '') : '';
-  const origPm = pmInput ? (pmInput.dataset.original || '') : '';
-
-  const store = _cwLerStore();
-  store[tbodyId] = store[tbodyId] || {};
-  if (qtd === origQtd && pm === origPm) delete store[tbodyId][ticker];
-  else store[tbodyId][ticker] = { qtd, pm };
-  if (!Object.keys(store[tbodyId]).length) delete store[tbodyId];
-  return _cwGravarStore(store);
-}
-
+// Os campos Qtd e PM são editáveis pra simular "e se" na hora, mas o valor digitado NÃO é
+// salvo no navegador — cada visita sempre parte do que está no arquivo (a fonte de verdade,
+// atualizada por quem mantém a carteira). Já existiu uma versão que gravava a edição no
+// localStorage do aparelho, mas isso fazia o arquivo publicado parecer "não ter atualizado"
+// pra quem já tinha editado aquele campo antes (o valor salvo antigo sobrescrevia
+// silenciosamente qualquer atualização nova do arquivo, sem aviso nenhum).
 function _cwStatusSalvo(tbodyId, txt, cor) {
   const el = document.getElementById(tbodyId === 'flaviaPosBody' ? 'flaviaSaveStatus' : 'luizSaveStatus');
   if (!el) return;
@@ -10078,30 +10048,20 @@ function _cwStatusSalvo(tbodyId, txt, cor) {
   el._t = setTimeout(() => { el.textContent = ''; }, 4000);
 }
 
-// Guarda o valor original de cada campo (para o "restaurar") e aplica o que estiver salvo.
-function restaurarPosicoesSalvas(tbodyId) {
+// Guarda o valor original de cada campo, pro botão "restaurar valores originais" (desfaz só o
+// que foi digitado nesta visita — não existe mais nada gravado entre sessões pra restaurar).
+function _cwCapturarOriginais(tbodyId) {
   const tbody = document.getElementById(tbodyId);
   if (!tbody) return;
-  const salvos = (_cwLerStore()[tbodyId]) || {};
-  let n = 0;
   tbody.querySelectorAll('tr[data-ticker]').forEach(row => {
-    const ticker = row.dataset.ticker;
     ['cw-qtd', 'cw-pm'].forEach(cls => {
       const inp = row.querySelector('.' + cls);
-      if (!inp) return;
-      if (inp.dataset.original === undefined) inp.dataset.original = inp.value;
+      if (inp && inp.dataset.original === undefined) inp.dataset.original = inp.value;
     });
-    const s = salvos[ticker];
-    if (!s) return;
-    const q = row.querySelector('.cw-qtd'), p = row.querySelector('.cw-pm');
-    if (q && s.qtd !== undefined) q.value = s.qtd;
-    if (p && s.pm !== undefined) p.value = s.pm;
-    n++;
   });
-  return n;
 }
 
-// Volta Qtd/PM para os valores que vieram no arquivo e limpa o que estava gravado.
+// Volta Qtd/PM para os valores que vieram no arquivo.
 function restaurarPosicoesOriginais(tbodyId) {
   const tbody = document.getElementById(tbodyId);
   if (!tbody) return;
@@ -10111,21 +10071,18 @@ function restaurarPosicoesOriginais(tbodyId) {
       if (inp && inp.dataset.original !== undefined) inp.value = inp.dataset.original;
     });
   });
-  const store = _cwLerStore();
-  delete store[tbodyId];
-  _cwGravarStore(store);
   recalcularCarteiraManual(tbodyId);
   _cwStatusSalvo(tbodyId, '↩️ valores originais restaurados', '#7a5c00');
 }
 
-// Liga os campos: digitou → recalcula a página toda e grava. O debounce evita recalcular a
-// cada tecla enquanto o número ainda está sendo digitado (ex.: "1", "15", "150").
+// Liga os campos: digitou → recalcula a página toda. O debounce evita recalcular a cada tecla
+// enquanto o número ainda está sendo digitado (ex.: "1", "15", "150").
 function initCarteiraEditavel(tbodyId) {
   const tbody = document.getElementById(tbodyId);
   if (!tbody || tbody.dataset.editavelPronto) return;
   tbody.dataset.editavelPronto = '1';
 
-  restaurarPosicoesSalvas(tbodyId);
+  _cwCapturarOriginais(tbodyId);
   // Preço gravado ANTES do primeiro cálculo, senão a página abre com o preço da data-base
   // e o patrimônio aparece desatualizado até o usuário clicar em "Atualizar Cotação".
   const tsCot = _cwAplicarCotacoesSalvas(tbody);
@@ -10145,13 +10102,7 @@ function initCarteiraEditavel(tbodyId) {
     const row = inp.closest('tr[data-ticker]');
     if (!row) return;
     clearTimeout(t);
-    t = setTimeout(() => {
-      recalcularCarteiraManual(tbodyId);
-      const ok = _cwSalvarLinha(tbodyId, row);
-      _cwStatusSalvo(tbodyId,
-        ok ? '✅ salvo neste navegador' : '⚠️ não foi possível salvar (navegação anônima?)',
-        ok ? '#0a5c35' : '#9c1c1c');
-    }, 400);
+    t = setTimeout(() => { recalcularCarteiraManual(tbodyId); }, 400);
   });
 }
 </script>
