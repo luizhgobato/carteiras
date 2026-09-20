@@ -12755,6 +12755,13 @@ if (typeof initCarteiraEditavel === 'function') {
   initCarteiraEditavel('flaviaPosBody');
   initCarteiraEditavel('luizPosBody');
 }
+// A aba "Consolidada" agora é a padrão (já começa ativa direto no HTML, sem passar pelo
+// showPage('familia') que dispararia isso sozinho) -- sem isso a tabela ficava vazia pra
+// sempre no load, porque _consIniciado nunca virava true e renderConsolidado() nunca rodava.
+if (!_consIniciado) {
+  _consIniciado = true;
+  if (typeof renderConsolidado === 'function') renderConsolidado();
+}
 // Limita a busca automática a 1x a cada 5 min por navegador — sem isso, cada F5/reabertura
 // da aba disparava as 17 buscas de novo, e o plano free do brapi.dev tem limite de
 // requisições/minuto: era isso que fazia "algumas" cotações voltarem com erro (429) sem
