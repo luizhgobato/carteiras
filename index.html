@@ -327,6 +327,11 @@ thead tr.col-header,#fundTable thead tr{overflow:visible;}
 .rp-table tbody tr:last-child{border-bottom:none;}
 .rp-table tbody td{padding:9px 12px;white-space:nowrap;vertical-align:middle;}
 .rp-table tbody tr:hover{background:#fafaf8;}
+.rp-freeze-first thead th:first-child,.rp-freeze-first tbody td:first-child{position:sticky;left:0;z-index:2;background:inherit;box-shadow:2px 0 4px -2px rgba(0,0,0,0.18);}
+.rp-freeze-first thead th:first-child{background:#f7f7f5;}
+.rp-sort-th{cursor:pointer;user-select:none;}
+.rp-sort-th .rp-sort-icon{opacity:0.4;font-size:9px;margin-left:2px;}
+.rp-sort-th.rp-sort-active .rp-sort-icon{opacity:1;}
 .rp-tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;white-space:nowrap;}
 .rp-tag-red{background:#fde8e8;color:#9c1c1c;}
 .rp-tag-yellow{background:#fef3cd;color:#856404;}
@@ -1299,7 +1304,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <button type="button" onclick="restaurarPosicoesOriginais('flaviaPosBody')" style="background:none;border:none;padding:0;font:inherit;font-size:11px;color:#888;text-decoration:underline;cursor:pointer;" title="Descarta o que você digitou e volta aos valores que vieram no arquivo">restaurar valores originais</button>
       </div>
       <div class="rp-table-wrap">
-        <table class="rp-table">
+        <table class="rp-table rp-freeze-first" id="tblFlaviaPos">
           <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia<span class="col-tip" data-tip="Variação do preço hoje vs. o fechamento de ontem&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Var. Dia R$<span class="col-tip" data-tip="Quanto essa posição ganhou/perdeu hoje: Qtd × variação do preço&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Investido</th><th>Saldo</th><th>Result.</th><th>% Cart.</th><th>% Classe</th></tr></thead>
           <tbody id="flaviaPosBody" data-outros-fixos="0">
             <tr data-ticker="ALOS3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Shoppings">
@@ -1547,9 +1552,8 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <span id="luizSaveStatus" style="font-size:11px;font-weight:600;"></span>
         <button type="button" onclick="restaurarPosicoesOriginais('luizPosBody')" style="background:none;border:none;padding:0;font:inherit;font-size:11px;color:#888;text-decoration:underline;cursor:pointer;" title="Descarta o que você digitou e volta aos valores que vieram no arquivo">restaurar valores originais</button>
       </div>
-      <p class="rp-estim" style="margin:0 0 0.75rem;font-size:11px;line-height:1.6;">⚠️ Qtd e PM abaixo são <b>implícitos</b>, derivados do valor de cada posição na data-base ÷ cotação da data-base (e o PM, da rentabilidade informada) — não vêm de extrato de corretora. Servem para o patrimônio reagir à cotação ao vivo; corrija-os se tiver os números reais.</p>
       <div class="rp-table-wrap">
-        <table class="rp-table">
+        <table class="rp-table rp-freeze-first" id="tblLuizPos">
           <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia<span class="col-tip" data-tip="Variação do preço hoje vs. o fechamento de ontem&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Var. Dia R$<span class="col-tip" data-tip="Quanto essa posição ganhou/perdeu hoje: Qtd × variação do preço&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Investido</th><th>Saldo</th><th>Result.</th><th>% Cart.</th><th>% Classe</th></tr></thead>
           <tbody id="luizPosBody" data-outros-fixos="159518.24">
             <tr data-ticker="IRBR3.SA" data-classe="acao" data-grupo="crescimento" data-segmento="Resseguros">
@@ -1763,18 +1767,6 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       </div>
     </div>
 
-    <details class="rp-details rp-objetivo" style="border:2px solid #4f46e5;">
-      <summary>🎯 Para que serve esta página</summary>
-      <div class="rp-details-body">
-        <ul style="padding-left:18px;margin:0;">
-          <li style="margin-bottom:8px;font-size:12px;line-height:1.6;">As carteiras do Luiz e da Flavia <b>continuam separadas</b> e cada uma tem sua própria aba. Nada aqui substitui aquelas páginas.</li>
-          <li style="margin-bottom:8px;font-size:12px;line-height:1.6;">O que só aparece aqui: <b>concentração real</b>. Um ativo que pesa 17% numa carteira e 6% na outra não é "duas posições médias" — é uma posição grande do casal, e nenhuma das duas páginas consegue mostrar isso.</li>
-          <li style="margin-bottom:8px;font-size:12px;line-height:1.6;">Todos os números são <b>lidos das duas tabelas de posição</b>, não digitados aqui. Editar uma Qtd na aba do Luiz muda esta página na hora.</li>
-          <li style="margin-bottom:0;font-size:12px;line-height:1.6;">⚠️ <b>Premissa a confirmar:</b> a meta de R$ 20.000/mês e o marco de R$ 2MM são tratados como objetivo <b>do casal</b>. Se forem por pessoa, o alvo dobra.</li>
-        </ul>
-      </div>
-    </details>
-
     <div class="rp-exec">
       <div class="rp-exec-grid" id="consExec"></div>
     </div>
@@ -1792,8 +1784,8 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <summary>📋 Ver tabela — quem detém o quê</summary>
         <div class="rp-details-body">
           <div class="rp-table-wrap">
-            <table class="rp-table" id="tblConsAtivos">
-              <thead><tr><th>Ativo</th><th>Segmento</th><th>Luiz</th><th>Flavia</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia</th><th>Var. Dia R$</th><th>Investido</th><th>Saldo somado</th><th>% do casal</th><th>Result.</th></tr></thead>
+            <table class="rp-table rp-freeze-first" id="tblConsAtivos">
+              <thead><tr><th>Ativo</th><th>Segmento</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia</th><th>Var. Dia R$</th><th>Investido</th><th>Saldo somado (Luiz+Flavia)</th><th>% do casal</th><th>Result.</th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
@@ -12584,14 +12576,11 @@ function renderConsolidado() {
     tb.innerHTML = d.ativos.map(a => {
       const res = a.investido > 0 ? (a.saldo - a.investido) / a.investido * 100 : null;
       const pm = a.qtd > 0 ? a.investido / a.qtd : 0;
-      const ambos = (a.donos['Luiz'] > 0) && (a.donos['Flavia'] > 0);
       totInvestido += a.investido;
       if (a.temVarDia) { totVarDiaRS += a.varDiaRS; totSaldoComVar += a.saldo; algumTemVar = true; }
       return `<tr>
         <td class="rp-bold">${a.ticker}</td>
         <td>${a.seg}</td>
-        <td style="${ambos ? 'background:#eef3fb;' : ''}">${a.donos['Luiz'] > 0 ? _consR0(a.donos['Luiz']) : '—'}</td>
-        <td style="${ambos ? 'background:#eef3fb;' : ''}">${a.donos['Flavia'] > 0 ? _consR0(a.donos['Flavia']) : '—'}</td>
         <td>${a.qtd > 0 ? a.qtd.toLocaleString('pt-BR') : '—'}</td>
         <td>${a.qtd > 0 ? _consR(pm) : '—'}</td>
         <td>${a.preco > 0 ? _consR(a.preco) : '—'}</td>
@@ -12606,7 +12595,7 @@ function renderConsolidado() {
       const saldoOntemComVar = totSaldoComVar - totVarDiaRS;
       const pctTotal = algumTemVar && saldoOntemComVar > 0 ? totVarDiaRS / saldoOntemComVar * 100 : null;
       return `<tr style="background:#1e1a2e;color:#fff;font-weight:700;">
-        <td>Total</td><td></td><td></td><td></td><td></td><td></td><td></td>
+        <td>Total</td><td></td><td></td><td></td><td></td>
         <td style="color:${pctTotal === null ? '#fff' : (pctTotal >= 0 ? '#4ecdc4' : '#ff6b6b')};">${pctTotal === null ? '—' : (pctTotal >= 0 ? '+' : '') + pctTotal.toFixed(2).replace('.', ',') + '%'}</td>
         <td style="color:${!algumTemVar ? '#fff' : (totVarDiaRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${!algumTemVar ? '—' : (totVarDiaRS >= 0 ? '+' : '') + _consR(totVarDiaRS)}</td>
         <td>${_consR(totInvestido)}</td>
@@ -12779,6 +12768,71 @@ if (typeof atualizarCotacaoFamilia === 'function') {
     try { localStorage.setItem(CW_AUTOFETCH_KEY, String(Date.now())); } catch {}
   }
 }
+
+// ── ORDENAÇÃO POR CLIQUE NO CABEÇALHO (tabelas de ativos: Flavia, Luiz, Consolidada) ──
+// Clica no cabeçalho de uma coluna de valor pra ordenar as linhas por ela (clica de novo pra
+// inverter). A linha de Total nunca se move — fica sempre por último, identificada por não
+// ter data-ticker.
+function _cwSortCellValue(td) {
+  if (!td) return null;
+  const input = td.querySelector('input');
+  const raw = input ? input.value : td.textContent;
+  if (!raw) return null;
+  const m = raw.match(/-?[\d.,]+/);
+  if (!m) return null;
+  let s = m[0];
+  if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+  const n = parseFloat(s);
+  return isNaN(n) ? null : n;
+}
+function attachSortHandlers(tableEl, skipCols) {
+  if (!tableEl || tableEl.dataset.sortAttached) return;
+  tableEl.dataset.sortAttached = '1';
+  const ths = Array.from(tableEl.querySelectorAll('thead th'));
+  ths.forEach((th, idx) => {
+    if (skipCols.includes(idx)) return;
+    th.classList.add('rp-sort-th');
+    const icon = document.createElement('span');
+    icon.className = 'rp-sort-icon';
+    icon.textContent = '⇅';
+    th.appendChild(icon);
+    th.addEventListener('click', () => {
+      const tbody = tableEl.querySelector('tbody');
+      if (!tbody) return;
+      const asc = th.dataset.sortDir !== 'asc';
+      ths.forEach(h => {
+        h.dataset.sortDir = '';
+        h.classList.remove('rp-sort-active');
+        const ic = h.querySelector('.rp-sort-icon');
+        if (ic) ic.textContent = '⇅';
+      });
+      th.dataset.sortDir = asc ? 'asc' : 'desc';
+      th.classList.add('rp-sort-active');
+      icon.textContent = asc ? '▲' : '▼';
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      const dataRows = rows.filter(r => r.hasAttribute('data-ticker'));
+      const otherRows = rows.filter(r => !r.hasAttribute('data-ticker'));
+      dataRows.sort((a, b) => {
+        const av = _cwSortCellValue(a.children[idx]);
+        const bv = _cwSortCellValue(b.children[idx]);
+        if (av === null && bv === null) return 0;
+        if (av === null) return 1;
+        if (bv === null) return -1;
+        return asc ? av - bv : bv - av;
+      });
+      dataRows.forEach(r => tbody.appendChild(r));
+      otherRows.forEach(r => tbody.appendChild(r));
+    });
+  });
+}
+(function initSortTabelas() {
+  const tFlavia = document.getElementById('tblFlaviaPos');
+  const tLuiz = document.getElementById('tblLuizPos');
+  const tCons = document.getElementById('tblConsAtivos');
+  if (tFlavia) attachSortHandlers(tFlavia, [0]);
+  if (tLuiz) attachSortHandlers(tLuiz, [0]);
+  if (tCons) attachSortHandlers(tCons, [0, 1]);
+})();
 </script>
 </body>
 </html>
