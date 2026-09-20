@@ -830,14 +830,14 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       <span class="nav-tab-icon">💼</span> Minha Carteira
     </div>
     -->
-    <div class="nav-tab active" onclick="showPage('flavia')">
+    <div class="nav-tab active" onclick="showPage('familia')">
+      <span class="nav-tab-icon">👨‍👩‍👧</span> Consolidada
+    </div>
+    <div class="nav-tab" onclick="showPage('flavia')">
       <span class="nav-tab-icon">👩</span> Carteira da Flavia
     </div>
     <div class="nav-tab" onclick="showPage('resumoluiz')">
       <span class="nav-tab-icon">📋</span> Carteira Luiz
-    </div>
-    <div class="nav-tab" onclick="showPage('familia')">
-      <span class="nav-tab-icon">👨‍👩‍👧</span> Consolidada
     </div>
   </div>
   <div class="nav-right">
@@ -1259,7 +1259,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
 </div><!-- /page-dados -->
 
 <!-- PÁGINA 3.5 — CARTEIRA DA FLAVIA (esposa do Luiz — chat/carteira separados) -->
-<div class="page active" id="page-flavia">
+<div class="page" id="page-flavia">
   <div class="report-body" style="max-width:1000px;">
 
     <div class="rp-header">
@@ -1753,7 +1753,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
      Não há número fixo aqui de propósito — um valor digitado nesta página seria uma terceira
      fonte de verdade, livre para divergir das duas carteiras que ela deveria representar.
      ══════════════════════════════════════════════════════════════════════════════════════ -->
-<div class="page" id="page-familia">
+<div class="page active" id="page-familia">
   <div class="report-body" style="max-width:1000px;">
 
     <div class="rp-header">
@@ -8005,6 +8005,7 @@ function showPage(id){
     if(id==='dados'&&txt.includes('base de dados')) t.classList.add('active');
     if(id==='flavia'&&txt.includes('carteira da flavia')) t.classList.add('active');
     if(id==='resumoluiz'&&txt.includes('carteira luiz')) t.classList.add('active');
+    if(id==='familia'&&txt.includes('consolidada')) t.classList.add('active');
   });
   _paginaAnterior = id;
   window.scrollTo(0,0);
@@ -11614,14 +11615,8 @@ const _showPageOrig = showPage;
   };
 })();
 
-// A aba "flavia" já começa ativa direto no HTML (não passa pelo showPage() acima), então o
-// gatilho de inicialização dela nunca disparava — os gráficos de Patrimônio/Segmento/Posição
-// ficavam vazios até o usuário trocar de aba e voltar. Dispara aqui, uma vez, no load.
-if(!_flaviaChartsIniciados && typeof initRpCharts==='function'){
-  _flaviaChartsIniciados = true;
-  initRpCharts('Flavia');
-  if(typeof initCarteiraEditavel==='function') initCarteiraEditavel('flaviaPosBody');
-}
+// A aba padrão agora é "Consolidada" (Flavia/Luiz inicializam sob demanda, na primeira vez
+// que o usuário abre a aba — ver o gatilho id==='flavia'/'resumoluiz' logo acima).
 
 // A propagação pós-cotação (gráfico de posição, Patrimônio, Carteira Ideal, Segmento e os
 // números do topo) vive em _cwPropagar(), em js/carteira-manual.js — assim vale tanto para
@@ -12577,6 +12572,7 @@ function renderConsolidado() {
     let totInvestido = 0, totVarDiaRS = 0, algumTemVar = false, totSaldoComVar = 0;
     tb.innerHTML = d.ativos.map(a => {
       const res = a.investido > 0 ? (a.saldo - a.investido) / a.investido * 100 : null;
+      const ganhoRS = a.investido > 0 ? a.saldo - a.investido : null;
       const pm = a.qtd > 0 ? a.investido / a.qtd : 0;
       totInvestido += a.investido;
       if (a.temVarDia) { totVarDiaRS += a.varDiaRS; totSaldoComVar += a.saldo; algumTemVar = true; }
@@ -12591,17 +12587,20 @@ function renderConsolidado() {
         <td>${_consR(a.investido)}</td>
         <td>${_consR(a.saldo)}</td>
         <td>${_consPct(a.saldo / d.totalGeral * 100)}</td>
-        <td style="color:${res === null ? '#888' : (res >= 0 ? '#0a5c35' : '#9c1c1c')};">${res === null ? '—' : (res >= 0 ? '+' : '') + res.toFixed(2).replace('.', ',') + '%'}</td>
+        <td style="color:${res === null ? '#888' : (res >= 0 ? '#0a5c35' : '#9c1c1c')};">${res === null ? '—' : (ganhoRS >= 0 ? '+' : '') + _consR(ganhoRS) + ' (' + (res >= 0 ? '+' : '') + res.toFixed(2).replace('.', ',') + '%)'}</td>
       </tr>`;
     }).join('') + (() => {
       const saldoOntemComVar = totSaldoComVar - totVarDiaRS;
       const pctTotal = algumTemVar && saldoOntemComVar > 0 ? totVarDiaRS / saldoOntemComVar * 100 : null;
+      const ganhoTotalRS = totInvestido > 0 ? d.totalGeral - totInvestido : null;
+      const pctGanhoTotal = totInvestido > 0 ? ganhoTotalRS / totInvestido * 100 : null;
       return `<tr style="background:#1e1a2e;color:#fff;font-weight:700;">
         <td>Total</td><td></td><td></td><td></td><td></td>
         <td style="color:${pctTotal === null ? '#fff' : (pctTotal >= 0 ? '#4ecdc4' : '#ff6b6b')};">${pctTotal === null ? '—' : (pctTotal >= 0 ? '+' : '') + pctTotal.toFixed(2).replace('.', ',') + '%'}</td>
         <td style="color:${!algumTemVar ? '#fff' : (totVarDiaRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${!algumTemVar ? '—' : (totVarDiaRS >= 0 ? '+' : '') + _consR(totVarDiaRS)}</td>
         <td>${_consR(totInvestido)}</td>
-        <td>${_consR(d.totalGeral)}</td><td>100%</td><td></td></tr>`;
+        <td>${_consR(d.totalGeral)}</td><td>100%</td>
+        <td style="color:${ganhoTotalRS === null ? '#fff' : (ganhoTotalRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${ganhoTotalRS === null ? '—' : (ganhoTotalRS >= 0 ? '+' : '') + _consR(ganhoTotalRS) + ' (' + (pctGanhoTotal >= 0 ? '+' : '') + pctGanhoTotal.toFixed(2).replace('.', ',') + '%)'}</td></tr>`;
     })();
   }
 
