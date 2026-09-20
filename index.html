@@ -1308,7 +1308,10 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       <div class="rp-table-wrap">
         <table class="rp-table rp-freeze-first" id="tblFlaviaPos">
           <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia<span class="col-tip" data-tip="Variação do preço hoje vs. o fechamento de ontem&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Var. Dia R$<span class="col-tip" data-tip="Quanto essa posição ganhou/perdeu hoje: Qtd × variação do preço&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Investido</th><th>Saldo</th><th>Result.</th><th>% Cart.</th><th>% Classe</th></tr></thead>
-          <tbody id="flaviaPosBody" data-outros-fixos="0">
+          <!-- ⚠️ Qtd/PM abaixo = posição real na corretora. NUNCA alterar sem o usuário
+               fornecer dado novo NESTA conversa (print, operação, número explícito).
+               Ver CLAUDE.md. Preço/Var.Dia podem ser atualizados livremente. -->
+          <tbody id="flaviaPosBody" data-outros-fixos="0" data-verificado="20/09/2026">
             <tr data-ticker="ALOS3.SA" data-classe="acao" data-grupo="dividendos" data-segmento="Shoppings">
               <td class="rp-bold">ALOS3</td>
               <td><input type="text" class="cw-qtd" value="1400" style="width:60px;font:inherit;"></td>
@@ -1577,7 +1580,10 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       <div class="rp-table-wrap">
         <table class="rp-table rp-freeze-first" id="tblLuizPos">
           <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia<span class="col-tip" data-tip="Variação do preço hoje vs. o fechamento de ontem&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Var. Dia R$<span class="col-tip" data-tip="Quanto essa posição ganhou/perdeu hoje: Qtd × variação do preço&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Investido</th><th>Saldo</th><th>Result.</th><th>% Cart.</th><th>% Classe</th></tr></thead>
-          <tbody id="luizPosBody" data-outros-fixos="159518.24">
+          <!-- ⚠️ Qtd/PM abaixo = posição real na corretora. NUNCA alterar sem o usuário
+               fornecer dado novo NESTA conversa (print, operação, número explícito).
+               Ver CLAUDE.md. Preço/Var.Dia podem ser atualizados livremente. -->
+          <tbody id="luizPosBody" data-outros-fixos="159518.24" data-verificado="20/09/2026">
             <tr data-ticker="IRBR3.SA" data-classe="acao" data-grupo="crescimento" data-segmento="Resseguros">
               <td class="rp-bold">IRBR3</td>
               <td><input type="text" class="cw-qtd" value="3229" style="width:55px;font:inherit;"></td>
