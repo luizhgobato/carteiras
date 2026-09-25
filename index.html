@@ -8095,6 +8095,11 @@ const TIR_SEED = {
 </script>
 <script>
 // ── REPORTS DATA ──
+// O JSON embutido abaixo (#reportsData) é uma cópia estática do research (luizhgobato/research,
+// app/index.html#reportsData) — serve de FALLBACK caso a busca ao vivo abaixo falhe (rede bloqueada,
+// GitHub fora do ar). fetchReportsDataAoVivo() sobrepõe REPORTS com a versão mais recente de
+// data/reports.json daquele repo assim que a página carrega, então relatórios novos ou atualizados
+// no research aparecem aqui automaticamente, sem precisar copiar/colar o JSON de novo.
 let REPORTS = {};
 try {
   const raw = document.getElementById('reportsData').textContent;
@@ -8102,6 +8107,19 @@ try {
 } catch(e) {
   console.warn('[Reports] Erro ao parsear JSON:', e);
 }
+
+async function fetchReportsDataAoVivo(){
+  try {
+    const resp = await fetch('https://raw.githubusercontent.com/luizhgobato/research/master/data/reports.json', {cache:'no-store'});
+    if(!resp.ok) return;
+    const live = await resp.json();
+    Object.assign(REPORTS, live);
+    if(typeof renderReportCells === 'function') renderReportCells();
+  } catch(e) {
+    console.warn('[Reports] Busca ao vivo falhou, mantendo cópia estática embutida:', e);
+  }
+}
+fetchReportsDataAoVivo();
 
 // ── NAVEGAÇÃO SPA ──
 let _paginaAnterior = 'radar';
