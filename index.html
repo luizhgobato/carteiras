@@ -1586,7 +1586,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
           <!-- ⚠️ Qtd/PM abaixo = posição real na corretora. NUNCA alterar sem o usuário
                fornecer dado novo NESTA conversa (print, operação, número explícito).
                Ver CLAUDE.md. Preço/Var.Dia podem ser atualizados livremente. -->
-          <tbody id="luizPosBody" data-outros-fixos="159518.24" data-verificado="20/09/2026">
+          <tbody id="luizPosBody" data-outros-fixos="172715.82" data-verificado="20/09/2026">
             <tr data-ticker="IRBR3.SA" data-classe="acao" data-grupo="crescimento" data-segmento="Resseguros">
               <td class="rp-bold">IRBR3</td>
               <td><input type="text" class="cw-qtd" value="3259" style="width:55px;font:inherit;"></td>
@@ -1689,7 +1689,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
               <tbody>
                 <tr><td class="rp-bold">Ações BR</td><td>R$ 564.984,49</td><td>71,85%</td></tr>
                 <tr><td class="rp-bold">Renda Fixa (LFTB11)</td><td>R$ 74.642,04</td><td>9,49%</td></tr>
-                <tr><td class="rp-bold">Previdência Privada</td><td>R$ 141.448,47</td><td>16,89%</td></tr>
+                <tr><td class="rp-bold">Previdência Privada</td><td>R$ 154.646,05</td><td>19,04%</td></tr>
                 <tr><td class="rp-bold">ETFs BR</td><td>R$ 8.521,76</td><td>1,02%</td></tr>
                 <tr><td class="rp-bold">ETFs Internacionais</td><td>R$ 9.548,01</td><td>1,14%</td></tr>
                 <tr style="background:#1e1a2e;color:#fff;font-weight:700;"><td>Total</td><td>R$ 786.394,75</td><td>100%</td></tr>
@@ -1698,7 +1698,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
           </div>
         </div>
       </details>
-      <p class="rp-estim" style="margin:-0.25rem 0 0.75rem;font-size:11px;line-height:1.6;">ℹ️ Ações, LFTB11 e ETFs Internacionais (SOLT/TXXS, via Yahoo Finance) são recalculados pela cotação ao vivo no botão "Atualizar Cotação". <b>Previdência Privada (R$ 141.448) e ETFs BR (R$ 8.522) ficam estáticos</b> — não têm ticker/quantidade cadastrados aqui. Me passe o ticker e a quantidade de cada um que eu os coloco no motor também.</p>
+      <p class="rp-estim" style="margin:-0.25rem 0 0.75rem;font-size:11px;line-height:1.6;">ℹ️ Ações, LFTB11 e ETFs Internacionais (SOLT/TXXS, via Yahoo Finance) são recalculados pela cotação ao vivo no botão "Atualizar Cotação". <b>Previdência Privada (R$ 154.646,05, extrato SISAROS de 29/09/2026) e ETFs BR (R$ 8.522) ficam estáticos</b> — não têm ticker/quantidade cadastrados aqui. Me passe o ticker e a quantidade de cada um que eu os coloco no motor também.</p>
     </div>
 
     <div class="rp-section">
@@ -1801,7 +1801,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <li style="margin-bottom:10px;font-size:12px;line-height:1.65;"><b>LFTB11 adicionado como Renda Fixa</b> (594 cotas, R$ 74.642,04, 9,49% da carteira) — reduz o desvio de Renda Fixa/Reserva de −15,00pp para −5,51pp frente à meta de 15%, o maior avanço estrutural da carteira nesta atualização.</li>
         <li style="margin-bottom:10px;font-size:12px;line-height:1.65;"><b>44% da carteira sem tese registrada</b> (CXSE3, ITUB3, RANI3, BBAS3) — sem veredicto/preço-teto formal no Radar.</li>
         <li style="margin-bottom:10px;font-size:12px;line-height:1.65;"><b>GMAT3</b> (zero proventos, -29,11%): sem projeção de dividendo futuro — retorno depende só de valorização.</li>
-        <li style="margin-bottom:10px;font-size:12px;line-height:1.65;"><b>Previdência Privada</b> (16,89%, R$ 141.448,47): consolidada em um único fundo — Itaú FlexPrev Privilège RF Referenciado DI FICFI (82.237,48 cotas, cota R$ 1,72) — composição ainda caixa-preta na régua da Carteira Ideal.</li>
+        <li style="margin-bottom:10px;font-size:12px;line-height:1.65;"><b>Previdência Privada</b> (19,04%, R$ 154.646,05, extrato SISAROS 29/09/2026): majoritariamente no plano Pgbl Itubers Privilege Di Rf (provisão Básica, 83.705,74 cotas, cota R$ 1,7279 — R$144.634,90) + aporte extra-voluntário novo de R$10.000 em 25/09/2026 (R$10.009,13) — resto residual (~R$2) em planos já migrados/encerrados. Composição ainda caixa-preta na régua da Carteira Ideal.</li>
         <li style="margin-bottom:0;font-size:12px;line-height:1.65;">Exposição internacional de apenas 0,93% — não é obrigatório corrigir, mas é uma opção de diversificação em aberto.</li>
       </ol>
     </div>
@@ -9196,7 +9196,7 @@ const RP_PATRIMONIO_CFG = {
     classeTableId: 'tblLuizClasse',
     idealTableId: 'tblLuizIdeal',
     fixos: [
-      { label: 'Previdência Privada', valor: 141448.47 },
+      { label: 'Previdência Privada', valor: 154646.05 },
       { label: 'ETFs BR', valor: 8521.76 },
       { label: 'ETFs Internacionais', valor: 9548.01 },
     ],
