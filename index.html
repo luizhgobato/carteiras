@@ -8789,7 +8789,12 @@ const RP_PATRIMONIO_CFG = {
       // pedido do usuário em 13/10/2026. ETFs ficam como estavam (perfil de ação, fora da
       // régua) — campos opcionais, só a Previdência os define; o resto cai no default (própria
       // label como classe/segmento, grupo 'fora') em coletarConsolidado().
-      { label: 'Previdência Privada', valor: 154646.05, classe: 'Renda Fixa', segmento: 'Renda Fixa', grupo: 'rf' },
+      // investido: reconstruído em 13/10/2026 a partir dos extratos SISAROS 2020-2026 (todos os
+      // produtos/provisões do plano 0236979-7 — 0616, 1447, 5614, 5626), somando só "Contribuição"
+      // e "Aporte" reais (participante+empresa) e excluindo toda "Migração interna" (dinheiro só
+      // mudando de produto dentro do próprio plano, não aporte novo) — validado batendo o saldo
+      // inicial+aportes+rendimento contra o saldo final de CADA ano, exato, sem diferença.
+      { label: 'Previdência Privada', valor: 154646.05, investido: 118642.70, classe: 'Renda Fixa', segmento: 'Renda Fixa', grupo: 'rf' },
       // ⚠️ "ETFs BR" (R$8.521,76) REMOVIDO em 13/10/2026 — era o MESMO LFTB11 já rastreado de
       // verdade (ticker/Qtd/PM) na posição real, contado aqui de novo como saldo estático
       // separado. Dobrava o valor do LFTB11 em todo cálculo que soma fixos (Patrimônio total,
@@ -12387,9 +12392,11 @@ function coletarConsolidado() {
       porClasse[classeKey] = (porClasse[classeKey] || 0) + f.valor;
       porSegmento[segKey] = (porSegmento[segKey] || 0) + f.valor;
       porGrupo[grpKey] = (porGrupo[grpKey] || 0) + f.valor;
-      // ETFs Internacionais (SOLT/TXXS) têm Qtd/PM reais em #etfiPosBody, ao contrário da
-      // Previdência — por isso só eles ganham Investido/Resultado (ver _consEtfiInvestidoResultado).
-      const extra = (f.label === 'ETFs Internacionais') ? _consEtfiInvestidoResultado(f.valor) : null;
+      // ETFs Internacionais: investido calculado ao vivo a partir de #etfiPosBody (ver
+      // _consEtfiInvestidoResultado). Previdência: f.investido vem fixo da config — reconstruído
+      // uma vez a partir dos extratos SISAROS 2020-2026 (não tem Qtd/PM pra ler do DOM).
+      let extra = (f.label === 'ETFs Internacionais') ? _consEtfiInvestidoResultado(f.valor) : null;
+      if (!extra && typeof f.investido === 'number') extra = { investido: f.investido, resultado: f.valor - f.investido, obs: null };
       fixosConsolidados.push({ label: f.label, valor: f.valor, dono: c.nome, classe: classeKey, segmento: segKey, investido: extra ? extra.investido : null, resultado: extra ? extra.resultado : null, obs: extra ? extra.obs : null });
     });
 
@@ -12511,7 +12518,7 @@ function renderConsolidado() {
           <td>${_consR(f.investido)}</td>
           <td>${_consR(f.valor)}</td>
           <td>${_consPct(f.valor / d.totalGeral * 100)}</td>
-          <td style="color:${f.resultado >= 0 ? '#0a5c35' : '#9c1c1c'};">${(f.resultado >= 0 ? '+' : '') + _consR(f.resultado) + (resPct !== null ? ' (' + (resPct >= 0 ? '+' : '') + resPct.toFixed(2).replace('.', ',') + '%)' : '')} <span style="color:#888;">· ${f.obs}</span></td>
+          <td style="color:${f.resultado >= 0 ? '#0a5c35' : '#9c1c1c'};">${(f.resultado >= 0 ? '+' : '') + _consR(f.resultado) + (resPct !== null ? ' (' + (resPct >= 0 ? '+' : '') + resPct.toFixed(2).replace('.', ',') + '%)' : '')}${f.obs ? ' <span style="color:#888;">· ' + f.obs + '</span>' : ''}</td>
         </tr>`;
       }
       return `<tr>
