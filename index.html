@@ -12417,12 +12417,13 @@ function renderConsolidado() {
   // ── Tabela por ativo, com quem detém o quê ──
   const tb = document.querySelector('#tblConsAtivos tbody');
   if (tb) {
-    let totInvestido = 0, totVarDiaRS = 0, algumTemVar = false, totSaldoComVar = 0;
+    let totInvestido = 0, totSaldoAtivos = 0, totVarDiaRS = 0, algumTemVar = false, totSaldoComVar = 0;
     tb.innerHTML = d.ativos.map(a => {
       const res = a.investido > 0 ? (a.saldo - a.investido) / a.investido * 100 : null;
       const ganhoRS = a.investido > 0 ? a.saldo - a.investido : null;
       const pm = a.qtd > 0 ? a.investido / a.qtd : 0;
       totInvestido += a.investido;
+      totSaldoAtivos += a.saldo;
       if (a.temVarDia) { totVarDiaRS += a.varDiaRS; totSaldoComVar += a.saldo; algumTemVar = true; }
       return `<tr>
         <td class="rp-bold">${a.ticker}</td>
@@ -12440,14 +12441,22 @@ function renderConsolidado() {
     }).join('') + (() => {
       const saldoOntemComVar = totSaldoComVar - totVarDiaRS;
       const pctTotal = algumTemVar && saldoOntemComVar > 0 ? totVarDiaRS / saldoOntemComVar * 100 : null;
-      const ganhoTotalRS = totInvestido > 0 ? d.totalGeral - totInvestido : null;
+      // ⚠️ CORRIGIDO 13/10/2026 — Total comparava Saldo de TUDO (d.totalGeral, que inclui
+      // Previdência/ETFs sem linha própria aqui, somados via RP_PATRIMONIO_CFG.fixos) contra
+      // Investido só dos ativos desta tabela. Resultado: o valor inteiro da Previdência virava
+      // "ganho" sem custo algum, e o Total não batia com a soma das linhas visíveis (usuário
+      // percebeu: Investido-menos-Atual linha a linha somava diferente do Total mostrado).
+      // Esta tabela é POR ATIVO — seu Total soma só o que as linhas somam. totSaldoAtivos é o
+      // mesmo escopo de totInvestido (só os tickers com posição, sem fixos).
+      const ganhoTotalRS = totInvestido > 0 ? totSaldoAtivos - totInvestido : null;
       const pctGanhoTotal = totInvestido > 0 ? ganhoTotalRS / totInvestido * 100 : null;
+      const pctCartTotal = d.totalGeral > 0 ? totSaldoAtivos / d.totalGeral * 100 : null;
       return `<tr style="background:#1e1a2e;color:#fff;font-weight:700;" data-role="total">
         <td>Total</td><td></td><td></td><td></td><td></td>
         <td style="color:${pctTotal === null ? '#fff' : (pctTotal >= 0 ? '#4ecdc4' : '#ff6b6b')};">${pctTotal === null ? '—' : (pctTotal >= 0 ? '+' : '') + pctTotal.toFixed(2).replace('.', ',') + '%'}</td>
         <td style="color:${!algumTemVar ? '#fff' : (totVarDiaRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${!algumTemVar ? '—' : (totVarDiaRS >= 0 ? '+' : '') + _consR(totVarDiaRS)}</td>
         <td>${_consR(totInvestido)}</td>
-        <td>${_consR(d.totalGeral)}</td><td>100%</td>
+        <td>${_consR(totSaldoAtivos)}</td><td>${pctCartTotal === null ? '—' : _consPct(pctCartTotal)}</td>
         <td style="color:${ganhoTotalRS === null ? '#fff' : (ganhoTotalRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${ganhoTotalRS === null ? '—' : (ganhoTotalRS >= 0 ? '+' : '') + _consR(ganhoTotalRS) + ' (' + (pctGanhoTotal >= 0 ? '+' : '') + pctGanhoTotal.toFixed(2).replace('.', ',') + '%)'}</td></tr>`;
     })();
   }
