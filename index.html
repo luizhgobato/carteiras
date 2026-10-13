@@ -1736,7 +1736,6 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
                 <tr><td class="rp-bold">Ações BR</td><td>R$ 564.984,49</td><td>71,85%</td></tr>
                 <tr><td class="rp-bold">Renda Fixa (LFTB11)</td><td>R$ 74.642,04</td><td>9,49%</td></tr>
                 <tr><td class="rp-bold">Previdência Privada</td><td>R$ 154.646,05</td><td>19,04%</td></tr>
-                <tr><td class="rp-bold">ETFs BR</td><td>R$ 8.521,76</td><td>1,02%</td></tr>
                 <tr><td class="rp-bold">ETFs Internacionais</td><td>R$ 9.548,01</td><td>1,14%</td></tr>
                 <tr style="background:#1e1a2e;color:#fff;font-weight:700;"><td>Total</td><td>R$ 786.394,75</td><td>100%</td></tr>
               </tbody>
@@ -1744,7 +1743,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
           </div>
         </div>
       </details>
-      <p class="rp-estim" style="margin:-0.25rem 0 0.75rem;font-size:11px;line-height:1.6;">ℹ️ Ações, LFTB11 e ETFs Internacionais (SOLT/TXXS, via Yahoo Finance) são recalculados pela cotação ao vivo no botão "Atualizar Cotação". <b>Previdência Privada (R$ 154.646,05, extrato SISAROS de 29/09/2026) e ETFs BR (R$ 8.522) ficam estáticos</b> — não têm ticker/quantidade cadastrados aqui. Me passe o ticker e a quantidade de cada um que eu os coloco no motor também.</p>
+      <p class="rp-estim" style="margin:-0.25rem 0 0.75rem;font-size:11px;line-height:1.6;">ℹ️ Ações, LFTB11 e ETFs Internacionais (SOLT/TXXS, via Yahoo Finance) são recalculados pela cotação ao vivo no botão "Atualizar Cotação". <b>Previdência Privada (R$ 154.646,05, extrato SISAROS de 29/09/2026) fica estática</b> — não tem ticker/quantidade cadastrados aqui.</p>
     </div>
 
     <div class="rp-section">
@@ -8791,7 +8790,10 @@ const RP_PATRIMONIO_CFG = {
       // régua) — campos opcionais, só a Previdência os define; o resto cai no default (própria
       // label como classe/segmento, grupo 'fora') em coletarConsolidado().
       { label: 'Previdência Privada', valor: 154646.05, classe: 'Renda Fixa', segmento: 'Renda Fixa', grupo: 'rf' },
-      { label: 'ETFs BR', valor: 8521.76 },
+      // ⚠️ "ETFs BR" (R$8.521,76) REMOVIDO em 13/10/2026 — era o MESMO LFTB11 já rastreado de
+      // verdade (ticker/Qtd/PM) na posição real, contado aqui de novo como saldo estático
+      // separado. Dobrava o valor do LFTB11 em todo cálculo que soma fixos (Patrimônio total,
+      // classe, segmento, régua, Consolidado) — usuário confirmou a duplicata.
       { label: 'ETFs Internacionais', valor: 9548.01 },
     ],
     dividendosBaseline: 348189.43,
