@@ -8785,7 +8785,12 @@ const RP_PATRIMONIO_CFG = {
     classeTableId: 'tblLuizClasse',
     idealTableId: 'tblLuizIdeal',
     fixos: [
-      { label: 'Previdência Privada', valor: 154646.05 },
+      // classe/segmento/grupo: a Previdência é atrelada ao CDI (perfil de renda fixa), então
+      // entra junto com o LFTB11 na visão consolidada (classe, segmento e régua 65/20/15) —
+      // pedido do usuário em 13/10/2026. ETFs ficam como estavam (perfil de ação, fora da
+      // régua) — campos opcionais, só a Previdência os define; o resto cai no default (própria
+      // label como classe/segmento, grupo 'fora') em coletarConsolidado().
+      { label: 'Previdência Privada', valor: 154646.05, classe: 'Renda Fixa', segmento: 'Renda Fixa', grupo: 'rf' },
       { label: 'ETFs BR', valor: 8521.76 },
       { label: 'ETFs Internacionais', valor: 9548.01 },
     ],
@@ -12303,6 +12308,7 @@ function _consPct(v) { return v.toFixed(2).replace('.', ',') + '%'; }
 // para que nenhuma seção possa discordar de outra sobre quanto o casal tem.
 function coletarConsolidado() {
   const porTitular = {}, porTicker = {}, porSegmento = {}, porClasse = {}, porGrupo = {};
+  const fixosConsolidados = [];
   let totalGeral = 0;
 
   CONS_CARTEIRAS.forEach(c => {
@@ -12344,9 +12350,17 @@ function coletarConsolidado() {
       ? RP_PATRIMONIO_CFG[c.prefix].fixos : [];
     fixos.forEach(f => {
       subtotal += f.valor;
-      porClasse[f.label] = (porClasse[f.label] || 0) + f.valor;
-      porSegmento[f.label] = (porSegmento[f.label] || 0) + f.valor;
-      porGrupo['fora'] = (porGrupo['fora'] || 0) + f.valor;
+      // classe/segmento/grupo são opcionais na config — por padrão cada fixo é sua própria
+      // classe (Previdência vira "Previdência Privada" sozinha), mas a Previdência agora
+      // declara 'Renda Fixa' nos três, pra entrar junto com o LFTB11 (mesma classe, mesmo
+      // segmento, mesmo grupo da régua 65/20/15) — ver comentário na config acima.
+      const classeKey = f.classe || f.label;
+      const segKey = f.segmento || f.label;
+      const grpKey = f.grupo || 'fora';
+      porClasse[classeKey] = (porClasse[classeKey] || 0) + f.valor;
+      porSegmento[segKey] = (porSegmento[segKey] || 0) + f.valor;
+      porGrupo[grpKey] = (porGrupo[grpKey] || 0) + f.valor;
+      fixosConsolidados.push({ label: f.label, valor: f.valor, dono: c.nome, classe: classeKey, segmento: segKey });
     });
 
     porTitular[c.nome] = subtotal;
@@ -12366,7 +12380,8 @@ function coletarConsolidado() {
   });
 
   const ativos = Object.values(porTicker).sort((a, b) => b.saldo - a.saldo);
-  return { porTitular, porSegmento, porClasse, porGrupo, ativos, totalGeral, rendaMes };
+  const fixosOrdenados = fixosConsolidados.sort((a, b) => b.valor - a.valor);
+  return { porTitular, porSegmento, porClasse, porGrupo, ativos, fixos: fixosOrdenados, totalGeral, rendaMes };
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────────────────
@@ -12405,25 +12420,34 @@ function renderConsolidado() {
   _consDonut('chartConsSegmento', d.porSegmento, d.totalGeral, 'Segmento consolidado');
 
   // ── Barras por ativo ──
+  // Inclui os fixos (Previdência/ETFs) como barras próprias — ficavam de fora antes porque
+  // não têm ticker, e "de fora" aqui significava literalmente sumir da visão "por ativo".
+  // Ordenado por valor, junto com os tickers, não num bloco separado no fim.
   const barEl = document.getElementById('chartConsAtivo');
   if (barEl && typeof renderRpHBarFmt === 'function') {
-    renderRpHBarFmt(
-      barEl,
-      d.ativos.map(a => ({ label: a.ticker, value: a.saldo / d.totalGeral * 100, amount: a.saldo })),
-      v => v.toFixed(2).replace('.', ',') + '%'
-    );
+    const itensBarra = d.ativos.map(a => ({ label: a.ticker, value: a.saldo / d.totalGeral * 100, amount: a.saldo }))
+      .concat(d.fixos.map(f => ({ label: f.label, value: f.valor / d.totalGeral * 100, amount: f.valor })))
+      .sort((x, y) => y.amount - x.amount);
+    renderRpHBarFmt(barEl, itensBarra, v => v.toFixed(2).replace('.', ',') + '%');
   }
 
   // ── Tabela por ativo, com quem detém o quê ──
   const tb = document.querySelector('#tblConsAtivos tbody');
   if (tb) {
-    let totInvestido = 0, totSaldoAtivos = 0, totVarDiaRS = 0, algumTemVar = false, totSaldoComVar = 0;
-    tb.innerHTML = d.ativos.map(a => {
+    // ganhoTotalRS soma o ganho de CADA LINHA (não totalSaldo-totalInvestido) — robusto por
+    // construção: um fixo sem investido>0 nunca entra na conta, não importa o que mais for
+    // adicionado aqui no futuro. Foi exatamente a falta disso que causou o bug de 13/10/2026
+    // (Total tratava a Previdência inteira como ganho, por comparar Saldo de TUDO com
+    // Investido só dos tickers).
+    let totInvestido = 0, totSaldoTabela = 0, totVarDiaRS = 0, algumTemVar = false, totSaldoComVar = 0,
+        ganhoTotalRS = 0, temAlgumGanho = false;
+    const linhasAtivos = d.ativos.map(a => {
       const res = a.investido > 0 ? (a.saldo - a.investido) / a.investido * 100 : null;
       const ganhoRS = a.investido > 0 ? a.saldo - a.investido : null;
       const pm = a.qtd > 0 ? a.investido / a.qtd : 0;
       totInvestido += a.investido;
-      totSaldoAtivos += a.saldo;
+      totSaldoTabela += a.saldo;
+      if (ganhoRS !== null) { ganhoTotalRS += ganhoRS; temAlgumGanho = true; }
       if (a.temVarDia) { totVarDiaRS += a.varDiaRS; totSaldoComVar += a.saldo; algumTemVar = true; }
       return `<tr>
         <td class="rp-bold">${a.ticker}</td>
@@ -12438,26 +12462,38 @@ function renderConsolidado() {
         <td>${_consPct(a.saldo / d.totalGeral * 100)}</td>
         <td style="color:${res === null ? '#888' : (res >= 0 ? '#0a5c35' : '#9c1c1c')};">${res === null ? '—' : (ganhoRS >= 0 ? '+' : '') + _consR(ganhoRS) + ' (' + (res >= 0 ? '+' : '') + res.toFixed(2).replace('.', ',') + '%)'}</td>
       </tr>`;
-    }).join('') + (() => {
+    }).join('');
+
+    // Fixos entram como linha própria — sem Qtd/PM/Preço/Resultado, porque não são comprados
+    // a um preço (são saldo de conta/aplicação, não posição de mercado) — não têm custo de
+    // aquisição rastreável pra calcular ganho. Aparecem aqui pela mesma razão que já apareciam
+    // nos donuts de classe/segmento: ficar de fora da tabela os apagava da visão "quem detém
+    // o quê", que é o propósito desta página.
+    const linhasFixos = d.fixos.map(f => {
+      totSaldoTabela += f.valor;
+      return `<tr>
+        <td class="rp-bold">${f.label}</td>
+        <td>${f.segmento}</td>
+        <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+        <td>—</td>
+        <td>${_consR(f.valor)}</td>
+        <td>${_consPct(f.valor / d.totalGeral * 100)}</td>
+        <td style="color:#888;">— sem custo de aquisição rastreável</td>
+      </tr>`;
+    }).join('');
+
+    tb.innerHTML = linhasAtivos + linhasFixos + (() => {
       const saldoOntemComVar = totSaldoComVar - totVarDiaRS;
       const pctTotal = algumTemVar && saldoOntemComVar > 0 ? totVarDiaRS / saldoOntemComVar * 100 : null;
-      // ⚠️ CORRIGIDO 13/10/2026 — Total comparava Saldo de TUDO (d.totalGeral, que inclui
-      // Previdência/ETFs sem linha própria aqui, somados via RP_PATRIMONIO_CFG.fixos) contra
-      // Investido só dos ativos desta tabela. Resultado: o valor inteiro da Previdência virava
-      // "ganho" sem custo algum, e o Total não batia com a soma das linhas visíveis (usuário
-      // percebeu: Investido-menos-Atual linha a linha somava diferente do Total mostrado).
-      // Esta tabela é POR ATIVO — seu Total soma só o que as linhas somam. totSaldoAtivos é o
-      // mesmo escopo de totInvestido (só os tickers com posição, sem fixos).
-      const ganhoTotalRS = totInvestido > 0 ? totSaldoAtivos - totInvestido : null;
       const pctGanhoTotal = totInvestido > 0 ? ganhoTotalRS / totInvestido * 100 : null;
-      const pctCartTotal = d.totalGeral > 0 ? totSaldoAtivos / d.totalGeral * 100 : null;
+      const pctCartTotal = d.totalGeral > 0 ? totSaldoTabela / d.totalGeral * 100 : null;
       return `<tr style="background:#1e1a2e;color:#fff;font-weight:700;" data-role="total">
         <td>Total</td><td></td><td></td><td></td><td></td>
         <td style="color:${pctTotal === null ? '#fff' : (pctTotal >= 0 ? '#4ecdc4' : '#ff6b6b')};">${pctTotal === null ? '—' : (pctTotal >= 0 ? '+' : '') + pctTotal.toFixed(2).replace('.', ',') + '%'}</td>
         <td style="color:${!algumTemVar ? '#fff' : (totVarDiaRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${!algumTemVar ? '—' : (totVarDiaRS >= 0 ? '+' : '') + _consR(totVarDiaRS)}</td>
         <td>${_consR(totInvestido)}</td>
-        <td>${_consR(totSaldoAtivos)}</td><td>${pctCartTotal === null ? '—' : _consPct(pctCartTotal)}</td>
-        <td style="color:${ganhoTotalRS === null ? '#fff' : (ganhoTotalRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${ganhoTotalRS === null ? '—' : (ganhoTotalRS >= 0 ? '+' : '') + _consR(ganhoTotalRS) + ' (' + (pctGanhoTotal >= 0 ? '+' : '') + pctGanhoTotal.toFixed(2).replace('.', ',') + '%)'}</td></tr>`;
+        <td>${_consR(totSaldoTabela)}</td><td>${pctCartTotal === null ? '—' : _consPct(pctCartTotal)}</td>
+        <td style="color:${!temAlgumGanho ? '#fff' : (ganhoTotalRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${!temAlgumGanho ? '—' : (ganhoTotalRS >= 0 ? '+' : '') + _consR(ganhoTotalRS) + ' (' + (pctGanhoTotal >= 0 ? '+' : '') + pctGanhoTotal.toFixed(2).replace('.', ',') + '%)'}</td></tr>`;
     })();
   }
 
@@ -12470,7 +12506,7 @@ function renderConsolidado() {
       { label: 'Ações — Dividendos', valor: d.porGrupo['dividendos'] || 0, alvo: CONS_ALVO.dividendos },
       { label: 'Ações — Crescimento', valor: d.porGrupo['crescimento'] || 0, alvo: CONS_ALVO.crescimento },
       { label: 'Renda Fixa / Reserva Estratégica', valor: d.porGrupo['rf'] || 0, alvo: CONS_ALVO.rf },
-      { label: 'Fora da régua — Previdência/ETFs', valor: d.porGrupo['fora'] || 0, alvo: null },
+      { label: 'Fora da régua — ETFs', valor: d.porGrupo['fora'] || 0, alvo: null },
     ];
     ti.innerHTML = linhas.map(l => {
       const pct = l.valor / d.totalGeral * 100;
