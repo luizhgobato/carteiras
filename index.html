@@ -12606,7 +12606,7 @@ function renderConsolidado() {
           <td>${_consR(f.investido)}</td>
           <td>${_consR(f.valor)}</td>
           <td>${_consPct(f.valor / d.totalGeral * 100)}</td>
-          <td style="color:${f.resultado >= 0 ? '#0a5c35' : '#9c1c1c'};">${(f.resultado >= 0 ? '+' : '') + _consR(f.resultado) + (resPct !== null ? ' (' + (resPct >= 0 ? '+' : '') + resPct.toFixed(2).replace('.', ',') + '%)' : '')}${f.obs ? ' <span style="color:#888;">· ' + f.obs + '</span>' : ''}</td>
+          <td style="color:${f.resultado >= 0 ? '#0a5c35' : '#9c1c1c'};"${f.obs ? ' title="' + f.obs.replace(/"/g, '&quot;') + '"' : ''}>${(f.resultado >= 0 ? '+' : '') + _consR(f.resultado) + (resPct !== null ? ' (' + (resPct >= 0 ? '+' : '') + resPct.toFixed(2).replace('.', ',') + '%)' : '')}${f.obs ? ' <span style="color:#888;cursor:help;">ⓘ</span>' : ''}</td>
         </tr>`;
       }
       return `<tr>
