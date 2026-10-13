@@ -12305,6 +12305,31 @@ function _consR(v) { return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionD
 function _consR0(v) { return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }
 function _consPct(v) { return v.toFixed(2).replace('.', ',') + '%'; }
 
+// ETFs Internacionais (SOLT/TXXS) têm Qtd/PM reais em #etfiPosBody, só que em US$ — ao
+// contrário da Previdência, dá pra calcular Investido/Resultado. Lê direto do DOM (mesmo
+// princípio de não duplicar dado) e converte pelo câmbio IMPLÍCITO no saldo R$ já exibido
+// (saldoBRLAtual ÷ saldo em US$), nunca por uma taxa própria — assim Investido e Saldo usam a
+// mesma taxa e o Resultado reflete só a variação de preço em dólar. Não existe câmbio de compra
+// salvo (só o preço de compra em US$), então isso NÃO é o retorno real em reais do investidor
+// (que também ganha/perde com a variação do dólar desde a compra) — por isso o aviso na coluna
+// Observação em vez de apresentar como se fosse.
+function _consEtfiInvestidoResultado(saldoBRLAtual) {
+  const tbody = document.getElementById('etfiPosBody');
+  if (!tbody) return null;
+  let investidoUSD = 0, saldoUSD = 0;
+  tbody.querySelectorAll('tr[data-ticker]').forEach(tr => {
+    const qtd = _cwParseNum(tr.children[1]?.textContent);
+    const pm = _cwParseNum(tr.children[2]?.textContent);
+    const preco = _cwParseNum(tr.querySelector('.etfi-preco')?.textContent);
+    if (qtd > 0 && pm > 0) investidoUSD += qtd * pm;
+    if (qtd > 0 && preco > 0) saldoUSD += qtd * preco;
+  });
+  if (!(saldoUSD > 0) || !(investidoUSD > 0)) return null;
+  const fx = saldoBRLAtual / saldoUSD;
+  const investido = investidoUSD * fx;
+  return { investido, resultado: saldoBRLAtual - investido, obs: 'R$ pelo câmbio de hoje — não inclui variação cambial desde a compra' };
+}
+
 // ── COLETA ────────────────────────────────────────────────────────────────────────────────
 // Devolve a fotografia consolidada. Tudo o que as seções desenham sai daqui — uma leitura só,
 // para que nenhuma seção possa discordar de outra sobre quanto o casal tem.
@@ -12362,7 +12387,10 @@ function coletarConsolidado() {
       porClasse[classeKey] = (porClasse[classeKey] || 0) + f.valor;
       porSegmento[segKey] = (porSegmento[segKey] || 0) + f.valor;
       porGrupo[grpKey] = (porGrupo[grpKey] || 0) + f.valor;
-      fixosConsolidados.push({ label: f.label, valor: f.valor, dono: c.nome, classe: classeKey, segmento: segKey });
+      // ETFs Internacionais (SOLT/TXXS) têm Qtd/PM reais em #etfiPosBody, ao contrário da
+      // Previdência — por isso só eles ganham Investido/Resultado (ver _consEtfiInvestidoResultado).
+      const extra = (f.label === 'ETFs Internacionais') ? _consEtfiInvestidoResultado(f.valor) : null;
+      fixosConsolidados.push({ label: f.label, valor: f.valor, dono: c.nome, classe: classeKey, segmento: segKey, investido: extra ? extra.investido : null, resultado: extra ? extra.resultado : null, obs: extra ? extra.obs : null });
     });
 
     porTitular[c.nome] = subtotal;
@@ -12473,6 +12501,19 @@ function renderConsolidado() {
     // o quê", que é o propósito desta página.
     const linhasFixos = d.fixos.map(f => {
       totSaldoTabela += f.valor;
+      if (f.investido !== null && f.resultado !== null) {
+        totInvestido += f.investido; ganhoTotalRS += f.resultado; temAlgumGanho = true;
+        const resPct = f.investido > 0 ? f.resultado / f.investido * 100 : null;
+        return `<tr>
+          <td class="rp-bold">${f.label}</td>
+          <td>${f.segmento}</td>
+          <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+          <td>${_consR(f.investido)}</td>
+          <td>${_consR(f.valor)}</td>
+          <td>${_consPct(f.valor / d.totalGeral * 100)}</td>
+          <td style="color:${f.resultado >= 0 ? '#0a5c35' : '#9c1c1c'};">${(f.resultado >= 0 ? '+' : '') + _consR(f.resultado) + (resPct !== null ? ' (' + (resPct >= 0 ? '+' : '') + resPct.toFixed(2).replace('.', ',') + '%)' : '')} <span style="color:#888;">· ${f.obs}</span></td>
+        </tr>`;
+      }
       return `<tr>
         <td class="rp-bold">${f.label}</td>
         <td>${f.segmento}</td>
