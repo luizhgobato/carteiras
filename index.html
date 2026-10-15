@@ -8408,8 +8408,14 @@ function makeSVGDonut(el, labels, values, colors, opts){
     legend+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:11px;color:#555;"><div style="width:9px;height:9px;border-radius:2px;background:${colors[i%colors.length]};flex-shrink:0;"></div><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${l}</span>${valTxt}</div>`;
   });
   const itens=labels.length===1?'1 item':`${labels.length} itens`;
-  el.innerHTML=`<div style="text-align:center;"><svg width="180" height="${H+2*padOut}" viewBox="${-padOut} ${-padOut} ${H+2*padOut} ${H+2*padOut}" style="max-width:100%;">${paths}${centro}${labelEls}</svg></div>
-    <details class="svg-donut-legend"><summary>Ver detalhamento (${itens})</summary><div class="svg-donut-legend-body">${legend}</div></details>`;
+  // labelsOnChart também pede gráfico maior (240 em vez de 180) e legenda sempre aberta, sem o
+  // <details>/<summary> de "Ver detalhamento" — pedido do usuário pros dois donuts com rótulo.
+  const svgSize=labelsOnChart?240:180;
+  const legendaBloco=labelsOnChart
+    ?`<div class="svg-donut-legend-body" style="margin-top:0.5rem;">${legend}</div>`
+    :`<details class="svg-donut-legend"><summary>Ver detalhamento (${itens})</summary><div class="svg-donut-legend-body">${legend}</div></details>`;
+  el.innerHTML=`<div style="text-align:center;"><svg width="${svgSize}" height="${svgSize}" viewBox="${-padOut} ${-padOut} ${H+2*padOut} ${H+2*padOut}" style="max-width:100%;">${paths}${centro}${labelEls}</svg></div>
+    ${legendaBloco}`;
 }
 
 function makeSVGBar(el, labels, values, colors, fmt){
