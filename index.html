@@ -12514,23 +12514,47 @@ function _consDonut(containerId, mapa, total, titulo) {
   makeSVGDonut(el, rows.map(r => r.label), vals, RP_COLORS, { amounts: vals, titulo });
 }
 
+// Totais usados tanto nos cards do topo quanto na linha Total da tabela por ativo — uma conta
+// só, pra nunca os dois discordarem (mesmo princípio de "leitura única" de coletarConsolidado()).
+// ganhoTotalRS soma o ganho de CADA LINHA (não totalSaldo−totalInvestido): robusto por
+// construção, nunca mais repete o bug de 13/10/2026 (Total tratava a Previdência inteira como
+// ganho, por comparar Saldo de TUDO com Investido só dos tickers).
+function _consCalcularTotais(d) {
+  let totInvestido = 0, totSaldoTabela = 0, totVarDiaRS = 0, algumTemVar = false, totSaldoComVar = 0,
+      ganhoTotalRS = 0, temAlgumGanho = false;
+  d.ativos.forEach(a => {
+    totInvestido += a.investido;
+    totSaldoTabela += a.saldo;
+    if (a.investido > 0) { ganhoTotalRS += (a.saldo - a.investido); temAlgumGanho = true; }
+    if (a.temVarDia) { totVarDiaRS += a.varDiaRS; totSaldoComVar += a.saldo; algumTemVar = true; }
+  });
+  d.fixos.forEach(f => {
+    totSaldoTabela += f.valor;
+    if (f.varDia !== null && f.varDiaRS !== null) { totVarDiaRS += f.varDiaRS; totSaldoComVar += f.valor; algumTemVar = true; }
+    if (f.investido !== null && f.resultado !== null) { totInvestido += f.investido; ganhoTotalRS += f.resultado; temAlgumGanho = true; }
+  });
+  const saldoOntemComVar = totSaldoComVar - totVarDiaRS;
+  const pctTotal = algumTemVar && saldoOntemComVar > 0 ? totVarDiaRS / saldoOntemComVar * 100 : null;
+  const pctGanhoTotal = totInvestido > 0 ? ganhoTotalRS / totInvestido * 100 : null;
+  const pctCartTotal = d.totalGeral > 0 ? totSaldoTabela / d.totalGeral * 100 : null;
+  return { totInvestido, totSaldoTabela, totVarDiaRS, algumTemVar, totSaldoComVar, ganhoTotalRS, temAlgumGanho, pctTotal, pctGanhoTotal, pctCartTotal };
+}
+
 function renderConsolidado() {
   const d = coletarConsolidado();
   if (!(d.totalGeral > 0)) return;
+  const tot = _consCalcularTotais(d);
 
   // ── Cards do topo ──
   const exec = document.getElementById('consExec');
   if (exec) {
     const luiz = d.porTitular['Luiz'] || 0, flavia = d.porTitular['Flavia'] || 0;
-    // Maior AÇÃO, não maior ativo: o LFTB11 seria sempre o topo e o card viraria "reserva de
-    // liquidez é grande" — verdade, mas não é o risco que o card precisa vigiar.
-    const maior = d.ativos.find(a => a.classe === 'Ações BR');
+    const corPct = v => v === null ? '' : (v >= 0 ? 'green' : 'red');
     exec.innerHTML = `
       <div class="rp-exec-item"><div class="rp-exec-label">Patrimônio do casal</div><div class="rp-exec-value">${_consR(d.totalGeral)}</div></div>
       <div class="rp-exec-item"><div class="rp-exec-label">Luiz / Flavia</div><div class="rp-exec-value">${_consPct(luiz / d.totalGeral * 100)} / ${_consPct(flavia / d.totalGeral * 100)}</div></div>
-      <div class="rp-exec-item"><div class="rp-exec-label">Progresso vs. marco R$ 2MM</div><div class="rp-exec-value yellow">${(d.totalGeral / CONS_MARCO * 100).toFixed(1).replace('.', ',')}%</div></div>
-      <div class="rp-exec-item"><div class="rp-exec-label">Renda ações 2026 (est.)</div><div class="rp-exec-value">${_consR0(d.rendaMes)}/mês</div></div>
-      <div class="rp-exec-item"><div class="rp-exec-label">Maior ação única</div><div class="rp-exec-value ${maior && maior.saldo / d.totalGeral > 0.15 ? 'red' : ''}">${maior ? maior.ticker + ' ' + _consPct(maior.saldo / d.totalGeral * 100) : '—'}</div></div>`;
+      <div class="rp-exec-item"><div class="rp-exec-label">Variação total diária</div><div class="rp-exec-value ${corPct(tot.pctTotal)}">${tot.pctTotal === null ? '—' : (tot.pctTotal >= 0 ? '+' : '') + tot.pctTotal.toFixed(2).replace('.', ',') + '%'}</div></div>
+      <div class="rp-exec-item"><div class="rp-exec-label">Variação total (Investido × Atual)</div><div class="rp-exec-value ${corPct(tot.pctGanhoTotal)}">${tot.pctGanhoTotal === null ? '—' : (tot.pctGanhoTotal >= 0 ? '+' : '') + tot.pctGanhoTotal.toFixed(2).replace('.', ',') + '%'}</div></div>`;
   }
 
   // ── Donuts ──
@@ -12553,21 +12577,12 @@ function renderConsolidado() {
   // ── Tabela por ativo, com quem detém o quê ──
   const tb = document.querySelector('#tblConsAtivos tbody');
   if (tb) {
-    // ganhoTotalRS soma o ganho de CADA LINHA (não totalSaldo-totalInvestido) — robusto por
-    // construção: um fixo sem investido>0 nunca entra na conta, não importa o que mais for
-    // adicionado aqui no futuro. Foi exatamente a falta disso que causou o bug de 13/10/2026
-    // (Total tratava a Previdência inteira como ganho, por comparar Saldo de TUDO com
-    // Investido só dos tickers).
-    let totInvestido = 0, totSaldoTabela = 0, totVarDiaRS = 0, algumTemVar = false, totSaldoComVar = 0,
-        ganhoTotalRS = 0, temAlgumGanho = false;
+    // Totais (tot.*) já vêm prontos de _consCalcularTotais(d), chamado uma vez no topo da
+    // função — mesma conta usada nos cards do topo, pra nunca os dois discordarem.
     const linhasAtivos = d.ativos.map(a => {
       const res = a.investido > 0 ? (a.saldo - a.investido) / a.investido * 100 : null;
       const ganhoRS = a.investido > 0 ? a.saldo - a.investido : null;
       const pm = a.qtd > 0 ? a.investido / a.qtd : 0;
-      totInvestido += a.investido;
-      totSaldoTabela += a.saldo;
-      if (ganhoRS !== null) { ganhoTotalRS += ganhoRS; temAlgumGanho = true; }
-      if (a.temVarDia) { totVarDiaRS += a.varDiaRS; totSaldoComVar += a.saldo; algumTemVar = true; }
       return `<tr>
         <td class="rp-bold">${a.ticker}</td>
         <td>${a.seg}</td>
@@ -12589,8 +12604,6 @@ function renderConsolidado() {
     // nos donuts de classe/segmento: ficar de fora da tabela os apagava da visão "quem detém
     // o quê", que é o propósito desta página.
     const linhasFixos = d.fixos.map(f => {
-      totSaldoTabela += f.valor;
-      if (f.varDia !== null && f.varDiaRS !== null) { totVarDiaRS += f.varDiaRS; totSaldoComVar += f.valor; algumTemVar = true; }
       const colQtdPmPrecoVarDia = `
         <td>${f.qtd !== null ? f.qtd.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '—'}</td>
         <td>${f.pm !== null ? _consR(f.pm) : '—'}</td>
@@ -12598,7 +12611,6 @@ function renderConsolidado() {
         <td style="color:${f.varDia === null ? '#888' : (f.varDia >= 0 ? '#0a5c35' : '#9c1c1c')};">${f.varDia === null ? '—' : (f.varDia >= 0 ? '+' : '') + f.varDia.toFixed(2).replace('.', ',') + '%'}</td>
         <td style="color:${f.varDiaRS === null ? '#888' : (f.varDiaRS >= 0 ? '#0a5c35' : '#9c1c1c')};">${f.varDiaRS === null ? '—' : (f.varDiaRS >= 0 ? '+' : '') + _consR(f.varDiaRS)}</td>`;
       if (f.investido !== null && f.resultado !== null) {
-        totInvestido += f.investido; ganhoTotalRS += f.resultado; temAlgumGanho = true;
         const resPct = f.investido > 0 ? f.resultado / f.investido * 100 : null;
         return `<tr>
           <td class="rp-bold">${f.label}</td>
@@ -12619,19 +12631,13 @@ function renderConsolidado() {
       </tr>`;
     }).join('');
 
-    tb.innerHTML = linhasAtivos + linhasFixos + (() => {
-      const saldoOntemComVar = totSaldoComVar - totVarDiaRS;
-      const pctTotal = algumTemVar && saldoOntemComVar > 0 ? totVarDiaRS / saldoOntemComVar * 100 : null;
-      const pctGanhoTotal = totInvestido > 0 ? ganhoTotalRS / totInvestido * 100 : null;
-      const pctCartTotal = d.totalGeral > 0 ? totSaldoTabela / d.totalGeral * 100 : null;
-      return `<tr style="background:#1e1a2e;color:#fff;font-weight:700;" data-role="total">
+    tb.innerHTML = linhasAtivos + linhasFixos + `<tr style="background:#1e1a2e;color:#fff;font-weight:700;" data-role="total">
         <td>Total</td><td></td><td></td><td></td><td></td>
-        <td style="color:${pctTotal === null ? '#fff' : (pctTotal >= 0 ? '#4ecdc4' : '#ff6b6b')};">${pctTotal === null ? '—' : (pctTotal >= 0 ? '+' : '') + pctTotal.toFixed(2).replace('.', ',') + '%'}</td>
-        <td style="color:${!algumTemVar ? '#fff' : (totVarDiaRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${!algumTemVar ? '—' : (totVarDiaRS >= 0 ? '+' : '') + _consR(totVarDiaRS)}</td>
-        <td>${_consR(totInvestido)}</td>
-        <td>${_consR(totSaldoTabela)}</td><td>${pctCartTotal === null ? '—' : _consPct(pctCartTotal)}</td>
-        <td style="color:${!temAlgumGanho ? '#fff' : (ganhoTotalRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${!temAlgumGanho ? '—' : (ganhoTotalRS >= 0 ? '+' : '') + _consR(ganhoTotalRS) + ' (' + (pctGanhoTotal >= 0 ? '+' : '') + pctGanhoTotal.toFixed(2).replace('.', ',') + '%)'}</td></tr>`;
-    })();
+        <td style="color:${tot.pctTotal === null ? '#fff' : (tot.pctTotal >= 0 ? '#4ecdc4' : '#ff6b6b')};">${tot.pctTotal === null ? '—' : (tot.pctTotal >= 0 ? '+' : '') + tot.pctTotal.toFixed(2).replace('.', ',') + '%'}</td>
+        <td style="color:${!tot.algumTemVar ? '#fff' : (tot.totVarDiaRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${!tot.algumTemVar ? '—' : (tot.totVarDiaRS >= 0 ? '+' : '') + _consR(tot.totVarDiaRS)}</td>
+        <td>${_consR(tot.totInvestido)}</td>
+        <td>${_consR(tot.totSaldoTabela)}</td><td>${tot.pctCartTotal === null ? '—' : _consPct(tot.pctCartTotal)}</td>
+        <td style="color:${!tot.temAlgumGanho ? '#fff' : (tot.ganhoTotalRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${!tot.temAlgumGanho ? '—' : (tot.ganhoTotalRS >= 0 ? '+' : '') + _consR(tot.ganhoTotalRS) + ' (' + (tot.pctGanhoTotal >= 0 ? '+' : '') + tot.pctGanhoTotal.toFixed(2).replace('.', ',') + '%)'}</td></tr>`;
   }
 
   // ── Carteira Ideal do casal ──
