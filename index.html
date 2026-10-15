@@ -12553,8 +12553,8 @@ function renderConsolidado() {
     exec.innerHTML = `
       <div class="rp-exec-item"><div class="rp-exec-label">Patrimônio do casal</div><div class="rp-exec-value">${_consR(d.totalGeral)}</div></div>
       <div class="rp-exec-item"><div class="rp-exec-label">Luiz / Flavia</div><div class="rp-exec-value">${_consPct(luiz / d.totalGeral * 100)} / ${_consPct(flavia / d.totalGeral * 100)}</div></div>
-      <div class="rp-exec-item"><div class="rp-exec-label">Variação total diária</div><div class="rp-exec-value ${corPct(tot.pctTotal)}">${tot.pctTotal === null ? '—' : (tot.pctTotal >= 0 ? '+' : '') + tot.pctTotal.toFixed(2).replace('.', ',') + '%'}</div></div>
-      <div class="rp-exec-item"><div class="rp-exec-label">Variação total (Investido × Atual)</div><div class="rp-exec-value ${corPct(tot.pctGanhoTotal)}">${tot.pctGanhoTotal === null ? '—' : (tot.pctGanhoTotal >= 0 ? '+' : '') + tot.pctGanhoTotal.toFixed(2).replace('.', ',') + '%'}</div></div>`;
+      <div class="rp-exec-item"><div class="rp-exec-label">Variação total diária</div><div class="rp-exec-value ${corPct(tot.pctTotal)}">${tot.pctTotal === null ? '—' : (tot.totVarDiaRS >= 0 ? '+' : '') + _consR(tot.totVarDiaRS) + ' (' + (tot.pctTotal >= 0 ? '+' : '') + tot.pctTotal.toFixed(2).replace('.', ',') + '%)'}</div></div>
+      <div class="rp-exec-item"><div class="rp-exec-label">Variação total (Investido × Atual)</div><div class="rp-exec-value ${corPct(tot.pctGanhoTotal)}">${tot.pctGanhoTotal === null ? '—' : (tot.ganhoTotalRS >= 0 ? '+' : '') + _consR(tot.ganhoTotalRS) + ' (' + (tot.pctGanhoTotal >= 0 ? '+' : '') + tot.pctGanhoTotal.toFixed(2).replace('.', ',') + '%)'}</div></div>`;
   }
 
   // ── Donuts ──
