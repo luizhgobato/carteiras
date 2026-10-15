@@ -1935,6 +1935,9 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
     <div class="rp-section">
       <div class="rp-section-title">💼 Patrimônio por classe (casal)</div>
       <div id="chartConsClasse" style="margin-bottom:0.5rem;"></div>
+      <div class="rp-exec" style="margin:0.75rem 0 0;padding:1rem 1.25rem;">
+        <div class="rp-exec-grid" id="consClasseBig"></div>
+      </div>
     </div>
 
     <div class="rp-section">
@@ -12578,6 +12581,18 @@ function renderConsolidado() {
   _consDonut('chartConsTitular', d.porTitular, d.totalGeral, 'Patrimônio por titular', true);
   _consDonut('chartConsClasse', d.porClasse, d.totalGeral, 'Patrimônio por classe (casal)', true);
   _consDonut('chartConsSegmento', d.porSegmento, d.totalGeral, 'Segmento consolidado');
+
+  // ── Classe em big number (valor + % lado a lado, mesma ordem/cor das fatias do donut acima) ──
+  const classeBig = document.getElementById('consClasseBig');
+  if (classeBig) {
+    const linhasClasse = Object.entries(d.porClasse).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+    classeBig.innerHTML = linhasClasse.map(([label, valor], i) => `
+      <div class="rp-exec-item">
+        <div class="rp-exec-label"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${RP_COLORS[i % RP_COLORS.length]};margin-right:5px;"></span>${label}</div>
+        <div class="rp-exec-value">${_consR0(valor)}</div>
+        <div style="font-size:12px;color:#aaa;margin-top:2px;">${_consPct(valor / d.totalGeral * 100)}</div>
+      </div>`).join('');
+  }
 
   // ── Barras por ativo ──
   // Inclui os fixos (Previdência/ETFs) como barras próprias — ficavam de fora antes porque
