@@ -8359,7 +8359,16 @@ function makeSVGDonut(el, labels, values, colors, opts){
   const maiorPalavra=titulo?Math.max(...titulo.split(' ').map(w=>w.length)):0;
   const tituloFontSize=maiorPalavra>10?6.3:maiorPalavra>7?7.5:8.5;
   const H=200,cx=100,cy=100,R=82,r=54;
-  let paths='',startAngle=-Math.PI/2;
+  // labelsOnChart: valor escrito do lado de fora do anel, perto da fatia — só pra quem pediu
+  // (chartConsTitular/chartConsClasse), as outras donuts do site continuam só com legenda
+  // embaixo. Testado por tentativa: rótulo DENTRO do anel (mesmo só o valor, 1 linha) invadia o
+  // buraco central nas fatias perto do eixo horizontal, porque o texto é reto e o anel é
+  // estreito (28 unidades) — só funciona por fora, com texto curto (abreviado em "Rk") e o
+  // viewBox alargado (padOut) pra sobrar margem sem cortar nas pontas. Fatia fina (<18°) não
+  // ganha rótulo: não cabe e sobrepõe a vizinha — fica só no hover/legenda, igual antes.
+  const labelsOnChart=!!opts.labelsOnChart;
+  const padOut=labelsOnChart?34:0;
+  let paths='',labelEls='',startAngle=-Math.PI/2;
   values.forEach((v,i)=>{
     const angle=(v/total)*2*Math.PI;
     const x1=cx+R*Math.cos(startAngle),y1=cy+R*Math.sin(startAngle);
@@ -8370,6 +8379,14 @@ function makeSVGDonut(el, labels, values, colors, opts){
     const pct=((v/total)*100).toFixed(1).replace('.',',');
     const _a=amt(i);
     paths+=`<path d="M${xi1},${yi1} L${x1},${y1} A${R},${R} 0 ${lg},1 ${x2},${y2} L${xi2},${yi2} A${r},${r} 0 ${lg},0 ${xi1},${yi1}" fill="${colors[i%colors.length]}" opacity="0.9"><title>${labels[i]}: ${_a?_a+' · ':''}${pct}%</title></path>`;
+    if(labelsOnChart && angle*180/Math.PI>=18){
+      const midAngle=startAngle+angle/2, dx=Math.cos(midAngle), dy=Math.sin(midAngle), labelR=R+9;
+      const lx=(cx+labelR*dx).toFixed(1), ly=(cy+labelR*dy+3).toFixed(1);
+      const anchor=dx>0.2?'start':dx<-0.2?'end':'middle';
+      const v2=amounts&&isFinite(amounts[i])?amounts[i]:null;
+      const valTxt=v2!==null?(Math.abs(v2)>=1000?Math.round(v2/1000)+'k':fmtR(v2)):(pct+'%');
+      labelEls+=`<text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="10" font-weight="700" fill="${colors[i%colors.length]}" style="pointer-events:none;">${valTxt}</text>`;
+    }
     startAngle+=angle;
   });
   const holeSize=(r*(maiorPalavra>10?2.15:1.75)).toFixed(0);
@@ -8388,7 +8405,7 @@ function makeSVGDonut(el, labels, values, colors, opts){
     legend+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:11px;color:#555;"><div style="width:9px;height:9px;border-radius:2px;background:${colors[i%colors.length]};flex-shrink:0;"></div><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${l}</span>${valTxt}</div>`;
   });
   const itens=labels.length===1?'1 item':`${labels.length} itens`;
-  el.innerHTML=`<div style="text-align:center;"><svg width="180" height="${H}" viewBox="0 0 ${H} ${H}" style="max-width:100%;">${paths}${centro}</svg></div>
+  el.innerHTML=`<div style="text-align:center;"><svg width="180" height="${H+2*padOut}" viewBox="${-padOut} ${-padOut} ${H+2*padOut} ${H+2*padOut}" style="max-width:100%;">${paths}${centro}${labelEls}</svg></div>
     <details class="svg-donut-legend"><summary>Ver detalhamento (${itens})</summary><div class="svg-donut-legend-body">${legend}</div></details>`;
 }
 
@@ -12504,14 +12521,14 @@ function coletarConsolidado() {
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────────────────
-function _consDonut(containerId, mapa, total, titulo) {
+function _consDonut(containerId, mapa, total, titulo, labelsOnChart) {
   const el = document.getElementById(containerId);
   if (!el) return;
   const rows = Object.entries(mapa).map(([label, value]) => ({ label, value }))
     .filter(r => r.value > 0).sort((a, b) => b.value - a.value);
   if (!rows.length || typeof makeSVGDonut !== 'function') { if (el) el.innerHTML = ''; return; }
   const vals = rows.map(r => r.value);
-  makeSVGDonut(el, rows.map(r => r.label), vals, RP_COLORS, { amounts: vals, titulo });
+  makeSVGDonut(el, rows.map(r => r.label), vals, RP_COLORS, { amounts: vals, titulo, labelsOnChart });
 }
 
 // Totais usados tanto nos cards do topo quanto na linha Total da tabela por ativo — uma conta
@@ -12558,8 +12575,8 @@ function renderConsolidado() {
   }
 
   // ── Donuts ──
-  _consDonut('chartConsTitular', d.porTitular, d.totalGeral, 'Patrimônio por titular');
-  _consDonut('chartConsClasse', d.porClasse, d.totalGeral, 'Patrimônio por classe (casal)');
+  _consDonut('chartConsTitular', d.porTitular, d.totalGeral, 'Patrimônio por titular', true);
+  _consDonut('chartConsClasse', d.porClasse, d.totalGeral, 'Patrimônio por classe (casal)', true);
   _consDonut('chartConsSegmento', d.porSegmento, d.totalGeral, 'Segmento consolidado');
 
   // ── Barras por ativo ──
