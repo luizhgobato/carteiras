@@ -125,6 +125,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .nav-status-dot.err{background:#ef4444;}
 .nav-status-text{font-size:10px;color:rgba(156,163,175,0.7);letter-spacing:0.04em;white-space:nowrap;}
 
+/* Mobile: a nav inteira (marca + 5 abas + status) não cabe em ~390px de largura e, sem isso,
+   ficava cortada sem jeito nenhum de rolar até as abas da direita (Radar, Base de Dados) —
+   "a tela tava quebrando no celular". .nav-tabs vira a única parte que rola de lado; marca e
+   status encolhem pra sobrar espaço pras abas, que são o que a pessoa precisa alcançar. */
+@media(max-width:640px){
+  .nav{padding:0 0.75rem;}
+  .nav-brand{padding:0 0.75rem 0 0;margin-right:0.5rem;}
+  .nav-brand-text{display:none;}
+  .nav-tabs{flex:1;min-width:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .nav-tabs::-webkit-scrollbar{display:none;}
+  .nav-tab{padding:0 0.8rem;font-size:11px;}
+  .nav-right{padding-left:0.6rem;margin-left:0.4rem;}
+  .nav-status-text{display:none;}
+}
+
 /* ── PAGES ── */
 .page{display:none;}.page.active{display:block;}
 
@@ -1893,22 +1908,16 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <h1>Carteira Consolidada — Luiz + Flavia</h1>
         <p>Visão do casal · somada ao vivo das duas carteiras</p>
       </div>
-      <div>
-        <div class="rp-badges">
-          <span class="rp-badge rp-badge-blue">Patrimônio familiar</span>
-          <span class="rp-badge rp-badge-yellow">Risco agregado</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="rp-exec">
-      <div class="rp-exec-grid" id="consExec"></div>
     </div>
 
     <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;">
       <button class="btn-olho" onclick="atualizarCotacaoFamilia()" style="cursor:pointer;">🔄 Atualizar Cotação (as duas)</button>
       <span id="consUpdateStatus" style="font-size:11px;color:#888;"></span>
       <span id="consStatus" style="font-size:11px;color:#aaa;"></span>
+    </div>
+
+    <div class="rp-exec">
+      <div class="rp-exec-grid" id="consExec"></div>
     </div>
 
     <div class="rp-section">
@@ -1935,9 +1944,6 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
     <div class="rp-section">
       <div class="rp-section-title">💼 Patrimônio por classe (casal)</div>
       <div id="chartConsClasse" style="margin-bottom:0.5rem;"></div>
-      <div class="rp-exec" style="margin:0.75rem 0 0;padding:1rem 1.25rem;">
-        <div class="rp-exec-grid" id="consClasseBig"></div>
-      </div>
     </div>
 
     <div class="rp-section">
@@ -1954,14 +1960,12 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
             <tr><td class="rp-bold">BBAS3</td><td>1.758</td><td>R$ 1,88</td><td>45%</td><td>R$ 0,85</td><td>3,84%</td><td>R$ 3.302,07</td><td>R$ 1.485,94</td></tr>
             <tr><td class="rp-bold">FIQE3</td><td>7.000</td><td>R$ 0,63</td><td>34%</td><td>R$ 0,21</td><td>4,07%</td><td>R$ 4.380,60</td><td>R$ 1.489,40</td></tr>
             <tr><td class="rp-bold">GMAT3</td><td>4.500</td><td>R$ 0,97</td><td>32%</td><td>R$ 0,31</td><td>6,43%</td><td>R$ 4.385,48</td><td>R$ 1.403,35</td></tr>
-            <tr style="background:#faf8f0;"><td class="rp-bold">LFTB11*</td><td>4.621</td><td>—</td><td>—</td><td>—</td><td>11,81%</td><td>R$ 69.167,10</td><td>—</td></tr>
-            <tr style="background:#faf8f0;"><td class="rp-bold">Previdência Privada*</td><td>89.498,4</td><td>—</td><td>—</td><td>—</td><td>10,00%</td><td>R$ 15.464,61</td><td>—</td></tr>
+            <tr style="background:#faf8f0;"><td class="rp-bold">LFTB11</td><td>4.621</td><td>—</td><td>—</td><td>—</td><td>11,81%</td><td>R$ 69.167,10</td><td>—</td></tr>
+            <tr style="background:#faf8f0;"><td class="rp-bold">Previdência Privada</td><td>89.498,4</td><td>—</td><td>—</td><td>—</td><td>10,00%</td><td>R$ 15.464,61</td><td>—</td></tr>
             <tr data-role="total-lpady-cons" style="background:#1e1a2e;color:#fff;font-weight:700;"><td>TOTAL (ações)</td><td>—</td><td>—</td><td>—</td><td>—</td><td>5,75%</td><td>R$ 76.465,30</td><td>R$ 46.988,35</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="rp-estim" style="margin:0.5rem 0 0;font-size:11px;line-height:1.6;">Metodologia (ações): LPA 2027 = LPA 2026 projetado (motor de <code>scripts/gerar_colunas.py</code> do projeto Research — lucro de 2025 fechado × taxa de crescimento setorial/histórica) reaplicando a mesma taxa por mais um ano. Div./Ação = LPA × payout atual (mantido constante). DY esperado = Div./Ação ÷ preço atual (20/09/2026). É estimativa própria, não é guidance da empresa nem consenso de analistas — assume crescimento e payout constantes de um ano para o outro. DY esperado do TOTAL é ponderado (Dividendo Total ÷ saldo atual das posições em ação, casal) — soma só ação, não inclui as duas linhas abaixo.</p>
-      <p class="rp-estim" style="margin:0.35rem 0 0;font-size:11px;line-height:1.6;">*LFTB11 e Previdência Privada não têm LPA/payout (renda fixa, sem lucro por ação) — não cabe o método acima, nem são dividendo de verdade: nenhum dos dois distribui nada, o ganho só vira caixa quando vende/saca (ver aba Consolidada). Aqui "DY esperado"/"Lucro Total" é a <b>taxa de retorno projetada</b>, calculada diferente: <b>LFTB11</b> = CDI projetado p/ 2027 (Focus-BCB, boletim 28/09/2026: 12,00% a.a.) − taxa de administração do ETF (0,19% a.a.) = 11,81%, aplicado sobre o saldo atual (R$585.665,54). <b>Previdência</b> = CAGR real da própria cota 2020-2025 (~10%/ano, calculado a partir dos extratos SISAROS — não é projeção de terceiro), aplicado sobre o saldo atual (R$154.646,05). "Dividendo Total" fica "—" pros dois — isso é estimativa de ganho não-realizado, não é dinheiro que cai na conta.</p>
     </div>
 
     <div class="rp-section">
@@ -8365,13 +8369,13 @@ function makeSVGDonut(el, labels, values, colors, opts){
   const maiorPalavra=titulo?Math.max(...titulo.split(' ').map(w=>w.length)):0;
   const tituloFontSize=maiorPalavra>10?6.3:maiorPalavra>7?7.5:8.5;
   const H=200,cx=100,cy=100,R=82,r=54;
-  // labelsOnChart: valor escrito do lado de fora do anel, perto da fatia — só pra quem pediu
-  // (chartConsTitular/chartConsClasse), as outras donuts do site continuam só com legenda
-  // embaixo. Testado por tentativa: rótulo DENTRO do anel (mesmo só o valor, 1 linha) invadia o
-  // buraco central nas fatias perto do eixo horizontal, porque o texto é reto e o anel é
-  // estreito (28 unidades) — só funciona por fora, com texto curto (abreviado em "Rk") e o
-  // viewBox alargado (padOut) pra sobrar margem sem cortar nas pontas. Fatia fina (<18°) não
-  // ganha rótulo: não cabe e sobrepõe a vizinha — fica só no hover/legenda, igual antes.
+  // labelsOnChart: valor + % escritos do lado de fora do anel, perto da fatia, em vez de
+  // legenda — só pra quem pediu (chartConsTitular/chartConsClasse). Rótulo DENTRO do anel (só
+  // valor, 1 linha) invadia o buraco central nas fatias perto do eixo horizontal, porque o texto
+  // é reto e o anel é estreito (28 unidades) — só funciona por fora, com texto curto (abreviado
+  // em "Rk") e o viewBox alargado (padOut) pra sobrar margem sem cortar nas pontas. Toda fatia
+  // ganha rótulo, mesmo fina (ex. ETFs Internacionais, <1°) — sem legenda embaixo, é a única
+  // forma de ver o valor dela.
   const labelsOnChart=!!opts.labelsOnChart;
   const padOut=labelsOnChart?34:0;
   let paths='',labelEls='',startAngle=-Math.PI/2;
@@ -8385,13 +8389,15 @@ function makeSVGDonut(el, labels, values, colors, opts){
     const pct=((v/total)*100).toFixed(1).replace('.',',');
     const _a=amt(i);
     paths+=`<path d="M${xi1},${yi1} L${x1},${y1} A${R},${R} 0 ${lg},1 ${x2},${y2} L${xi2},${yi2} A${r},${r} 0 ${lg},0 ${xi1},${yi1}" fill="${colors[i%colors.length]}" opacity="0.9"><title>${labels[i]}: ${_a?_a+' · ':''}${pct}%</title></path>`;
-    if(labelsOnChart && angle*180/Math.PI>=18){
+    if(labelsOnChart){
       const midAngle=startAngle+angle/2, dx=Math.cos(midAngle), dy=Math.sin(midAngle), labelR=R+9;
       const lx=(cx+labelR*dx).toFixed(1), ly=(cy+labelR*dy+3).toFixed(1);
       const anchor=dx>0.2?'start':dx<-0.2?'end':'middle';
       const v2=amounts&&isFinite(amounts[i])?amounts[i]:null;
       const valTxt=v2!==null?(Math.abs(v2)>=1000?Math.round(v2/1000)+'k':fmtR(v2)):(pct+'%');
-      labelEls+=`<text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="10" font-weight="700" fill="${colors[i%colors.length]}" style="pointer-events:none;">${valTxt}</text>`;
+      const corFatia=colors[i%colors.length];
+      labelEls+=`<text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="10" font-weight="700" fill="${corFatia}" style="pointer-events:none;">${valTxt}</text>`+
+        `<text x="${lx}" y="${(+ly+11).toFixed(1)}" text-anchor="${anchor}" font-size="8.5" font-weight="600" fill="${corFatia}" opacity="0.8" style="pointer-events:none;">${pct}%</text>`;
     }
     startAngle+=angle;
   });
@@ -8411,11 +8417,10 @@ function makeSVGDonut(el, labels, values, colors, opts){
     legend+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:11px;color:#555;"><div style="width:9px;height:9px;border-radius:2px;background:${colors[i%colors.length]};flex-shrink:0;"></div><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${l}</span>${valTxt}</div>`;
   });
   const itens=labels.length===1?'1 item':`${labels.length} itens`;
-  // labelsOnChart também pede gráfico maior (240 em vez de 180) e legenda sempre aberta, sem o
-  // <details>/<summary> de "Ver detalhamento" — pedido do usuário pros dois donuts com rótulo.
+  // labelsOnChart também pede gráfico maior (240 em vez de 180) e SEM legenda nenhuma embaixo —
+  // nem a lista sempre aberta de antes, nem o "Ver detalhamento" — só o rótulo na própria fatia.
   const svgSize=labelsOnChart?240:180;
-  const legendaBloco=labelsOnChart
-    ?`<div class="svg-donut-legend-body" style="margin-top:0.5rem;">${legend}</div>`
+  const legendaBloco=labelsOnChart?''
     :`<details class="svg-donut-legend"><summary>Ver detalhamento (${itens})</summary><div class="svg-donut-legend-body">${legend}</div></details>`;
   el.innerHTML=`<div style="text-align:center;"><svg width="${svgSize}" height="${svgSize}" viewBox="${-padOut} ${-padOut} ${H+2*padOut} ${H+2*padOut}" style="max-width:100%;">${paths}${centro}${labelEls}</svg></div>
     ${legendaBloco}`;
@@ -12574,34 +12579,31 @@ function renderConsolidado() {
   if (!(d.totalGeral > 0)) return;
   const tot = _consCalcularTotais(d);
 
-  // ── Cards do topo ──
+  // ── Cards do topo ── (inclui a classe por valor direto aqui, não numa caixa separada embaixo
+  // do gráfico — pedido do usuário em 16/10/2026)
   const exec = document.getElementById('consExec');
   if (exec) {
     const luiz = d.porTitular['Luiz'] || 0, flavia = d.porTitular['Flavia'] || 0;
     const corPct = v => v === null ? '' : (v >= 0 ? 'green' : 'red');
+    const linhasClasse = Object.entries(d.porClasse).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+    const classeCards = linhasClasse.map(([label, valor], i) => `
+      <div class="rp-exec-item">
+        <div class="rp-exec-label"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${RP_COLORS[i % RP_COLORS.length]};margin-right:5px;"></span>${label}</div>
+        <div class="rp-exec-value">${_consR0(valor)}</div>
+        <div style="font-size:12px;color:#aaa;margin-top:2px;">${_consPct(valor / d.totalGeral * 100)}</div>
+      </div>`).join('');
     exec.innerHTML = `
       <div class="rp-exec-item"><div class="rp-exec-label">Patrimônio do casal</div><div class="rp-exec-value">${_consR(d.totalGeral)}</div></div>
       <div class="rp-exec-item"><div class="rp-exec-label">Luiz / Flavia</div><div class="rp-exec-value">${_consPct(luiz / d.totalGeral * 100)} / ${_consPct(flavia / d.totalGeral * 100)}</div></div>
-      <div class="rp-exec-item"><div class="rp-exec-label">Variação total diária</div><div class="rp-exec-value ${corPct(tot.pctTotal)}">${tot.pctTotal === null ? '—' : (tot.totVarDiaRS >= 0 ? '+' : '') + _consR(tot.totVarDiaRS) + ' (' + (tot.pctTotal >= 0 ? '+' : '') + tot.pctTotal.toFixed(2).replace('.', ',') + '%)'}</div></div>
-      <div class="rp-exec-item"><div class="rp-exec-label">Variação total (Investido × Atual)</div><div class="rp-exec-value ${corPct(tot.pctGanhoTotal)}">${tot.pctGanhoTotal === null ? '—' : (tot.ganhoTotalRS >= 0 ? '+' : '') + _consR(tot.ganhoTotalRS) + ' (' + (tot.pctGanhoTotal >= 0 ? '+' : '') + tot.pctGanhoTotal.toFixed(2).replace('.', ',') + '%)'}</div></div>`;
+      <div class="rp-exec-item"><div class="rp-exec-label">Resultado diário</div><div class="rp-exec-value ${corPct(tot.pctTotal)}">${tot.pctTotal === null ? '—' : (tot.totVarDiaRS >= 0 ? '+' : '') + _consR(tot.totVarDiaRS) + ' (' + (tot.pctTotal >= 0 ? '+' : '') + tot.pctTotal.toFixed(2).replace('.', ',') + '%)'}</div></div>
+      <div class="rp-exec-item"><div class="rp-exec-label">Resultado total</div><div class="rp-exec-value ${corPct(tot.pctGanhoTotal)}">${tot.pctGanhoTotal === null ? '—' : (tot.ganhoTotalRS >= 0 ? '+' : '') + _consR(tot.ganhoTotalRS) + ' (' + (tot.pctGanhoTotal >= 0 ? '+' : '') + tot.pctGanhoTotal.toFixed(2).replace('.', ',') + '%)'}</div></div>
+      ${classeCards}`;
   }
 
   // ── Donuts ──
   _consDonut('chartConsTitular', d.porTitular, d.totalGeral, 'Patrimônio por titular', true);
   _consDonut('chartConsClasse', d.porClasse, d.totalGeral, 'Patrimônio por classe (casal)', true);
   _consDonut('chartConsSegmento', d.porSegmento, d.totalGeral, 'Segmento consolidado');
-
-  // ── Classe em big number (valor + % lado a lado, mesma ordem/cor das fatias do donut acima) ──
-  const classeBig = document.getElementById('consClasseBig');
-  if (classeBig) {
-    const linhasClasse = Object.entries(d.porClasse).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
-    classeBig.innerHTML = linhasClasse.map(([label, valor], i) => `
-      <div class="rp-exec-item">
-        <div class="rp-exec-label"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${RP_COLORS[i % RP_COLORS.length]};margin-right:5px;"></span>${label}</div>
-        <div class="rp-exec-value">${_consR0(valor)}</div>
-        <div style="font-size:12px;color:#aaa;margin-top:2px;">${_consPct(valor / d.totalGeral * 100)}</div>
-      </div>`).join('');
-  }
 
   // ── Barras por ativo ──
   // Inclui os fixos (Previdência/ETFs) como barras próprias — ficavam de fora antes porque
@@ -12659,7 +12661,7 @@ function renderConsolidado() {
           <td>${_consR(f.investido)}</td>
           <td>${_consR(f.valor)}</td>
           <td>${_consPct(f.valor / d.totalGeral * 100)}</td>
-          <td style="color:${f.resultado >= 0 ? '#0a5c35' : '#9c1c1c'};"${f.obs ? ' title="' + f.obs.replace(/"/g, '&quot;') + '"' : ''}>${(f.resultado >= 0 ? '+' : '') + _consR(f.resultado) + (resPct !== null ? ' (' + (resPct >= 0 ? '+' : '') + resPct.toFixed(2).replace('.', ',') + '%)' : '')}${f.obs ? ' <span style="color:#888;cursor:help;">ⓘ</span>' : ''}</td>
+          <td style="color:${f.resultado >= 0 ? '#0a5c35' : '#9c1c1c'};">${(f.resultado >= 0 ? '+' : '') + _consR(f.resultado) + (resPct !== null ? ' (' + (resPct >= 0 ? '+' : '') + resPct.toFixed(2).replace('.', ',') + '%)' : '')}</td>
         </tr>`;
       }
       return `<tr>
