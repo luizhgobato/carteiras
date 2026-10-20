@@ -12598,10 +12598,30 @@ function _consCalcularTotais(d) {
   return { totInvestido, totSaldoTabela, totVarDiaRS, algumTemVar, totSaldoComVar, ganhoTotalRS, temAlgumGanho, pctTotal, pctGanhoTotal, pctCartTotal };
 }
 
+// Fixos com o mesmo label (ex.: "Participação — Academia", um de cada dono) viram uma linha/
+// barra só — é o mesmo investimento, só dividido na config porque cada um entrou com seu
+// próprio dinheiro. Quem é dono de cada metade continua visível no donut "Patrimônio por
+// titular" e na soma de d.porTitular, que não passam por aqui.
+function _consMergeFixosPorLabel(fixos) {
+  const somaNull = (a, b) => a === null ? b : (b === null ? a : a + b);
+  const porLabel = {}, ordem = [];
+  fixos.forEach(f => {
+    if (!porLabel[f.label]) { porLabel[f.label] = { ...f }; ordem.push(f.label); return; }
+    const m = porLabel[f.label];
+    m.valor += f.valor;
+    m.investido = somaNull(m.investido, f.investido);
+    m.resultado = somaNull(m.resultado, f.resultado);
+    m.varDiaRS = somaNull(m.varDiaRS, f.varDiaRS);
+    m.qtd = m.qtd ?? f.qtd; m.pm = m.pm ?? f.pm; m.preco = m.preco ?? f.preco; m.varDia = m.varDia ?? f.varDia;
+  });
+  return ordem.map(l => porLabel[l]).sort((a, b) => b.valor - a.valor);
+}
+
 function renderConsolidado() {
   const d = coletarConsolidado();
   if (!(d.totalGeral > 0)) return;
   const tot = _consCalcularTotais(d);
+  const fixosMerged = _consMergeFixosPorLabel(d.fixos);
 
   // ── Cards do topo ── (inclui a classe por valor direto aqui, não numa caixa separada embaixo
   // do gráfico — pedido do usuário em 16/10/2026)
@@ -12651,10 +12671,8 @@ function renderConsolidado() {
   // na tabela "Ver tabela — quem detém o quê" e no donut "Patrimônio por titular").
   const barEl = document.getElementById('chartConsAtivo');
   if (barEl && typeof renderRpHBarFmt === 'function') {
-    const fixosSomados = {};
-    d.fixos.forEach(f => { fixosSomados[f.label] = (fixosSomados[f.label] || 0) + f.valor; });
     const itensBarra = d.ativos.map(a => ({ label: a.ticker, value: a.saldo / d.totalGeral * 100, amount: a.saldo }))
-      .concat(Object.entries(fixosSomados).map(([label, valor]) => ({ label, value: valor / d.totalGeral * 100, amount: valor })))
+      .concat(fixosMerged.map(f => ({ label: f.label, value: f.valor / d.totalGeral * 100, amount: f.valor })))
       .sort((x, y) => y.amount - x.amount);
     renderRpHBarFmt(barEl, itensBarra, v => v.toFixed(2).replace('.', ',') + '%');
   }
@@ -12688,7 +12706,7 @@ function renderConsolidado() {
     // aquisição rastreável pra calcular ganho. Aparecem aqui pela mesma razão que já apareciam
     // nos donuts de classe/segmento: ficar de fora da tabela os apagava da visão "quem detém
     // o quê", que é o propósito desta página.
-    const linhasFixos = d.fixos.map(f => {
+    const linhasFixos = fixosMerged.map(f => {
       const colQtdPmPrecoVarDia = `
         <td>${f.qtd !== null ? f.qtd.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '—'}</td>
         <td>${f.pm !== null ? _consR(f.pm) : '—'}</td>
