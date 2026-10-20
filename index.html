@@ -12443,12 +12443,17 @@ function _consEtfiVarDiaPonderada() {
 function coletarConsolidado() {
   const porTitular = {}, porTicker = {}, porSegmento = {}, porClasse = {}, porGrupo = {};
   const fixosConsolidados = [];
+  // porTitularDet: mesmos totais de _consCalcularTotais(d), só que por titular — acumulados
+  // AQUI, dentro do loop por carteira que já lê cada linha, em vez de reler o DOM de novo (uma
+  // leitura só, mesmo princípio do resto do arquivo).
+  const porTitularDet = {};
   let totalGeral = 0;
 
   CONS_CARTEIRAS.forEach(c => {
     const tbody = document.getElementById(c.bodyId);
     if (!tbody) return;
     let subtotal = 0;
+    const det = porTitularDet[c.nome] = { investido: 0, saldo: 0, varDiaRS: 0, saldoComVar: 0, resultado: 0, temVarDia: false, temGanho: false };
 
     tbody.querySelectorAll('tr[data-ticker]').forEach(tr => {
       const saldo = _consNum(tr.querySelector('.cw-saldo')?.textContent);
@@ -12475,6 +12480,10 @@ function coletarConsolidado() {
       porSegmento[seg] = (porSegmento[seg] || 0) + saldo;
       porClasse[classe] = (porClasse[classe] || 0) + saldo;
       porGrupo[grupo] = (porGrupo[grupo] || 0) + saldo;
+
+      det.investido += investido; det.saldo += saldo;
+      if (investido > 0) { det.resultado += (saldo - investido); det.temGanho = true; }
+      if (varDia !== null) { det.varDiaRS += varDiaRS; det.saldoComVar += saldo; det.temVarDia = true; }
     });
 
     // Classes que NÃO existem como linha de posição (Previdência, ETFs do Luiz): vêm da
@@ -12514,6 +12523,10 @@ function coletarConsolidado() {
         if (vp !== null) { varDia = vp; varDiaRS = f.valor * varDia / 100; }
       }
       fixosConsolidados.push({ label: f.label, valor: f.valor, dono: c.nome, classe: classeKey, segmento: segKey, investido: extra ? extra.investido : null, resultado: extra ? extra.resultado : null, obs: extra ? extra.obs : null, qtd, pm, preco, varDia, varDiaRS });
+
+      det.saldo += f.valor;
+      if (varDia !== null && varDiaRS !== null) { det.varDiaRS += varDiaRS; det.saldoComVar += f.valor; det.temVarDia = true; }
+      if (extra) { det.investido += extra.investido; det.resultado += extra.resultado; det.temGanho = true; }
     });
 
     porTitular[c.nome] = subtotal;
@@ -12534,7 +12547,7 @@ function coletarConsolidado() {
 
   const ativos = Object.values(porTicker).sort((a, b) => b.saldo - a.saldo);
   const fixosOrdenados = fixosConsolidados.sort((a, b) => b.valor - a.valor);
-  return { porTitular, porSegmento, porClasse, porGrupo, ativos, fixos: fixosOrdenados, totalGeral, rendaMes };
+  return { porTitular, porTitularDet, porSegmento, porClasse, porGrupo, ativos, fixos: fixosOrdenados, totalGeral, rendaMes };
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────────────────
@@ -12592,11 +12605,24 @@ function renderConsolidado() {
         <div class="rp-exec-value">${_consR0(valor)}</div>
         <div style="font-size:12px;color:#aaa;margin-top:2px;">${_consPct(valor / d.totalGeral * 100)}</div>
       </div>`).join('');
+    // Resultado diário/total por titular — mesma fórmula de _consCalcularTotais(d), só que
+    // escopada a cada carteira (det vem de porTitularDet, acumulado dentro do loop por carteira
+    // de coletarConsolidado(), não uma segunda leitura do DOM).
+    const titularCards = ['Luiz', 'Flavia'].filter(nome => d.porTitularDet[nome]).map(nome => {
+      const det = d.porTitularDet[nome];
+      const saldoOntem = det.saldoComVar - det.varDiaRS;
+      const pctDia = det.temVarDia && saldoOntem > 0 ? det.varDiaRS / saldoOntem * 100 : null;
+      const pctTot = det.investido > 0 ? det.resultado / det.investido * 100 : null;
+      return `
+      <div class="rp-exec-item"><div class="rp-exec-label">Resultado diário — ${nome}</div><div class="rp-exec-value ${corPct(pctDia)}">${pctDia === null ? '—' : (det.varDiaRS >= 0 ? '+' : '') + _consR(det.varDiaRS) + ' (' + (pctDia >= 0 ? '+' : '') + pctDia.toFixed(2).replace('.', ',') + '%)'}</div></div>
+      <div class="rp-exec-item"><div class="rp-exec-label">Resultado total — ${nome}</div><div class="rp-exec-value ${corPct(pctTot)}">${pctTot === null ? '—' : (det.resultado >= 0 ? '+' : '') + _consR(det.resultado) + ' (' + (pctTot >= 0 ? '+' : '') + pctTot.toFixed(2).replace('.', ',') + '%)'}</div></div>`;
+    }).join('');
     exec.innerHTML = `
       <div class="rp-exec-item"><div class="rp-exec-label">Patrimônio do casal</div><div class="rp-exec-value">${_consR(d.totalGeral)}</div></div>
       <div class="rp-exec-item"><div class="rp-exec-label">Luiz / Flavia</div><div class="rp-exec-value">${_consPct(luiz / d.totalGeral * 100)} / ${_consPct(flavia / d.totalGeral * 100)}</div></div>
       <div class="rp-exec-item"><div class="rp-exec-label">Resultado diário</div><div class="rp-exec-value ${corPct(tot.pctTotal)}">${tot.pctTotal === null ? '—' : (tot.totVarDiaRS >= 0 ? '+' : '') + _consR(tot.totVarDiaRS) + ' (' + (tot.pctTotal >= 0 ? '+' : '') + tot.pctTotal.toFixed(2).replace('.', ',') + '%)'}</div></div>
       <div class="rp-exec-item"><div class="rp-exec-label">Resultado total</div><div class="rp-exec-value ${corPct(tot.pctGanhoTotal)}">${tot.pctGanhoTotal === null ? '—' : (tot.ganhoTotalRS >= 0 ? '+' : '') + _consR(tot.ganhoTotalRS) + ' (' + (tot.pctGanhoTotal >= 0 ? '+' : '') + tot.pctGanhoTotal.toFixed(2).replace('.', ',') + '%)'}</div></div>
+      ${titularCards}
       ${classeCards}`;
   }
 
