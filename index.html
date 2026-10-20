@@ -12638,11 +12638,11 @@ function renderConsolidado() {
         <div class="rp-exec-label">${label}</div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:3px;">
           <span style="font-size:10px;color:#888;white-space:nowrap;">Hoje</span>
-          <span class="rp-exec-value ${corPct(pctDia)}" style="font-size:13px;">${pctDia === null ? '—' : (valorDiaRS >= 0 ? '+' : '') + _consR(valorDiaRS) + ' (' + (pctDia >= 0 ? '+' : '') + pctDia.toFixed(2).replace('.', ',') + '%)'}</span>
+          <span class="rp-exec-value ${corPct(pctDia)}" style="font-size:13px;">${pctDia === null ? '—' : (valorDiaRS >= 0 ? '+' : '') + _consR0(valorDiaRS) + ' (' + (pctDia >= 0 ? '+' : '') + pctDia.toFixed(2).replace('.', ',') + '%)'}</span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:4px;">
           <span style="font-size:10px;color:#888;white-space:nowrap;">Total</span>
-          <span class="rp-exec-value ${corPct(pctTot)}" style="font-size:13px;">${pctTot === null ? '—' : (valorTotRS >= 0 ? '+' : '') + _consR(valorTotRS) + ' (' + (pctTot >= 0 ? '+' : '') + pctTot.toFixed(2).replace('.', ',') + '%)'}</span>
+          <span class="rp-exec-value ${corPct(pctTot)}" style="font-size:13px;">${pctTot === null ? '—' : (valorTotRS >= 0 ? '+' : '') + _consR0(valorTotRS) + ' (' + (pctTot >= 0 ? '+' : '') + pctTot.toFixed(2).replace('.', ',') + '%)'}</span>
         </div>
       </div>`;
     // Resultado por titular — mesma fórmula de _consCalcularTotais(d), só que escopada a cada
@@ -12656,7 +12656,7 @@ function renderConsolidado() {
       return cardResultado(`Resultado — ${nome}`, det.varDiaRS, pctDia, det.resultado, pctTot);
     }).join('');
     exec.innerHTML = `
-      <div class="rp-exec-item"><div class="rp-exec-label">Patrimônio do casal</div><div class="rp-exec-value">${_consR(d.totalGeral)}</div></div>
+      <div class="rp-exec-item"><div class="rp-exec-label">Patrimônio do casal</div><div class="rp-exec-value">${_consR0(d.totalGeral)}</div></div>
       <div class="rp-exec-item"><div class="rp-exec-label">Luiz / Flavia</div><div class="rp-exec-value">${_consPct(luiz / d.totalGeral * 100)} / ${_consPct(flavia / d.totalGeral * 100)}</div></div>
       ${cardResultado('Resultado — Casal', tot.totVarDiaRS, tot.pctTotal, tot.ganhoTotalRS, tot.pctGanhoTotal)}
       ${resultadoPessoas}`;
