@@ -12643,13 +12643,18 @@ function renderConsolidado() {
   _consDonut('chartConsSegmento', d.porSegmento, d.totalGeral, 'Segmento consolidado');
 
   // ── Barras por ativo ──
-  // Inclui os fixos (Previdência/ETFs) como barras próprias — ficavam de fora antes porque
-  // não têm ticker, e "de fora" aqui significava literalmente sumir da visão "por ativo".
-  // Ordenado por valor, junto com os tickers, não num bloco separado no fim.
+  // Inclui os fixos (Previdência/ETFs/Academia) como barras próprias — ficavam de fora antes
+  // porque não têm ticker, e "de fora" aqui significava literalmente sumir da visão "por ativo".
+  // Fixos com o mesmo label (ex.: "Participação — Academia", um de cada dono) somam numa barra
+  // só — é o mesmo investimento, só dividido na config porque cada um entrou com seu próprio
+  // dinheiro; a barra por ativo mostra o casal, não quem é dono de cada metade (isso já aparece
+  // na tabela "Ver tabela — quem detém o quê" e no donut "Patrimônio por titular").
   const barEl = document.getElementById('chartConsAtivo');
   if (barEl && typeof renderRpHBarFmt === 'function') {
+    const fixosSomados = {};
+    d.fixos.forEach(f => { fixosSomados[f.label] = (fixosSomados[f.label] || 0) + f.valor; });
     const itensBarra = d.ativos.map(a => ({ label: a.ticker, value: a.saldo / d.totalGeral * 100, amount: a.saldo }))
-      .concat(d.fixos.map(f => ({ label: f.label, value: f.valor / d.totalGeral * 100, amount: f.valor })))
+      .concat(Object.entries(fixosSomados).map(([label, valor]) => ({ label, value: valor / d.totalGeral * 100, amount: valor })))
       .sort((x, y) => y.amount - x.amount);
     renderRpHBarFmt(barEl, itensBarra, v => v.toFixed(2).replace('.', ',') + '%');
   }
