@@ -882,6 +882,10 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
      é o padrão comum de tabela full-bleed no mobile. As bordas laterais do wrapper somem
      (ficam coladas na borda da tela) e o raio de canto também, só nesses dois lados. */
   .rp-tw-bleed{margin-left:-40px;margin-right:-40px;border-left:none;border-right:none;border-radius:0;}
+  /* Consolidada: a tabela mora dentro de .rp-section > .rp-details (aninhamento duplo),
+     24px+24px de padding, em vez de só .rp-section (24px) como Flavia/Luiz -- por isso
+     precisa de -64px (16 do .report-body + 24+24) em vez de -40px pra sangrar até a borda. */
+  .rp-tw-bleed-deep{margin-left:-64px;margin-right:-64px;}
 }
 </style>
 </head>
@@ -1980,7 +1984,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       <details class="rp-details" open>
         <summary>📋 Ver tabela — quem detém o quê</summary>
         <div class="rp-details-body">
-          <div class="rp-table-wrap rp-tw-bleed">
+          <div class="rp-table-wrap rp-tw-bleed rp-tw-bleed-deep">
             <table class="rp-table rp-freeze-first" id="tblConsAtivos">
               <thead><tr><th>Ativo</th><th>Segmento</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia</th><th>Var. Dia R$</th><th>Investido</th><th>Saldo somado (Luiz+Flavia)</th><th>% do casal</th><th>Result.</th></tr></thead>
               <tbody></tbody>
