@@ -875,6 +875,13 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
   #tblLuizPos thead th:nth-child(10),#tblLuizPos tbody td:nth-child(10),
   #tblLuizPos thead th:nth-child(11),#tblLuizPos tbody td:nth-child(11)
   {display:none;}
+
+  /* As tabelas acima ainda ficavam espremidas dentro do padding dos cards (.rp-section/
+     .rp-details = 24px + .report-body = 16px = 40px de cada lado perdidos pra tabela).
+     "Sangra" o wrapper pra fora desse padding todo, ganhando a largura inteira da tela —
+     é o padrão comum de tabela full-bleed no mobile. As bordas laterais do wrapper somem
+     (ficam coladas na borda da tela) e o raio de canto também, só nesses dois lados. */
+  .rp-tw-bleed{margin-left:-40px;margin-right:-40px;border-left:none;border-right:none;border-radius:0;}
 }
 </style>
 </head>
@@ -1396,7 +1403,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <span id="flaviaSaveStatus" style="font-size:11px;font-weight:600;"></span>
         <button type="button" onclick="restaurarPosicoesOriginais('flaviaPosBody')" style="background:none;border:none;padding:0;font:inherit;font-size:11px;color:#888;text-decoration:underline;cursor:pointer;" title="Descarta o que você digitou e volta aos valores que vieram no arquivo">restaurar valores originais</button>
       </div>
-      <div class="rp-table-wrap">
+      <div class="rp-table-wrap rp-tw-bleed">
         <table class="rp-table rp-freeze-first" id="tblFlaviaPos">
           <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia<span class="col-tip" data-tip="Variação do preço hoje vs. o fechamento de ontem&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Var. Dia R$<span class="col-tip" data-tip="Quanto essa posição ganhou/perdeu hoje: Qtd × variação do preço&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Investido</th><th>Saldo</th><th>Result.</th><th>% Cart.</th><th>% Classe</th></tr></thead>
           <!-- ⚠️ Qtd/PM abaixo = posição real na corretora. NUNCA alterar sem o usuário
@@ -1687,7 +1694,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <span id="luizSaveStatus" style="font-size:11px;font-weight:600;"></span>
         <button type="button" onclick="restaurarPosicoesOriginais('luizPosBody')" style="background:none;border:none;padding:0;font:inherit;font-size:11px;color:#888;text-decoration:underline;cursor:pointer;" title="Descarta o que você digitou e volta aos valores que vieram no arquivo">restaurar valores originais</button>
       </div>
-      <div class="rp-table-wrap">
+      <div class="rp-table-wrap rp-tw-bleed">
         <table class="rp-table rp-freeze-first" id="tblLuizPos">
           <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia<span class="col-tip" data-tip="Variação do preço hoje vs. o fechamento de ontem&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Var. Dia R$<span class="col-tip" data-tip="Quanto essa posição ganhou/perdeu hoje: Qtd × variação do preço&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Investido</th><th>Saldo</th><th>Result.</th><th>% Cart.</th><th>% Classe</th></tr></thead>
           <!-- ⚠️ Qtd/PM abaixo = posição real na corretora. NUNCA alterar sem o usuário
@@ -1973,7 +1980,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       <details class="rp-details" open>
         <summary>📋 Ver tabela — quem detém o quê</summary>
         <div class="rp-details-body">
-          <div class="rp-table-wrap">
+          <div class="rp-table-wrap rp-tw-bleed">
             <table class="rp-table rp-freeze-first" id="tblConsAtivos">
               <thead><tr><th>Ativo</th><th>Segmento</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia</th><th>Var. Dia R$</th><th>Investido</th><th>Saldo somado (Luiz+Flavia)</th><th>% do casal</th><th>Result.</th></tr></thead>
               <tbody></tbody>
