@@ -847,13 +847,16 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
      continuam visíveis no mobile (pedido do usuário -- a tentativa anterior de esconder
      colunas secundárias foi revertida). O que ajuda a caber mais é: fonte/padding menores
      em todas as células, e a 1ª coluna (Ativo, que fica fixa/congelada ao rolar) bem mais
-     estreita que as outras -- ela só precisa caber o ticker (ex. "BBAS3"), então sobra mais
-     largura de tela pra rolar as colunas de valores. */
+     estreita que as outras. Primeira tentativa truncava com reticências (overflow:hidden +
+     ellipsis) -- usuário não quis isso, quer o texto inteiro visível mesmo com a coluna
+     estreita. Troca pra permitir quebra de linha (white-space:normal + word-break): tickers
+     curtos (ex. "BBAS3") continuam numa linha só, e os rótulos mais longos dos fixos (ex.
+     "Previdência", "Internacionais") quebram em 2 linhas em vez de cortar. */
   .rp-freeze-first{font-size:11px;}
   .rp-freeze-first thead th,.rp-freeze-first tbody td{padding:7px 6px;}
   .rp-freeze-first thead th:first-child,.rp-freeze-first tbody td:first-child{
-    width:52px;max-width:52px;min-width:52px;padding-left:5px;padding-right:3px;
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    width:50px;max-width:50px;min-width:50px;padding-left:5px;padding-right:3px;
+    white-space:normal;word-break:break-word;line-height:1.25;
   }
 
   /* As tabelas acima ainda ficavam espremidas dentro do padding dos cards (.rp-section/
@@ -1966,7 +1969,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <div class="rp-details-body">
           <div class="rp-table-wrap rp-tw-bleed rp-tw-bleed-deep">
             <table class="rp-table rp-freeze-first" id="tblConsAtivos">
-              <thead><tr><th>Ativo</th><th>Segmento</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia</th><th>Var. Dia R$</th><th>Investido</th><th>Saldo somado (Luiz+Flavia)</th><th>% do casal</th><th>Result.</th></tr></thead>
+              <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia</th><th>Var. Dia R$</th><th>Investido</th><th>Saldo somado (Luiz+Flavia)</th><th>% do casal</th><th>Result.</th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
@@ -12729,7 +12732,6 @@ function renderConsolidado() {
       const pm = a.qtd > 0 ? a.investido / a.qtd : 0;
       return `<tr>
         <td class="rp-bold">${a.ticker}</td>
-        <td>${a.seg}</td>
         <td>${a.qtd > 0 ? a.qtd.toLocaleString('pt-BR') : '—'}</td>
         <td>${a.qtd > 0 ? _consR(pm) : '—'}</td>
         <td>${a.preco > 0 ? _consR(a.preco) : '—'}</td>
@@ -12757,8 +12759,7 @@ function renderConsolidado() {
       if (f.investido !== null && f.resultado !== null) {
         const resPct = f.investido > 0 ? f.resultado / f.investido * 100 : null;
         return `<tr>
-          <td class="rp-bold">${f.label}</td>
-          <td>${f.segmento}</td>${colQtdPmPrecoVarDia}
+          <td class="rp-bold">${f.label}</td>${colQtdPmPrecoVarDia}
           <td>${_consR(f.investido)}</td>
           <td>${_consR(f.valor)}</td>
           <td>${_consPct(f.valor / d.totalGeral * 100)}</td>
@@ -12766,8 +12767,7 @@ function renderConsolidado() {
         </tr>`;
       }
       return `<tr>
-        <td class="rp-bold">${f.label}</td>
-        <td>${f.segmento}</td>${colQtdPmPrecoVarDia}
+        <td class="rp-bold">${f.label}</td>${colQtdPmPrecoVarDia}
         <td>—</td>
         <td>${_consR(f.valor)}</td>
         <td>${_consPct(f.valor / d.totalGeral * 100)}</td>
@@ -12776,7 +12776,7 @@ function renderConsolidado() {
     }).join('');
 
     tb.innerHTML = linhasAtivos + linhasFixos + `<tr style="background:#1e1a2e;color:#fff;font-weight:700;" data-role="total">
-        <td>Total</td><td></td><td></td><td></td><td></td>
+        <td>Total</td><td></td><td></td><td></td>
         <td style="color:${tot.pctTotal === null ? '#fff' : (tot.pctTotal >= 0 ? '#4ecdc4' : '#ff6b6b')};">${tot.pctTotal === null ? '—' : (tot.pctTotal >= 0 ? '+' : '') + tot.pctTotal.toFixed(2).replace('.', ',') + '%'}</td>
         <td style="color:${!tot.algumTemVar ? '#fff' : (tot.totVarDiaRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${!tot.algumTemVar ? '—' : (tot.totVarDiaRS >= 0 ? '+' : '') + _consR(tot.totVarDiaRS)}</td>
         <td>${_consR(tot.totInvestido)}</td>
@@ -13019,7 +13019,7 @@ function attachSortHandlers(tableEl, skipCols) {
   const tCons = document.getElementById('tblConsAtivos');
   if (tFlavia) attachSortHandlers(tFlavia, [0]);
   if (tLuiz) attachSortHandlers(tLuiz, [0]);
-  if (tCons) attachSortHandlers(tCons, [0, 1]);
+  if (tCons) attachSortHandlers(tCons, [0]);
 })();
 </script>
 </body>
