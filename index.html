@@ -842,6 +842,39 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
 
   /* remove o destaque cinza padrão do Safari ao tocar em elementos clicáveis */
   a,button,.nav-tab,.expand-btn,th.sortable{-webkit-tap-highlight-color:transparent;}
+
+  /* Tabelas de ativos com 1ª coluna congelada (Consolidada/Flavia/Luiz): com as 11 colunas
+     inteiras, a área que sobra pra rolar no celular fica estreita demais pra ler qualquer
+     coisa -- usuário reportou "quase não consigo ver os dados". Solução: no mobile, mostrar
+     só o essencial (Ativo congelado + Preço + Saldo + Resultado) e esconder o resto (Segmento,
+     Qtd, PM, Var.Dia, Var.Dia R$, Investido, % Cart./Classe/casal) -- essas 4 colunas cabem
+     perto da largura da tela, sem quase precisar rolar. No desktop nada muda, é só
+     @media(max-width:768px). Quem quiser Qtd/PM/etc. continua vendo tudo girando o celular
+     ou abrindo no computador.               */
+  .rp-freeze-first{font-size:11px;}
+  .rp-freeze-first thead th,.rp-freeze-first tbody td{padding:7px 6px;}
+  #tblConsAtivos thead th:nth-child(2),#tblConsAtivos tbody td:nth-child(2),
+  #tblConsAtivos thead th:nth-child(3),#tblConsAtivos tbody td:nth-child(3),
+  #tblConsAtivos thead th:nth-child(4),#tblConsAtivos tbody td:nth-child(4),
+  #tblConsAtivos thead th:nth-child(6),#tblConsAtivos tbody td:nth-child(6),
+  #tblConsAtivos thead th:nth-child(7),#tblConsAtivos tbody td:nth-child(7),
+  #tblConsAtivos thead th:nth-child(8),#tblConsAtivos tbody td:nth-child(8),
+  #tblConsAtivos thead th:nth-child(10),#tblConsAtivos tbody td:nth-child(10),
+  #tblFlaviaPos thead th:nth-child(2),#tblFlaviaPos tbody td:nth-child(2),
+  #tblFlaviaPos thead th:nth-child(3),#tblFlaviaPos tbody td:nth-child(3),
+  #tblFlaviaPos thead th:nth-child(5),#tblFlaviaPos tbody td:nth-child(5),
+  #tblFlaviaPos thead th:nth-child(6),#tblFlaviaPos tbody td:nth-child(6),
+  #tblFlaviaPos thead th:nth-child(7),#tblFlaviaPos tbody td:nth-child(7),
+  #tblFlaviaPos thead th:nth-child(10),#tblFlaviaPos tbody td:nth-child(10),
+  #tblFlaviaPos thead th:nth-child(11),#tblFlaviaPos tbody td:nth-child(11),
+  #tblLuizPos thead th:nth-child(2),#tblLuizPos tbody td:nth-child(2),
+  #tblLuizPos thead th:nth-child(3),#tblLuizPos tbody td:nth-child(3),
+  #tblLuizPos thead th:nth-child(5),#tblLuizPos tbody td:nth-child(5),
+  #tblLuizPos thead th:nth-child(6),#tblLuizPos tbody td:nth-child(6),
+  #tblLuizPos thead th:nth-child(7),#tblLuizPos tbody td:nth-child(7),
+  #tblLuizPos thead th:nth-child(10),#tblLuizPos tbody td:nth-child(10),
+  #tblLuizPos thead th:nth-child(11),#tblLuizPos tbody td:nth-child(11)
+  {display:none;}
 }
 </style>
 </head>
