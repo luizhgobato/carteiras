@@ -12880,7 +12880,19 @@ function renderConsolidado() {
     }).join('');
     const labelPatrimonio = _consFiltro === 'consolidado' ? 'Patrimônio do casal' : `Patrimônio — ${_consFiltro}`;
     const cardSplit = _consFiltro === 'consolidado'
-      ? `<div class="rp-exec-item"><div class="rp-exec-label">Luiz / Flavia</div><div class="rp-exec-value">${_consPct(luiz / d.totalGeral * 100)} / ${_consPct(flavia / d.totalGeral * 100)}</div><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:3px;"><span style="font-size:11px;color:#888;">${_consR0(luiz)}</span><span style="font-size:11px;color:#888;">${_consR0(flavia)}</span></div></div>`
+      // Mesmo layout dos cards de Resultado (rótulo pequeno à esquerda, valor à direita) --
+      // pedido do usuário em 28/10/2026 pra ficar no padrão dos demais cards.
+      ? `<div class="rp-exec-item">
+          <div class="rp-exec-label">Patrimônio — Luiz / Flavia</div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:3px;">
+            <span style="font-size:10px;color:#888;white-space:nowrap;">Luiz</span>
+            <span class="rp-exec-value" style="font-size:13px;">${_consR0(luiz)} (${_consPct(luiz / d.totalGeral * 100)})</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:4px;">
+            <span style="font-size:10px;color:#888;white-space:nowrap;">Flavia</span>
+            <span class="rp-exec-value" style="font-size:13px;">${_consR0(flavia)} (${_consPct(flavia / d.totalGeral * 100)})</span>
+          </div>
+        </div>`
       : '';
     const cardCasal = _consFiltro === 'consolidado'
       ? cardResultado('Resultado — Casal', tot.totVarDiaRS, tot.pctTotal, tot.ganhoTotalRS, tot.pctGanhoTotal)
