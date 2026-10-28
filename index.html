@@ -8744,7 +8744,7 @@ function makeSVGHBar(el, labels, values, colors, fmt, wideLabels, details) {
       </div>`;
     // Expandir pra ver posição por posição -- só quando há mais de 1 item (uma categoria com
     // 1 ativo só já É o detalhe, não faz sentido expandir pra ver a mesma coisa de novo).
-    const det = (details && Array.isArray(details[i]) && details[i].length > 1) ? details[i] : null;
+    const det = (details && Array.isArray(details[i]) && details[i].length > 0) ? details[i] : null;
     if (det) {
       const detTotal = det.reduce((s, dd) => s + dd.amount, 0) || 1;
       const body = det.slice().sort((a, b) => b.amount - a.amount).map(dd => {
@@ -12609,6 +12609,20 @@ function _consEtfiInvestidoResultado(saldoBRLAtual) {
   return { investido, resultado: saldoBRLAtual - investido, obs: 'R$ pelo câmbio de hoje — não inclui variação cambial desde a compra' };
 }
 
+// Breakdown por ticker (TXXS/SOLT) da linha agregada "Internacionais" -- usado no expandir dos
+// donuts de classe/segmento do Consolidado, pra mostrar os ativos de verdade em vez da linha
+// agregada sozinha (pedido do usuário em 28/10/2026).
+function _consEtfiDetalhe() {
+  const tbody = document.getElementById('etfiPosBody');
+  if (!tbody) return null;
+  const det = [];
+  tbody.querySelectorAll('tr[data-ticker]').forEach(tr => {
+    const saldo = _cwParseNum(tr.querySelector('.etfi-saldo-brl')?.textContent);
+    if (saldo > 0) det.push({ label: tr.dataset.ticker, amount: saldo });
+  });
+  return det.length ? det : null;
+}
+
 // Var.Dia ponderada de TXXS+SOLT pelo saldo R$ de cada um (mesmo princípio do resto da página:
 // "mesmo ticker rende o mesmo %", aqui dois tickers diferentes então pondera pelo peso de cada
 // um na linha agregada) — só entra se os dois tiverem Var.Dia (não "—") pra não fingir precisão
@@ -12880,11 +12894,13 @@ function renderConsolidado() {
     .concat(d.fixos.filter(f => f.dono === nome).map(f => ({ label: f.label, amount: f.valor })));
   const _rotuloFixoDet = (lista, f) => lista.filter(x => x.label === f.label).length > 1 ? `${f.label} (${f.dono})` : f.label;
   const _detClasse = classe => {
+    if (classe === 'Internacionais') { const etfi = _consEtfiDetalhe(); if (etfi) return etfi; }
     const fx = d.fixos.filter(f => f.classe === classe);
     return d.ativos.filter(a => a.classe === classe).map(a => ({ label: a.ticker, amount: a.saldo }))
       .concat(fx.map(f => ({ label: _rotuloFixoDet(fx, f), amount: f.valor })));
   };
   const _detSegmento = seg => {
+    if (seg === 'Internacionais') { const etfi = _consEtfiDetalhe(); if (etfi) return etfi; }
     const fx = d.fixos.filter(f => f.segmento === seg);
     return d.ativos.filter(a => a.seg === seg).map(a => ({ label: a.ticker, amount: a.saldo }))
       .concat(fx.map(f => ({ label: _rotuloFixoDet(fx, f), amount: f.valor })));
