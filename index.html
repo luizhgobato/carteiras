@@ -8430,7 +8430,7 @@ function makeSVGDonut(el, labels, values, colors, opts){
   // ganha rótulo, mesmo fina (ex. Internacionais, <1°) — sem legenda embaixo, é a única
   // forma de ver o valor dela.
   const labelsOnChart=!!opts.labelsOnChart;
-  const padOut=labelsOnChart?34:0;
+  const padOut=labelsOnChart?46:0;
   let paths='',labelEls='',startAngle=-Math.PI/2;
   values.forEach((v,i)=>{
     const angle=(v/total)*2*Math.PI;
@@ -8444,13 +8444,18 @@ function makeSVGDonut(el, labels, values, colors, opts){
     paths+=`<path d="M${xi1},${yi1} L${x1},${y1} A${R},${R} 0 ${lg},1 ${x2},${y2} L${xi2},${yi2} A${r},${r} 0 ${lg},0 ${xi1},${yi1}" fill="${colors[i%colors.length]}" opacity="0.9"><title>${labels[i]}: ${_a?_a+' · ':''}${pct}%</title></path>`;
     if(labelsOnChart){
       const midAngle=startAngle+angle/2, dx=Math.cos(midAngle), dy=Math.sin(midAngle), labelR=R+9;
-      const lx=(cx+labelR*dx).toFixed(1), ly=(cy+labelR*dy+3).toFixed(1);
+      const lx=(cx+labelR*dx).toFixed(1), ly=(cy+labelR*dy-2).toFixed(1);
       const anchor=dx>0.2?'start':dx<-0.2?'end':'middle';
       const v2=amounts&&isFinite(amounts[i])?amounts[i]:null;
       const valTxt=v2!==null?(Math.abs(v2)>=1000?Math.round(v2/1000)+'k':fmtR(v2)):(pct+'%');
       const corFatia=colors[i%colors.length];
-      labelEls+=`<text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="10" font-weight="700" fill="${corFatia}" style="pointer-events:none;">${valTxt}</text>`+
-        `<text x="${lx}" y="${(+ly+11).toFixed(1)}" text-anchor="${anchor}" font-size="8.5" font-weight="600" fill="${corFatia}" opacity="0.8" style="pointer-events:none;">${pct}%</text>`;
+      // Nome da fatia junto do rótulo, dentro do próprio gráfico -- usuário pediu em 28/10/2026
+      // pra não precisar olhar legenda separada embaixo (a legenda mínima abaixo do gráfico
+      // foi removida; o nome agora é a 1ª das 3 linhas do rótulo, truncado se muito comprido).
+      const nomeTxt=labels[i].length>16?labels[i].slice(0,15)+'…':labels[i];
+      labelEls+=`<text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="8" font-weight="600" fill="${corFatia}" opacity="0.85" style="pointer-events:none;">${nomeTxt}</text>`+
+        `<text x="${lx}" y="${(+ly+11).toFixed(1)}" text-anchor="${anchor}" font-size="10" font-weight="700" fill="${corFatia}" style="pointer-events:none;">${valTxt}</text>`+
+        `<text x="${lx}" y="${(+ly+21).toFixed(1)}" text-anchor="${anchor}" font-size="8.5" font-weight="600" fill="${corFatia}" opacity="0.8" style="pointer-events:none;">${pct}%</text>`;
     }
     startAngle+=angle;
   });
@@ -8477,12 +8482,9 @@ function makeSVGDonut(el, labels, values, colors, opts){
   // legenda mínima (só bolinha de cor + nome, sem valor/clique) sempre visível embaixo, bem mais
   // enxuta que o antigo "Ver detalhamento".
   const svgSize=labelsOnChart?240:180;
-  const legendaMinima=labelsOnChart
-    ?`<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;margin-top:4px;">${labels.map((l,i)=>
-        `<div style="display:flex;align-items:center;gap:4px;font-size:10.5px;color:#666;"><div style="width:8px;height:8px;border-radius:2px;background:${colors[i%colors.length]};flex-shrink:0;"></div><span>${l}</span></div>`
-      ).join('')}</div>`
-    :'';
-  const legendaBloco=labelsOnChart?legendaMinima
+  // Nome de cada fatia agora vem no próprio rótulo (dentro do gráfico, 1ª linha) -- sem
+  // legenda separada embaixo pra esse modo.
+  const legendaBloco=labelsOnChart?''
     :`<details class="svg-donut-legend"><summary>Ver detalhamento (${itens})</summary><div class="svg-donut-legend-body">${legend}</div></details>`;
   el.innerHTML=`<div style="text-align:center;"><svg width="${svgSize}" height="${svgSize}" viewBox="${-padOut} ${-padOut} ${H+2*padOut} ${H+2*padOut}" style="max-width:100%;">${paths}${centro}${labelEls}</svg></div>
     ${legendaBloco}`;
