@@ -8638,10 +8638,14 @@ function _rpTableRows(table, labelIdx, valueIdx, parseFn) {
 function renderRpDonut(tableId, containerId, labelIdx, valueIdx) {
   const table = document.getElementById(tableId), el = document.getElementById(containerId);
   if (!table || !el) return;
-  const rows = _rpTableRows(table, labelIdx, valueIdx).filter(r => r.value > 0);
+  const rows = _rpTableRows(table, labelIdx, valueIdx).filter(r => r.value > 0).sort((a, b) => b.value - a.value);
   if (!rows.length) { el.innerHTML = ''; return; }
-  const vals = rows.map(r => r.value);
-  makeSVGDonut(el, rows.map(r => r.label), vals, RP_COLORS, { amounts: vals, titulo: 'Patrimônio' });
+  // Barra horizontal (lista vertical) no lugar do donut -- pedido do usuário em 28/10/2026,
+  // mesmo estilo de "Exposição por ativo", pra ver o nome sempre, sem precisar ler rótulo
+  // coladinho no anel nem passar o mouse.
+  const total = rows.reduce((s, r) => s + r.value, 0);
+  const barRows = rows.map(r => ({ label: r.label, value: total > 0 ? r.value / total * 100 : 0, amount: r.value }));
+  renderRpHBarFmt(el, barRows, v => v.toFixed(2).replace('.', ',') + '%');
 }
 
 // Patrimônio total da carteira, lido da linha de total da tabela de Patrimônio (fundo #1e1a2e).
@@ -8863,11 +8867,13 @@ function renderRpSegmentoChart(tbodyId, containerId, opts) {
     .filter(r => r.value > 0)
     .sort((a, b) => b.value - a.value);
   if (!rows.length) { el.innerHTML = ''; return; }
-  // As fatias aqui são % da carteira; converte para R$ usando o patrimônio total para que a
-  // legenda mostre também quanto dinheiro há em cada segmento.
+  // As fatias aqui são % da carteira; converte para R$ usando o patrimônio total para que o
+  // rótulo da barra mostre também quanto dinheiro há em cada segmento.
   const total = _rpTotalPatrimonio(opts.totalTableId);
   const amounts = total > 0 ? rows.map(r => r.value / 100 * total) : null;
-  makeSVGDonut(el, rows.map(r => r.label), rows.map(r => r.value), RP_COLORS, { amounts, titulo: 'Segmento' });
+  // Barra horizontal (lista vertical) no lugar do donut -- pedido do usuário em 28/10/2026.
+  const barRows = rows.map((r, i) => ({ label: r.label, value: r.value, amount: amounts ? amounts[i] : 0 }));
+  renderRpHBarFmt(el, barRows, v => v.toFixed(2).replace('.', ',') + '%');
 }
 
 // ── Recalcula Patrimônio total / Carteira Ideal / stats do topo após "Atualizar Cotação" ──
@@ -12665,6 +12671,19 @@ function _consDonut(containerId, mapa, total, titulo, labelsOnChart) {
   makeSVGDonut(el, rows.map(r => r.label), vals, RP_COLORS, { amounts: vals, titulo, labelsOnChart });
 }
 
+// Barra horizontal (lista vertical de barras) no lugar do donut -- usuário pediu em 28/10/2026
+// pra trocar Titular/Classe/Segmento pelo mesmo estilo de "Exposição por ativo (casal)" (que já
+// usa renderRpHBarFmt): nome sempre visível do lado esquerdo, sem precisar ler rótulo coladinho
+// no anel nem passar o mouse.
+function _consBarChart(containerId, mapa, total) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const rows = Object.entries(mapa).map(([label, value]) => ({ label, value: total > 0 ? value / total * 100 : 0, amount: value }))
+    .filter(r => r.amount > 0).sort((a, b) => b.amount - a.amount);
+  if (!rows.length || typeof renderRpHBarFmt !== 'function') { el.innerHTML = ''; return; }
+  renderRpHBarFmt(el, rows, v => v.toFixed(2).replace('.', ',') + '%');
+}
+
 // Totais usados tanto nos cards do topo quanto na linha Total da tabela por ativo — uma conta
 // só, pra nunca os dois discordarem (mesmo princípio de "leitura única" de coletarConsolidado()).
 // ganhoTotalRS soma o ganho de CADA LINHA (não totalSaldo−totalInvestido): robusto por
@@ -12763,9 +12782,9 @@ function renderConsolidado() {
   }
 
   // ── Donuts ──
-  _consDonut('chartConsTitular', d.porTitular, d.totalGeral, 'Patrimônio por titular', true);
-  _consDonut('chartConsClasse', d.porClasse, d.totalGeral, 'Patrimônio por classe (casal)', true);
-  _consDonut('chartConsSegmento', d.porSegmento, d.totalGeral, 'Segmento consolidado');
+  _consBarChart('chartConsTitular', d.porTitular, d.totalGeral);
+  _consBarChart('chartConsClasse', d.porClasse, d.totalGeral);
+  _consBarChart('chartConsSegmento', d.porSegmento, d.totalGeral);
 
   // ── Barras por ativo ──
   // Inclui os fixos (Previdência/ETFs/Academia) como barras próprias — ficavam de fora antes
