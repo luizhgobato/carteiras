@@ -12987,7 +12987,7 @@ function renderConsolidado() {
           <div class="mob-card-item"><span class="mob-card-label">PM</span><span class="mob-card-value">${pmTxt}</span></div>
           <div class="mob-card-item"><span class="mob-card-label">Preço</span><span class="mob-card-value">${precoTxt}</span></div>
           <div class="mob-card-item"><span class="mob-card-label">Var. dia</span><span class="mob-card-value" style="color:${varDiaCor};">${varDiaTxt}</span></div>
-          <div class="mob-card-item"><span class="mob-card-label">Investido</span><span class="mob-card-value">${investidoTxt}</span></div>
+          <div class="mob-card-item"><span class="mob-card-label">Investido</span><span class="mob-card-value" style="white-space:nowrap;">${investidoTxt}</span></div>
         </div>`;
       const cardsAtivos = d.ativos.map(a => {
         const res = a.investido > 0 ? (a.saldo - a.investido) / a.investido * 100 : null;
@@ -13008,7 +13008,7 @@ function renderConsolidado() {
             a.preco > 0 ? _consR(a.preco) : '—',
             a.varDia === null ? '—' : (a.varDia >= 0 ? '+' : '') + a.varDia.toFixed(2).replace('.', ',') + '%',
             a.varDia === null ? '#888' : (a.varDia >= 0 ? '#0a5c35' : '#9c1c1c'),
-            _consR(a.investido)
+            _consR0(a.investido)
           )}
         </div>`;
       }).join('');
@@ -13030,7 +13030,7 @@ function renderConsolidado() {
             f.preco !== null ? _consR(f.preco) : '—',
             f.varDia === null ? '—' : (f.varDia >= 0 ? '+' : '') + f.varDia.toFixed(2).replace('.', ',') + '%',
             f.varDia === null ? '#888' : (f.varDia >= 0 ? '#0a5c35' : '#9c1c1c'),
-            temResultado ? _consR(f.investido) : '—'
+            temResultado ? _consR0(f.investido) : '—'
           )}
         </div>`;
       }).join('');
