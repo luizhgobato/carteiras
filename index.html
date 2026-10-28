@@ -344,7 +344,8 @@ thead tr.col-header,#fundTable thead tr{overflow:visible;}
 .rp-resumo-item{background:#f7f7f5;border-radius:8px;padding:0.75rem 1rem;}
 .rp-r-label{font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;}
 .rp-r-value{font-size:12px;color:#333;line-height:1.5;}
-.rp-table-wrap{overflow-x:auto;border:1px solid #efefef;border-radius:8px;}
+.rp-table-wrap{overflow-x:auto;border:1px solid #efefef;border-radius:8px;-webkit-overflow-scrolling:touch;}
+.rp-scroll-hint{display:none;}
 .rp-table{border-collapse:collapse;width:100%;font-size:12px;}
 .rp-table thead tr{background:#f7f7f5;}
 .rp-table thead th{padding:9px 12px;text-align:left;font-weight:600;color:#555;white-space:nowrap;border-bottom:1px solid #efefef;font-size:11px;}
@@ -501,6 +502,16 @@ thead tr.col-header,#fundTable thead tr{overflow:visible;}
 .svg-donut-legend summary::after{content:'▾';display:inline-block;margin-left:5px;transition:transform 0.15s;}
 .svg-donut-legend[open] summary::after{transform:rotate(180deg);}
 .svg-donut-legend-body{padding-top:6px;}
+/* Expandir posição por posição dentro de uma barra agregada (Titular/Classe/Segmento) --
+   pedido do usuário em 28/10/2026. */
+.rp-hbar-item{margin-bottom:11px;}
+.rp-hbar-item.rp-hbar-expandable>summary{cursor:pointer;list-style:none;}
+.rp-hbar-item.rp-hbar-expandable>summary::-webkit-details-marker{display:none;}
+.rp-hbar-caret{display:inline-block;margin-right:3px;font-size:9px;color:#888;transition:transform .15s;}
+.rp-hbar-item[open]>summary .rp-hbar-caret{transform:rotate(90deg);}
+.rp-hbar-detail-body{padding:7px 0 1px 15px;margin:5px 0 0;border-left:2px solid #ececec;}
+.rp-hbar-detail-row{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:#666;margin-bottom:6px;}
+.rp-hbar-detail-row:last-child{margin-bottom:0;}
 .rp-code{background:#1a1a2e;color:#e2e8f0;border-radius:8px;padding:1rem 1.1rem;font-family:'SF Mono',Consolas,monospace;font-size:11px;line-height:1.6;white-space:pre-wrap;word-break:break-word;overflow-x:auto;}
 @media(max-width:700px){.rp-bull-bear{grid-template-columns:1fr;}.report-body{padding:1rem;}}
 /* Fixa pelo mesmo motivo da .nav (sticky fugia de lado junto com a tabela). Fora do fluxo,
@@ -754,6 +765,17 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
   .kpi-grid{grid-template-columns:1fr 1fr;gap:0.6rem;padding:1rem;}
   .kpi-val{font-size:16px;}
   .kpi-card.accent .kpi-val{font-size:18px;}
+
+  /* BIGNUMBERS (rp-exec-grid: Patrimônio/Resultado do topo da Carteira/Consolidada) — 1
+     coluna só no mobile. Usuário pediu em 28/10/2026: 2 colunas ficavam espremidas e os
+     números grandes quebravam estranho. */
+  .rp-exec-grid{grid-template-columns:1fr;}
+
+  /* Tabelas congeladas (1ª coluna fixa) rolam na horizontal pro resto das colunas -- no
+     celular isso não fica óbvio (sem barra de rolagem visível em iOS/Android), o usuário
+     achou que a tabela estava "vazando" da tela em 28/10/2026. Dica de texto avisando que dá
+     pra arrastar, só no mobile (no desktop a tabela já cabe inteira, sem scroll). */
+  .rp-scroll-hint{display:block;font-size:10.5px;color:#999;margin:0 0 5px;text-align:right;}
 
   /* CHARTS — empilhados */
   .charts-grid{grid-template-columns:1fr;padding:0 1rem 0.75rem;}
@@ -1396,6 +1418,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <span id="flaviaSaveStatus" style="font-size:11px;font-weight:600;"></span>
         <button type="button" onclick="restaurarPosicoesOriginais('flaviaPosBody')" style="background:none;border:none;padding:0;font:inherit;font-size:11px;color:#888;text-decoration:underline;cursor:pointer;" title="Descarta o que você digitou e volta aos valores que vieram no arquivo">restaurar valores originais</button>
       </div>
+      <div class="rp-scroll-hint">⇠ arraste para o lado para ver mais ⇢</div>
       <div class="rp-table-wrap rp-tw-bleed">
         <table class="rp-table rp-freeze-first" id="tblFlaviaPos">
           <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia<span class="col-tip" data-tip="Variação do preço hoje vs. o fechamento de ontem&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Var. Dia R$<span class="col-tip" data-tip="Quanto essa posição ganhou/perdeu hoje: Qtd × variação do preço&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Investido</th><th>Saldo</th><th>Result.</th><th>% Cart.</th><th>% Classe</th></tr></thead>
@@ -1687,6 +1710,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <span id="luizSaveStatus" style="font-size:11px;font-weight:600;"></span>
         <button type="button" onclick="restaurarPosicoesOriginais('luizPosBody')" style="background:none;border:none;padding:0;font:inherit;font-size:11px;color:#888;text-decoration:underline;cursor:pointer;" title="Descarta o que você digitou e volta aos valores que vieram no arquivo">restaurar valores originais</button>
       </div>
+      <div class="rp-scroll-hint">⇠ arraste para o lado para ver mais ⇢</div>
       <div class="rp-table-wrap rp-tw-bleed">
         <table class="rp-table rp-freeze-first" id="tblLuizPos">
           <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia<span class="col-tip" data-tip="Variação do preço hoje vs. o fechamento de ontem&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Var. Dia R$<span class="col-tip" data-tip="Quanto essa posição ganhou/perdeu hoje: Qtd × variação do preço&#10;Só atualiza ao clicar em &quot;Atualizar Cotação&quot;">ⓘ</span></th><th>Investido</th><th>Saldo</th><th>Result.</th><th>% Cart.</th><th>% Classe</th></tr></thead>
@@ -1979,6 +2003,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       <details class="rp-details" open>
         <summary>📋 Ver tabela — quem detém o quê</summary>
         <div class="rp-details-body">
+          <div class="rp-scroll-hint">⇠ arraste para o lado para ver mais ⇢</div>
           <div class="rp-table-wrap rp-tw-bleed rp-tw-bleed-deep">
             <table class="rp-table rp-freeze-first" id="tblConsAtivos">
               <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia</th><th>Var. Dia R$</th><th>Investido</th><th id="thConsSaldo">Saldo somado (Luiz+Flavia)</th><th id="thConsPct">% do casal</th><th>Result.</th></tr></thead>
@@ -8635,7 +8660,7 @@ function _rpTableRows(table, labelIdx, valueIdx, parseFn) {
 // ── Donut genérico (reaproveita makeSVGDonut de js/graficos.js) ────────────────────────
 // A coluna lida (valueIdx) já é o valor em R$, então serve tanto de fatia quanto de "amounts"
 // — a legenda mostra "R$ X · Y%".
-function renderRpDonut(tableId, containerId, labelIdx, valueIdx) {
+function renderRpDonut(tableId, containerId, labelIdx, valueIdx, posBodyId) {
   const table = document.getElementById(tableId), el = document.getElementById(containerId);
   if (!table || !el) return;
   const rows = _rpTableRows(table, labelIdx, valueIdx).filter(r => r.value > 0).sort((a, b) => b.value - a.value);
@@ -8644,7 +8669,20 @@ function renderRpDonut(tableId, containerId, labelIdx, valueIdx) {
   // mesmo estilo de "Exposição por ativo", pra ver o nome sempre, sem precisar ler rótulo
   // coladinho no anel nem passar o mouse.
   const total = rows.reduce((s, r) => s + r.value, 0);
-  const barRows = rows.map(r => ({ label: r.label, value: total > 0 ? r.value / total * 100 : 0, amount: r.value }));
+  // Detalhe (ticker por ticker) pra "Ações BR" e "Renda Fixa (...)" -- únicas linhas desta
+  // tabela que são soma de mais de uma posição (Previdência/Internacionais/Academia já são
+  // 1 item só, não tem o que expandir). Mesmo prefixo usado em atualizarCotacaoCarteira() pra
+  // identificar essas duas linhas na tabela de Patrimônio.
+  const posBody = posBodyId ? document.getElementById(posBodyId) : null;
+  const detalhe = label => {
+    if (!posBody) return null;
+    const isAcoes = label.indexOf('Ações') === 0, isRF = label.indexOf('Renda Fixa') === 0;
+    if (!isAcoes && !isRF) return null;
+    return Array.from(posBody.querySelectorAll('tr[data-ticker]')).filter(tr =>
+      isRF ? tr.dataset.classe === 'rf' : tr.dataset.classe !== 'rf'
+    ).map(tr => ({ label: (tr.dataset.ticker || '').replace(/\.SA$/i, ''), amount: _rpParseNum(tr.querySelector('.cw-saldo')?.textContent) })).filter(r => r.amount > 0);
+  };
+  const barRows = rows.map(r => ({ label: r.label, value: total > 0 ? r.value / total * 100 : 0, amount: r.value, detail: detalhe(r.label) }));
   renderRpHBarFmt(el, barRows, v => v.toFixed(2).replace('.', ',') + '%');
 }
 
@@ -8667,7 +8705,7 @@ function _rpTotalPatrimonio(classeTableId) {
 // usuário). Com rótulo+valor numa linha (flex, quebra livre) e a barra numa LINHA DE BAIXO
 // ocupando 100% da largura disponível, não existe mais essa divisão de espaço fixo — a barra
 // sempre aparece por inteiro, em qualquer largura de tela.
-function makeSVGHBar(el, labels, values, colors, fmt, wideLabels) {
+function makeSVGHBar(el, labels, values, colors, fmt, wideLabels, details) {
   if (!el || !labels.length) { if (el) el.innerHTML = ''; return; }
   const maxV = Math.max(...values, 0.0001);
   const rows = labels.map((l, i) => {
@@ -8675,15 +8713,29 @@ function makeSVGHBar(el, labels, values, colors, fmt, wideLabels) {
     const pct = Math.max((v / maxV) * 100, 1.5);
     const col = Array.isArray(colors) ? colors[i % colors.length] : colors;
     const txt = fmt ? fmt(v, i) : v;
-    return `<div style="margin-bottom:11px;">
+    const header = `
       <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:4px;">
         <span style="font-size:12.5px;color:#555;overflow-wrap:break-word;">${l}</span>
         <span style="font-size:12.5px;font-weight:700;color:#333;white-space:nowrap;flex-shrink:0;">${txt}</span>
       </div>
       <div style="background:#eee;border-radius:4px;height:11px;overflow:hidden;">
         <div style="width:${pct.toFixed(1)}%;height:100%;background:${col};border-radius:4px;" title="${l}: ${txt}"></div>
-      </div>
-    </div>`;
+      </div>`;
+    // Expandir pra ver posição por posição -- só quando há mais de 1 item (uma categoria com
+    // 1 ativo só já É o detalhe, não faz sentido expandir pra ver a mesma coisa de novo).
+    const det = (details && Array.isArray(details[i]) && details[i].length > 1) ? details[i] : null;
+    if (det) {
+      const detTotal = det.reduce((s, dd) => s + dd.amount, 0) || 1;
+      const body = det.slice().sort((a, b) => b.amount - a.amount).map(dd => {
+        const dp = (dd.amount / detTotal * 100).toFixed(1).replace('.', ',');
+        return `<div class="rp-hbar-detail-row"><span>${dd.label}</span><span style="white-space:nowrap;flex-shrink:0;">R$ ${Math.round(dd.amount).toLocaleString('pt-BR')} · ${dp}%</span></div>`;
+      }).join('');
+      return `<details class="rp-hbar-item rp-hbar-expandable">
+        <summary>${header}<div style="text-align:right;margin-top:3px;"><span class="rp-hbar-caret">▸</span><span style="font-size:10.5px;color:#888;">${det.length} posições</span></div></summary>
+        <div class="rp-hbar-detail-body">${body}</div>
+      </details>`;
+    }
+    return `<div class="rp-hbar-item">${header}</div>`;
   }).join('');
   el.innerHTML = rows;
 }
@@ -8716,7 +8768,7 @@ function renderRpHBarFmt(el, rows, fmt) {
         return a + fmt(v);
       }
     : fmt;
-  makeSVGHBar(el, rows.map(r => r.label), rows.map(r => r.value), RP_COLORS, fmtFinal, anyAmount);
+  makeSVGHBar(el, rows.map(r => r.label), rows.map(r => r.value), RP_COLORS, fmtFinal, anyAmount, rows.map(r => r.detail || null));
 }
 // Lê qualquer coluna numérica de uma rp-table (ex.: "Div. 2026" da tabela Renda Esperada)
 // e desenha barra horizontal ordenada por magnitude — pula linhas de total/subtotal.
@@ -8851,12 +8903,19 @@ function renderRpSegmentoChart(tbodyId, containerId, opts) {
   if (!tbody || !el) return;
   const pctSelector = opts.pctSelector || '.cw-pct-cart';
   const map = {};
+  const detailMap = {}; // ticker por ticker de cada segmento, pra expandir -- 28/10/2026
   Array.from(tbody.querySelectorAll('tr[data-segmento]')).forEach(tr => {
     const seg = _segAgrupa(tr.dataset.segmento);
     if (!seg) return;
     const cell = tr.querySelector(pctSelector);
     const v = _rpParseNum(cell?.textContent);
-    if (v > 0) map[seg] = (map[seg] || 0) + v;
+    if (v > 0) {
+      map[seg] = (map[seg] || 0) + v;
+      const saldo = _rpParseNum(tr.querySelector('.cw-saldo')?.textContent);
+      if (saldo > 0) {
+        (detailMap[seg] = detailMap[seg] || []).push({ label: (tr.dataset.ticker || '').replace(/\.SA$/i, ''), amount: saldo });
+      }
+    }
   });
   if (opts.classeTableId && opts.skipLabels) {
     const table = document.getElementById(opts.classeTableId);
@@ -8877,7 +8936,7 @@ function renderRpSegmentoChart(tbodyId, containerId, opts) {
   const total = _rpTotalPatrimonio(opts.totalTableId);
   const amounts = total > 0 ? rows.map(r => r.value / 100 * total) : null;
   // Barra horizontal (lista vertical) no lugar do donut -- pedido do usuário em 28/10/2026.
-  const barRows = rows.map((r, i) => ({ label: r.label, value: r.value, amount: amounts ? amounts[i] : 0 }));
+  const barRows = rows.map((r, i) => ({ label: r.label, value: r.value, amount: amounts ? amounts[i] : 0, detail: detailMap[r.label] || null }));
   renderRpHBarFmt(el, barRows, v => v.toFixed(2).replace('.', ',') + '%');
 }
 
@@ -8983,7 +9042,7 @@ function atualizarResumoPatrimonio(prefix) {
       if (cells[1]) cells[1].textContent = _rpFmtR(valor);
       if (cells[2]) cells[2].textContent = _rpFmtPct(valor / novoTotal * 100);
     });
-    if (typeof renderRpDonut === 'function') renderRpDonut(cfg.classeTableId, `chart${prefix}Classe`, 0, 1);
+    if (typeof renderRpDonut === 'function') renderRpDonut(cfg.classeTableId, `chart${prefix}Classe`, 0, 1, cfg.posBodyId);
   }
 
   // ── Resumo-grid do topo da "Posição Atual" (só existe na página do Luiz) ──
@@ -9116,7 +9175,7 @@ function atualizarResumoPatrimonio(prefix) {
 // ── Orquestrador — chamado uma vez, na primeira abertura de cada aba (showPage) ────────
 function initRpCharts(prefix) {
   const P = prefix; // 'Flavia' | 'Luiz'
-  renderRpDonut(`tbl${P}Classe`, `chart${P}Classe`, 0, 1);
+  renderRpDonut(`tbl${P}Classe`, `chart${P}Classe`, 0, 1, `${P.toLowerCase()}PosBody`);
   renderRpDesvioChart(`tbl${P}Ideal`, `chart${P}Ideal`);
   // Tabelas da Flavia e do Luiz têm exatamente as mesmas colunas agora — não precisa mais
   // diferenciar seletor por pessoa, as duas usam a mesma classe .cw-pct-cart.
@@ -12680,11 +12739,13 @@ function _consDonut(containerId, mapa, total, titulo, labelsOnChart) {
 // pra trocar Titular/Classe/Segmento pelo mesmo estilo de "Exposição por ativo (casal)" (que já
 // usa renderRpHBarFmt): nome sempre visível do lado esquerdo, sem precisar ler rótulo coladinho
 // no anel nem passar o mouse.
-function _consBarChart(containerId, mapa, total) {
+function _consBarChart(containerId, mapa, total, detailFn) {
   const el = document.getElementById(containerId);
   if (!el) return;
-  const rows = Object.entries(mapa).map(([label, value]) => ({ label, value: total > 0 ? value / total * 100 : 0, amount: value }))
-    .filter(r => r.amount > 0).sort((a, b) => b.amount - a.amount);
+  const rows = Object.entries(mapa).map(([label, value]) => ({
+    label, value: total > 0 ? value / total * 100 : 0, amount: value,
+    detail: detailFn ? detailFn(label) : null,
+  })).filter(r => r.amount > 0).sort((a, b) => b.amount - a.amount);
   if (!rows.length || typeof renderRpHBarFmt !== 'function') { el.innerHTML = ''; return; }
   renderRpHBarFmt(el, rows, v => v.toFixed(2).replace('.', ',') + '%');
 }
@@ -12787,9 +12848,18 @@ function renderConsolidado() {
   }
 
   // ── Donuts ──
-  _consBarChart('chartConsTitular', d.porTitular, d.totalGeral);
-  _consBarChart('chartConsClasse', d.porClasse, d.totalGeral);
-  _consBarChart('chartConsSegmento', d.porSegmento, d.totalGeral);
+  // Detalhe (posição por posição) de cada barra -- pedido do usuário em 28/10/2026. d.ativos
+  // já traz .donos{nome:saldo} por titular e .classe/.seg (normalizado) prontos; d.fixos traz
+  // .dono/.classe/.segmento também -- junta os dois sem reler o DOM de novo.
+  const _detTitular = nome => d.ativos.filter(a => (a.donos[nome] || 0) > 0).map(a => ({ label: a.ticker, amount: a.donos[nome] }))
+    .concat(d.fixos.filter(f => f.dono === nome).map(f => ({ label: f.label, amount: f.valor })));
+  const _detClasse = classe => d.ativos.filter(a => a.classe === classe).map(a => ({ label: a.ticker, amount: a.saldo }))
+    .concat(d.fixos.filter(f => f.classe === classe).map(f => ({ label: f.label, amount: f.valor })));
+  const _detSegmento = seg => d.ativos.filter(a => a.seg === seg).map(a => ({ label: a.ticker, amount: a.saldo }))
+    .concat(d.fixos.filter(f => f.segmento === seg).map(f => ({ label: f.label, amount: f.valor })));
+  _consBarChart('chartConsTitular', d.porTitular, d.totalGeral, _detTitular);
+  _consBarChart('chartConsClasse', d.porClasse, d.totalGeral, _detClasse);
+  _consBarChart('chartConsSegmento', d.porSegmento, d.totalGeral, _detSegmento);
 
   // ── Barras por ativo ──
   // Inclui os fixos (Previdência/ETFs/Academia) como barras próprias — ficavam de fora antes
