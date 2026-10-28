@@ -785,7 +785,13 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
      arrastar, então trocou de abordagem em vez de insistir no scroll horizontal. */
   .cons-table-desktop{display:none;}
   .cons-mobile-cards{display:flex!important;flex-direction:column;gap:0.6rem;}
-  .cons-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:0.9rem 1rem;box-shadow:var(--shadow);}
+  /* Eram 3 caixas aninhadas (.rp-section > .rp-details > card), cada uma com borda e ~24px de
+     padding -- o card ficava com ~260px num celular de 390px. Usuário pediu card mais largo e
+     menos bordas (28/10/2026): o <details> vira transparente (sem borda/padding) e a lista
+     sangra 16px pra fora do padding da seção. */
+  .cons-ativos-details{border:none;padding:0;background:transparent;margin-bottom:0;}
+  .cons-mobile-cards{margin:0 -16px;}
+  .cons-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:0.85rem 0.9rem;}
   .cons-card.cons-card-total{background:#1e1a2e;border-color:#1e1a2e;}
   .cons-card.cons-card-total .mob-card-ticker,.cons-card.cons-card-total .mob-card-label{color:#fff;}
   .cons-card.cons-card-total .mob-card-value{color:#fff;}
@@ -2014,7 +2020,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
     <div class="rp-section">
       <div class="rp-section-title">📈 Exposição por ativo (casal)</div>
       <div id="chartConsAtivo" style="margin-bottom:0.75rem;"></div>
-      <details class="rp-details" open>
+      <details class="rp-details cons-ativos-details" open>
         <summary>📋 Ver tabela — quem detém o quê</summary>
         <div class="rp-details-body">
           <!-- Desktop: tabela com rolagem horizontal (1ª coluna congelada). Mobile: vira lista
@@ -12997,12 +13003,14 @@ function renderConsolidado() {
     const mc = document.getElementById('consMobileCards');
     if (mc) {
       const corGain = v => v === null ? '#888' : (v >= 0 ? '#0a5c35' : '#9c1c1c');
-      const cardGrid = (qtdTxt, pmTxt, precoTxt, varDiaTxt, varDiaCor, investidoTxt) => `
+      const fmtVarRS = v => (v >= 0 ? '+' : '-') + _consR0(Math.abs(v));
+      const cardGrid = (qtdTxt, pmTxt, precoTxt, varDiaTxt, varDiaCor, investidoTxt, varDiaRSTxt, varDiaRSCor) => `
         <div class="mob-card-grid" style="margin-top:0.6rem;">
           <div class="mob-card-item"><span class="mob-card-label">Qtd</span><span class="mob-card-value">${qtdTxt}</span></div>
           <div class="mob-card-item"><span class="mob-card-label">PM</span><span class="mob-card-value">${pmTxt}</span></div>
           <div class="mob-card-item"><span class="mob-card-label">Preço</span><span class="mob-card-value">${precoTxt}</span></div>
           <div class="mob-card-item"><span class="mob-card-label">Var. dia</span><span class="mob-card-value" style="color:${varDiaCor};">${varDiaTxt}</span></div>
+          <div class="mob-card-item"><span class="mob-card-label">Var. dia R$</span><span class="mob-card-value" style="color:${varDiaRSCor};white-space:nowrap;">${varDiaRSTxt}</span></div>
           <div class="mob-card-item"><span class="mob-card-label">Investido</span><span class="mob-card-value" style="white-space:nowrap;">${investidoTxt}</span></div>
         </div>`;
       const cardsAtivos = d.ativos.map(a => {
@@ -13024,7 +13032,9 @@ function renderConsolidado() {
             a.preco > 0 ? _consR(a.preco) : '—',
             a.varDia === null ? '—' : (a.varDia >= 0 ? '+' : '') + a.varDia.toFixed(2).replace('.', ',') + '%',
             a.varDia === null ? '#888' : (a.varDia >= 0 ? '#0a5c35' : '#9c1c1c'),
-            _consR0(a.investido)
+            _consR0(a.investido),
+            !a.temVarDia ? '—' : fmtVarRS(a.varDiaRS),
+            !a.temVarDia ? '#888' : (a.varDiaRS >= 0 ? '#0a5c35' : '#9c1c1c')
           )}
         </div>`;
       }).join('');
@@ -13046,7 +13056,9 @@ function renderConsolidado() {
             f.preco !== null ? _consR(f.preco) : '—',
             f.varDia === null ? '—' : (f.varDia >= 0 ? '+' : '') + f.varDia.toFixed(2).replace('.', ',') + '%',
             f.varDia === null ? '#888' : (f.varDia >= 0 ? '#0a5c35' : '#9c1c1c'),
-            temResultado ? _consR0(f.investido) : '—'
+            temResultado ? _consR0(f.investido) : '—',
+            f.varDiaRS === null ? '—' : fmtVarRS(f.varDiaRS),
+            f.varDiaRS === null ? '#888' : (f.varDiaRS >= 0 ? '#0a5c35' : '#9c1c1c')
           )}
         </div>`;
       }).join('');
