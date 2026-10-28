@@ -8470,10 +8470,19 @@ function makeSVGDonut(el, labels, values, colors, opts){
     legend+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:11px;color:#555;"><div style="width:9px;height:9px;border-radius:2px;background:${colors[i%colors.length]};flex-shrink:0;"></div><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${l}</span>${valTxt}</div>`;
   });
   const itens=labels.length===1?'1 item':`${labels.length} itens`;
-  // labelsOnChart também pede gráfico maior (240 em vez de 180) e SEM legenda nenhuma embaixo —
-  // nem a lista sempre aberta de antes, nem o "Ver detalhamento" — só o rótulo na própria fatia.
+  // labelsOnChart também pede gráfico maior (240 em vez de 180) e SEM a lista de detalhamento
+  // (accordion com valor+% de cada fatia, removida a pedido do usuário) — só o rótulo (valor+%)
+  // na própria fatia, colorido igual a cor dela. Mas o rótulo sozinho não diz o NOME da classe/
+  // titular (usuário perguntou "como eu sei o que é cada cor?" em 28/10/2026) — por isso uma
+  // legenda mínima (só bolinha de cor + nome, sem valor/clique) sempre visível embaixo, bem mais
+  // enxuta que o antigo "Ver detalhamento".
   const svgSize=labelsOnChart?240:180;
-  const legendaBloco=labelsOnChart?''
+  const legendaMinima=labelsOnChart
+    ?`<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;margin-top:4px;">${labels.map((l,i)=>
+        `<div style="display:flex;align-items:center;gap:4px;font-size:10.5px;color:#666;"><div style="width:8px;height:8px;border-radius:2px;background:${colors[i%colors.length]};flex-shrink:0;"></div><span>${l}</span></div>`
+      ).join('')}</div>`
+    :'';
+  const legendaBloco=labelsOnChart?legendaMinima
     :`<details class="svg-donut-legend"><summary>Ver detalhamento (${itens})</summary><div class="svg-donut-legend-body">${legend}</div></details>`;
   el.innerHTML=`<div style="text-align:center;"><svg width="${svgSize}" height="${svgSize}" viewBox="${-padOut} ${-padOut} ${H+2*padOut} ${H+2*padOut}" style="max-width:100%;">${paths}${centro}${labelEls}</svg></div>
     ${legendaBloco}`;
