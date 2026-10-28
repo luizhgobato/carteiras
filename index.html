@@ -8659,37 +8659,33 @@ function _rpTotalPatrimonio(classeTableId) {
 }
 
 // ── Barra horizontal (magnitude, todas positivas) — ideal p/ listas de tickers ─────────
-// wideLabels: reserva mais espaço à direita quando o rótulo do valor traz R$ + % (texto longo),
-// senão a barra mais comprida empurra o texto para fora do SVG.
+// wideLabels: compat (não usado mais -- era padding de SVG, ver nota abaixo).
+// Reescrito em HTML/flex em 28/10/2026: a versão em SVG com padding fixo em pixel (padL/padR)
+// quebrava no celular -- rótulo comprido ("Participação Societária") + valor comprido
+// ("R$ 200.000 · 12,68%") comiam quase toda a largura da tela estreita, sobrando poucos
+// pixels pra barra em si (ficava uma lasquinha de cor, quase invisível -- bug visto pelo
+// usuário). Com rótulo+valor numa linha (flex, quebra livre) e a barra numa LINHA DE BAIXO
+// ocupando 100% da largura disponível, não existe mais essa divisão de espaço fixo — a barra
+// sempre aparece por inteiro, em qualquer largura de tela.
 function makeSVGHBar(el, labels, values, colors, fmt, wideLabels) {
   if (!el || !labels.length) { if (el) el.innerHTML = ''; return; }
-  let W = el.offsetWidth || el.parentElement?.offsetWidth || 600;
-  W = Math.max(Math.min(W, 720), 320);
-  const rowH = 30;
-  // padL dinâmico: era fixo em 70, pensado pra ticker curto ("BBDC3"). Ao reaproveitar esta
-  // barra pros gráficos de Titular/Classe/Segmento (nomes como "Participação Societária"),
-  // o texto direito-alinhado estourava pra fora da esquerda do SVG e saía cortado na tela --
-  // bug visto pelo usuário em 28/10/2026. Trunca nomes muito longos (>22) e expande padL até
-  // caber os que sobraram, com teto pra não comer área demais da barra.
-  const labelsTrunc = labels.map(l => (l && l.length > 22) ? l.slice(0, 21) + '…' : l);
-  const maxLabelLen = Math.max(...labelsTrunc.map(l => (l || '').length), 0);
-  const padL = Math.min(Math.max(70, maxLabelLen * 6.3 + 16), 190);
-  const padR = wideLabels ? 170 : 90, padT = 4, padB = 4;
-  const H = labels.length * rowH + padT + padB;
-  const cW = W - padL - padR;
   const maxV = Math.max(...values, 0.0001);
-  let bars = '';
-  labels.forEach((l, i) => {
+  const rows = labels.map((l, i) => {
     const v = values[i];
-    const y = padT + i * rowH;
-    const w = Math.max((v / maxV) * cW, 2);
+    const pct = Math.max((v / maxV) * 100, 1.5);
     const col = Array.isArray(colors) ? colors[i % colors.length] : colors;
     const txt = fmt ? fmt(v, i) : v;
-    bars += `<text x="${padL - 8}" y="${y + rowH / 2 + 4}" text-anchor="end" font-size="13" fill="#555">${labelsTrunc[i]}</text>`;
-    bars += `<rect x="${padL}" y="${y + 6}" width="${w}" height="${rowH - 12}" rx="3" fill="${col}" opacity="0.88"><title>${l}: ${txt}</title></rect>`;
-    bars += `<text x="${padL + w + 7}" y="${y + rowH / 2 + 4}" font-size="12.5" font-weight="700" fill="#333">${txt}</text>`;
-  });
-  el.innerHTML = `<svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" style="overflow:visible;">${bars}</svg>`;
+    return `<div style="margin-bottom:11px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:4px;">
+        <span style="font-size:12.5px;color:#555;overflow-wrap:break-word;">${l}</span>
+        <span style="font-size:12.5px;font-weight:700;color:#333;white-space:nowrap;flex-shrink:0;">${txt}</span>
+      </div>
+      <div style="background:#eee;border-radius:4px;height:11px;overflow:hidden;">
+        <div style="width:${pct.toFixed(1)}%;height:100%;background:${col};border-radius:4px;" title="${l}: ${txt}"></div>
+      </div>
+    </div>`;
+  }).join('');
+  el.innerHTML = rows;
 }
 // Lê % Carteira (posição atual) por ativo de uma tabela de posição e desenha barra horizontal.
 // pctSelector: '.cw-pct-cart' — Flavia e Luiz usam a mesma classe, mesmas colunas nas duas.
