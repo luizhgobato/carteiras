@@ -8665,7 +8665,16 @@ function makeSVGHBar(el, labels, values, colors, fmt, wideLabels) {
   if (!el || !labels.length) { if (el) el.innerHTML = ''; return; }
   let W = el.offsetWidth || el.parentElement?.offsetWidth || 600;
   W = Math.max(Math.min(W, 720), 320);
-  const rowH = 30, padL = 70, padR = wideLabels ? 170 : 90, padT = 4, padB = 4;
+  const rowH = 30;
+  // padL dinâmico: era fixo em 70, pensado pra ticker curto ("BBDC3"). Ao reaproveitar esta
+  // barra pros gráficos de Titular/Classe/Segmento (nomes como "Participação Societária"),
+  // o texto direito-alinhado estourava pra fora da esquerda do SVG e saía cortado na tela --
+  // bug visto pelo usuário em 28/10/2026. Trunca nomes muito longos (>22) e expande padL até
+  // caber os que sobraram, com teto pra não comer área demais da barra.
+  const labelsTrunc = labels.map(l => (l && l.length > 22) ? l.slice(0, 21) + '…' : l);
+  const maxLabelLen = Math.max(...labelsTrunc.map(l => (l || '').length), 0);
+  const padL = Math.min(Math.max(70, maxLabelLen * 6.3 + 16), 190);
+  const padR = wideLabels ? 170 : 90, padT = 4, padB = 4;
   const H = labels.length * rowH + padT + padB;
   const cW = W - padL - padR;
   const maxV = Math.max(...values, 0.0001);
@@ -8676,7 +8685,7 @@ function makeSVGHBar(el, labels, values, colors, fmt, wideLabels) {
     const w = Math.max((v / maxV) * cW, 2);
     const col = Array.isArray(colors) ? colors[i % colors.length] : colors;
     const txt = fmt ? fmt(v, i) : v;
-    bars += `<text x="${padL - 8}" y="${y + rowH / 2 + 4}" text-anchor="end" font-size="13" fill="#555">${l}</text>`;
+    bars += `<text x="${padL - 8}" y="${y + rowH / 2 + 4}" text-anchor="end" font-size="13" fill="#555">${labelsTrunc[i]}</text>`;
     bars += `<rect x="${padL}" y="${y + 6}" width="${w}" height="${rowH - 12}" rx="3" fill="${col}" opacity="0.88"><title>${l}: ${txt}</title></rect>`;
     bars += `<text x="${padL + w + 7}" y="${y + rowH / 2 + 4}" font-size="12.5" font-weight="700" fill="#333">${txt}</text>`;
   });
