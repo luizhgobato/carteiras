@@ -346,6 +346,9 @@ thead tr.col-header,#fundTable thead tr{overflow:visible;}
 .rp-r-value{font-size:12px;color:#333;line-height:1.5;}
 .rp-table-wrap{overflow-x:auto;border:1px solid #efefef;border-radius:8px;-webkit-overflow-scrolling:touch;}
 .rp-scroll-hint{display:none;}
+/* #tblConsAtivos: desktop mostra a tabela, mobile vira lista de cards (ver @media abaixo) —
+   nenhum dos dois aparece junto, evita duplicar a mesma informação na tela. */
+.cons-mobile-cards{display:none;}
 .rp-table{border-collapse:collapse;width:100%;font-size:12px;}
 .rp-table thead tr{background:#f7f7f5;}
 .rp-table thead th{padding:9px 12px;text-align:left;font-weight:600;color:#555;white-space:nowrap;border-bottom:1px solid #efefef;font-size:11px;}
@@ -776,6 +779,16 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
      achou que a tabela estava "vazando" da tela em 28/10/2026. Dica de texto avisando que dá
      pra arrastar, só no mobile (no desktop a tabela já cabe inteira, sem scroll). */
   .rp-scroll-hint{display:block;font-size:10.5px;color:#999;margin:0 0 5px;text-align:right;}
+
+  /* #tblConsAtivos no mobile: tabela de 10 colunas vira lista de cards empilhados (sem rolagem
+     nenhuma) -- usuário reportou 2x (28/10/2026) que a tabela "vazava" mesmo com a dica de
+     arrastar, então trocou de abordagem em vez de insistir no scroll horizontal. */
+  .cons-table-desktop{display:none;}
+  .cons-mobile-cards{display:flex!important;flex-direction:column;gap:0.6rem;}
+  .cons-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:0.9rem 1rem;box-shadow:var(--shadow);}
+  .cons-card.cons-card-total{background:#1e1a2e;border-color:#1e1a2e;}
+  .cons-card.cons-card-total .mob-card-ticker,.cons-card.cons-card-total .mob-card-label{color:#fff;}
+  .cons-card.cons-card-total .mob-card-value{color:#fff;}
 
   /* CHARTS — empilhados */
   .charts-grid{grid-template-columns:1fr;padding:0 1rem 0.75rem;}
@@ -1823,6 +1836,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
                 <tr><td class="rp-bold">Previdência</td><td>R$ 156.596,29</td><td>19,86%</td></tr>
                 <tr><td class="rp-bold">Internacionais</td><td>R$ 9.548,01</td><td>1,21%</td></tr>
                 <tr><td class="rp-bold">Academia</td><td>R$ 100.000,00</td><td>0,00%</td></tr>
+                <tr><td class="rp-bold">Apartamento</td><td>R$ 150.000,00</td><td>0,00%</td></tr>
                 <tr style="background:#1e1a2e;color:#fff;font-weight:700;"><td>Total</td><td>R$ 788.344,99</td><td>100%</td></tr>
               </tbody>
             </table>
@@ -2003,13 +2017,20 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       <details class="rp-details" open>
         <summary>📋 Ver tabela — quem detém o quê</summary>
         <div class="rp-details-body">
-          <div class="rp-scroll-hint">⇠ arraste para o lado para ver mais ⇢</div>
-          <div class="rp-table-wrap rp-tw-bleed rp-tw-bleed-deep">
-            <table class="rp-table rp-freeze-first" id="tblConsAtivos">
-              <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia</th><th>Var. Dia R$</th><th>Investido</th><th id="thConsSaldo">Saldo somado (Luiz+Flavia)</th><th id="thConsPct">% do casal</th><th>Result.</th></tr></thead>
-              <tbody></tbody>
-            </table>
+          <!-- Desktop: tabela com rolagem horizontal (1ª coluna congelada). Mobile: vira lista
+               de cards empilhados (sem rolagem nenhuma) -- rolar lateral numa tabela de 10
+               colunas no celular não funcionava bem na prática (usuário reportou 2x em
+               28/10/2026, mesmo com a dica de "arraste pro lado"), então trocou de abordagem
+               em vez de insistir no scroll. -->
+          <div class="cons-table-desktop">
+            <div class="rp-table-wrap rp-tw-bleed rp-tw-bleed-deep">
+              <table class="rp-table rp-freeze-first" id="tblConsAtivos">
+                <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia</th><th>Var. Dia R$</th><th>Investido</th><th id="thConsSaldo">Saldo somado (Luiz+Flavia)</th><th id="thConsPct">% do casal</th><th>Result.</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
+          <div class="cons-mobile-cards" id="consMobileCards"></div>
         </div>
       </details>
     </div>
@@ -8995,6 +9016,10 @@ const RP_PATRIMONIO_CFG = {
       // financiado pela venda de 780 cotas de LFTB11 em 20/10/2026. Classe própria, fora da
       // régua 65/20/15 (não é nem dividendo de ação nem CDI) — pedido do usuário em 20/10/2026.
       { label: 'Academia', valor: 100000, investido: 100000, classe: 'Participação Societária', segmento: 'Participação Societária', grupo: 'fora' },
+      // Apartamento (imóvel físico) — R$150k, pedido do usuário em 28/10/2026. Sem Qtd/PM/
+      // cotação (não é ativo negociado), classe própria "Imóvel", fora da régua 65/20/15 (mesmo
+      // tratamento dado à Academia: participação ilíquida fora da alocação-alvo de papéis).
+      { label: 'Apartamento', valor: 150000, investido: 150000, classe: 'Imóvel', segmento: 'Imóvel', grupo: 'fora' },
     ],
     dividendosBaseline: 348189.43,
     crescimentoBaseline: 216799.87,
@@ -12835,7 +12860,7 @@ function renderConsolidado() {
     }).join('');
     const labelPatrimonio = _consFiltro === 'consolidado' ? 'Patrimônio do casal' : `Patrimônio — ${_consFiltro}`;
     const cardSplit = _consFiltro === 'consolidado'
-      ? `<div class="rp-exec-item"><div class="rp-exec-label">Luiz / Flavia</div><div class="rp-exec-value">${_consPct(luiz / d.totalGeral * 100)} / ${_consPct(flavia / d.totalGeral * 100)}</div></div>`
+      ? `<div class="rp-exec-item"><div class="rp-exec-label">Luiz / Flavia</div><div class="rp-exec-value">${_consPct(luiz / d.totalGeral * 100)} / ${_consPct(flavia / d.totalGeral * 100)}</div><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:3px;"><span style="font-size:11px;color:#888;">${_consR0(luiz)}</span><span style="font-size:11px;color:#888;">${_consR0(flavia)}</span></div></div>`
       : '';
     const cardCasal = _consFiltro === 'consolidado'
       ? cardResultado('Resultado — Casal', tot.totVarDiaRS, tot.pctTotal, tot.ganhoTotalRS, tot.pctGanhoTotal)
@@ -12949,6 +12974,78 @@ function renderConsolidado() {
         <td>${_consR(tot.totSaldoTabela)}</td><td>${tot.pctCartTotal === null ? '—' : _consPct(tot.pctCartTotal)}</td>
         <td style="color:${!tot.temAlgumGanho ? '#fff' : (tot.ganhoTotalRS >= 0 ? '#4ecdc4' : '#ff6b6b')};">${!tot.temAlgumGanho ? '—' : (tot.ganhoTotalRS >= 0 ? '+' : '') + _consR(tot.ganhoTotalRS) + ' (' + (tot.pctGanhoTotal >= 0 ? '+' : '') + tot.pctGanhoTotal.toFixed(2).replace('.', ',') + '%)'}</td></tr>`;
   }
+
+    // ── Mesma informação, em cards empilhados (mobile — ver CSS .cons-table-desktop/
+    // .cons-mobile-cards). Um card por linha, mesmos campos da tabela, sem Qtd/PM/Preço/Var.Dia
+    // quando o fixo não tem (mesma regra "— sem custo de aquisição rastreável" da tabela).
+    const mc = document.getElementById('consMobileCards');
+    if (mc) {
+      const corGain = v => v === null ? '#888' : (v >= 0 ? '#0a5c35' : '#9c1c1c');
+      const cardGrid = (qtdTxt, pmTxt, precoTxt, varDiaTxt, varDiaCor, investidoTxt) => `
+        <div class="mob-card-grid" style="margin-top:0.6rem;">
+          <div class="mob-card-item"><span class="mob-card-label">Qtd</span><span class="mob-card-value">${qtdTxt}</span></div>
+          <div class="mob-card-item"><span class="mob-card-label">PM</span><span class="mob-card-value">${pmTxt}</span></div>
+          <div class="mob-card-item"><span class="mob-card-label">Preço</span><span class="mob-card-value">${precoTxt}</span></div>
+          <div class="mob-card-item"><span class="mob-card-label">Var. dia</span><span class="mob-card-value" style="color:${varDiaCor};">${varDiaTxt}</span></div>
+          <div class="mob-card-item"><span class="mob-card-label">Investido</span><span class="mob-card-value">${investidoTxt}</span></div>
+        </div>`;
+      const cardsAtivos = d.ativos.map(a => {
+        const res = a.investido > 0 ? (a.saldo - a.investido) / a.investido * 100 : null;
+        const ganhoRS = a.investido > 0 ? a.saldo - a.investido : null;
+        const pm = a.qtd > 0 ? a.investido / a.qtd : 0;
+        return `<div class="cons-card">
+          <div class="mob-card-top">
+            <span class="mob-card-ticker">${a.ticker}</span>
+            <span class="mob-card-saldo">${_consR(a.saldo)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:11px;color:#888;">
+            <span>${_consPct(a.saldo / d.totalGeral * 100)} do casal</span>
+            <span style="color:${corGain(res)};font-weight:600;">${res === null ? '—' : (ganhoRS >= 0 ? '+' : '') + _consR(ganhoRS) + ' (' + (res >= 0 ? '+' : '') + res.toFixed(2).replace('.', ',') + '%)'}</span>
+          </div>
+          ${cardGrid(
+            a.qtd > 0 ? a.qtd.toLocaleString('pt-BR') : '—',
+            a.qtd > 0 ? _consR(pm) : '—',
+            a.preco > 0 ? _consR(a.preco) : '—',
+            a.varDia === null ? '—' : (a.varDia >= 0 ? '+' : '') + a.varDia.toFixed(2).replace('.', ',') + '%',
+            a.varDia === null ? '#888' : (a.varDia >= 0 ? '#0a5c35' : '#9c1c1c'),
+            _consR(a.investido)
+          )}
+        </div>`;
+      }).join('');
+      const cardsFixos = fixosMerged.map(f => {
+        const temResultado = f.investido !== null && f.resultado !== null;
+        const resPct = temResultado && f.investido > 0 ? f.resultado / f.investido * 100 : null;
+        return `<div class="cons-card">
+          <div class="mob-card-top">
+            <span class="mob-card-ticker">${f.label}</span>
+            <span class="mob-card-saldo">${_consR(f.valor)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:11px;color:#888;">
+            <span>${_consPct(f.valor / d.totalGeral * 100)} do casal</span>
+            <span style="color:${temResultado ? (f.resultado >= 0 ? '#0a5c35' : '#9c1c1c') : '#888'};font-weight:600;">${temResultado ? (f.resultado >= 0 ? '+' : '') + _consR(f.resultado) + (resPct !== null ? ' (' + (resPct >= 0 ? '+' : '') + resPct.toFixed(2).replace('.', ',') + '%)' : '') : '— sem custo de aquisição rastreável'}</span>
+          </div>
+          ${cardGrid(
+            f.qtd !== null ? f.qtd.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '—',
+            f.pm !== null ? _consR(f.pm) : '—',
+            f.preco !== null ? _consR(f.preco) : '—',
+            f.varDia === null ? '—' : (f.varDia >= 0 ? '+' : '') + f.varDia.toFixed(2).replace('.', ',') + '%',
+            f.varDia === null ? '#888' : (f.varDia >= 0 ? '#0a5c35' : '#9c1c1c'),
+            temResultado ? _consR(f.investido) : '—'
+          )}
+        </div>`;
+      }).join('');
+      const cardTotal = `<div class="cons-card cons-card-total">
+        <div class="mob-card-top">
+          <span class="mob-card-ticker">Total</span>
+          <span class="mob-card-saldo">${_consR(tot.totSaldoTabela)}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:11px;color:#bbb;">
+          <span>${tot.pctCartTotal === null ? '—' : _consPct(tot.pctCartTotal)}</span>
+          <span style="color:${!tot.temAlgumGanho ? '#bbb' : (tot.ganhoTotalRS >= 0 ? '#4ecdc4' : '#ff6b6b')};font-weight:600;">${!tot.temAlgumGanho ? '—' : (tot.ganhoTotalRS >= 0 ? '+' : '') + _consR(tot.ganhoTotalRS) + ' (' + (tot.pctGanhoTotal >= 0 ? '+' : '') + tot.pctGanhoTotal.toFixed(2).replace('.', ',') + '%)'}</span>
+        </div>
+      </div>`;
+      mc.innerHTML = cardsAtivos + cardsFixos + cardTotal;
+    }
 
   // ── Carteira Ideal do casal ──
   // Mesma régua 65/20/15 das páginas individuais, aplicada sobre o patrimônio somado. Os
