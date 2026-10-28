@@ -791,10 +791,22 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
      sangra 16px pra fora do padding da seção. */
   .cons-ativos-details{border:none;padding:0;background:transparent;margin-bottom:0;}
   .cons-mobile-cards{margin:0 -16px;}
-  .cons-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:0.85rem 0.9rem;}
+  /* Card no estilo do app da corretora: faixa colorida à esquerda, cabeçalho cinza com
+     ticker/"PM → Preço"/badge de quantidade, corpo com linhas rótulo | R$ | %. */
+  .cons-card{background:#fff;border:1px solid var(--border);border-left:4px solid #999;border-radius:10px;overflow:hidden;}
+  .cc-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0.75rem 0.9rem;background:#f6f6f8;}
+  .cc-ticker{font-size:16px;font-weight:800;color:#111;}
+  .cc-sub{font-size:12px;color:#777;margin-top:2px;white-space:nowrap;}
+  .cc-badge{flex-shrink:0;font-size:13px;font-weight:700;color:#7a5a00;background:#fff6dc;border:1px solid #e9c46a;border-radius:6px;padding:2px 8px;}
+  .cc-body{padding:0.6rem 0.9rem 0.7rem;}
+  .cc-row{display:grid;grid-template-columns:82px 1fr auto;align-items:baseline;gap:6px;padding:4px 0;}
+  .cc-lbl{font-size:12px;color:#888;}
+  .cc-val{font-size:14px;font-weight:700;white-space:nowrap;}
+  .cc-pct{font-size:12.5px;font-weight:600;white-space:nowrap;text-align:right;}
   .cons-card.cons-card-total{background:#1e1a2e;border-color:#1e1a2e;}
-  .cons-card.cons-card-total .mob-card-ticker,.cons-card.cons-card-total .mob-card-label{color:#fff;}
-  .cons-card.cons-card-total .mob-card-value{color:#fff;}
+  .cons-card.cons-card-total .cc-head{background:#28233d;}
+  .cons-card.cons-card-total .cc-ticker{color:#fff;}
+  .cons-card.cons-card-total .cc-lbl{color:#aaa;}
 
   /* CHARTS — empilhados */
   .charts-grid{grid-template-columns:1fr;padding:0 1rem 0.75rem;}
@@ -13014,77 +13026,67 @@ function renderConsolidado() {
     // quando o fixo não tem (mesma regra "— sem custo de aquisição rastreável" da tabela).
     const mc = document.getElementById('consMobileCards');
     if (mc) {
-      const corGain = v => v === null ? '#888' : (v >= 0 ? '#0a5c35' : '#9c1c1c');
-      const fmtVarRS = v => (v >= 0 ? '+' : '-') + _consR0(Math.abs(v));
-      const cardGrid = (qtdTxt, pmTxt, precoTxt, varDiaTxt, varDiaCor, investidoTxt, varDiaRSTxt, varDiaRSCor) => `
-        <div class="mob-card-grid" style="margin-top:0.6rem;">
-          <div class="mob-card-item"><span class="mob-card-label">Qtd</span><span class="mob-card-value">${qtdTxt}</span></div>
-          <div class="mob-card-item"><span class="mob-card-label">PM</span><span class="mob-card-value">${pmTxt}</span></div>
-          <div class="mob-card-item"><span class="mob-card-label">Preço</span><span class="mob-card-value">${precoTxt}</span></div>
-          <div class="mob-card-item"><span class="mob-card-label">Var. dia</span><span class="mob-card-value" style="color:${varDiaCor};">${varDiaTxt}</span></div>
-          <div class="mob-card-item"><span class="mob-card-label">Var. dia R$</span><span class="mob-card-value" style="color:${varDiaRSCor};white-space:nowrap;">${varDiaRSTxt}</span></div>
-          <div class="mob-card-item"><span class="mob-card-label">Investido</span><span class="mob-card-value" style="white-space:nowrap;">${investidoTxt}</span></div>
+      // Layout no estilo do app da corretora (pedido do usuário em 28/10/2026, print do app
+      // Itaú): cabeçalho com ticker, "PM → Preço" e badge de quantidade; corpo com 3 linhas
+      // rótulo | R$ | % -- Posição (% do casal), Res. Aberto, Res. Dia -- + Investido.
+      const cor = v => v === null ? '#888' : (v >= 0 ? '#0a8a4a' : '#d13b3b');
+      const seta = v => v === null ? '' : (v >= 0 ? '▲ ' : '▼ ');
+      const sinalR = v => (v >= 0 ? '' : '-') + _consR(Math.abs(v));
+      const pctTxt = v => (v >= 0 ? '+' : '') + v.toFixed(2).replace('.', ',') + '%';
+      const linha = (rotulo, valorTxt, valorCor, dirTxt, dirCor) => `
+        <div class="cc-row"><span class="cc-lbl">${rotulo}</span><span class="cc-val" style="color:${valorCor};">${valorTxt}</span><span class="cc-pct" style="color:${dirCor};">${dirTxt}</span></div>`;
+      const card = (o, idx) => `<div class="cons-card" style="border-left-color:${RP_COLORS[idx % RP_COLORS.length]};">
+          <div class="cc-head">
+            <div style="min-width:0;">
+              <div class="cc-ticker">${o.nome}</div>
+              <div class="cc-sub">${o.sub}</div>
+            </div>
+            ${o.qtd ? `<span class="cc-badge">${o.qtd}</span>` : ''}
+          </div>
+          <div class="cc-body">
+            ${linha('Posição', _consR(o.saldo), '#111', _consPct(o.saldo / d.totalGeral * 100), '#666')}
+            ${linha('Res. Aberto', o.res === null ? '—' : sinalR(o.res), cor(o.res), o.resPct === null ? '' : seta(o.resPct) + pctTxt(o.resPct), cor(o.resPct))}
+            ${linha('Res. Dia', o.dia === null ? '—' : sinalR(o.dia), cor(o.dia), o.diaPct === null ? '' : seta(o.diaPct) + pctTxt(o.diaPct), cor(o.diaPct))}
+            ${linha('Investido', o.inv === null ? '—' : _consR(o.inv), '#555', '', '#666')}
+          </div>
         </div>`;
-      const cardsAtivos = d.ativos.map(a => {
-        const res = a.investido > 0 ? (a.saldo - a.investido) / a.investido * 100 : null;
-        const ganhoRS = a.investido > 0 ? a.saldo - a.investido : null;
-        const pm = a.qtd > 0 ? a.investido / a.qtd : 0;
-        return `<div class="cons-card">
-          <div class="mob-card-top">
-            <span class="mob-card-ticker">${a.ticker}</span>
-            <span class="mob-card-saldo">${_consR(a.saldo)}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:11px;color:#888;">
-            <span>${_consPct(a.saldo / d.totalGeral * 100)} do casal</span>
-            <span style="color:${corGain(res)};font-weight:600;">${res === null ? '—' : (ganhoRS >= 0 ? '+' : '') + _consR(ganhoRS) + ' (' + (res >= 0 ? '+' : '') + res.toFixed(2).replace('.', ',') + '%)'}</span>
-          </div>
-          ${cardGrid(
-            a.qtd > 0 ? a.qtd.toLocaleString('pt-BR') : '—',
-            a.qtd > 0 ? _consR(pm) : '—',
-            a.preco > 0 ? _consR(a.preco) : '—',
-            a.varDia === null ? '—' : (a.varDia >= 0 ? '+' : '') + a.varDia.toFixed(2).replace('.', ',') + '%',
-            a.varDia === null ? '#888' : (a.varDia >= 0 ? '#0a5c35' : '#9c1c1c'),
-            _consR0(a.investido),
-            !a.temVarDia ? '—' : fmtVarRS(a.varDiaRS),
-            !a.temVarDia ? '#888' : (a.varDiaRS >= 0 ? '#0a5c35' : '#9c1c1c')
-          )}
-        </div>`;
-      }).join('');
-      const cardsFixos = fixosMerged.map(f => {
-        const temResultado = f.investido !== null && f.resultado !== null;
-        const resPct = temResultado && f.investido > 0 ? f.resultado / f.investido * 100 : null;
-        return `<div class="cons-card">
-          <div class="mob-card-top">
-            <span class="mob-card-ticker">${f.label}</span>
-            <span class="mob-card-saldo">${_consR(f.valor)}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:11px;color:#888;">
-            <span>${_consPct(f.valor / d.totalGeral * 100)} do casal</span>
-            <span style="color:${temResultado ? (f.resultado >= 0 ? '#0a5c35' : '#9c1c1c') : '#888'};font-weight:600;">${temResultado ? (f.resultado >= 0 ? '+' : '') + _consR(f.resultado) + (resPct !== null ? ' (' + (resPct >= 0 ? '+' : '') + resPct.toFixed(2).replace('.', ',') + '%)' : '') : '— sem custo de aquisição rastreável'}</span>
-          </div>
-          ${cardGrid(
-            f.qtd !== null ? f.qtd.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '—',
-            f.pm !== null ? _consR(f.pm) : '—',
-            f.preco !== null ? _consR(f.preco) : '—',
-            f.varDia === null ? '—' : (f.varDia >= 0 ? '+' : '') + f.varDia.toFixed(2).replace('.', ',') + '%',
-            f.varDia === null ? '#888' : (f.varDia >= 0 ? '#0a5c35' : '#9c1c1c'),
-            temResultado ? _consR0(f.investido) : '—',
-            f.varDiaRS === null ? '—' : fmtVarRS(f.varDiaRS),
-            f.varDiaRS === null ? '#888' : (f.varDiaRS >= 0 ? '#0a5c35' : '#9c1c1c')
-          )}
-        </div>`;
-      }).join('');
+      const itens = d.ativos.map(a => {
+        const pm = a.qtd > 0 ? a.investido / a.qtd : null;
+        return {
+          nome: a.ticker,
+          sub: pm && a.preco > 0 ? `${_consR(pm)} → ${_consR(a.preco)}` : (a.preco > 0 ? _consR(a.preco) : ''),
+          qtd: a.qtd > 0 ? a.qtd.toLocaleString('pt-BR') : '',
+          saldo: a.saldo,
+          res: a.investido > 0 ? a.saldo - a.investido : null,
+          resPct: a.investido > 0 ? (a.saldo - a.investido) / a.investido * 100 : null,
+          dia: a.temVarDia ? a.varDiaRS : null,
+          diaPct: a.varDia,
+          inv: a.investido > 0 ? a.investido : null,
+        };
+      }).concat(fixosMerged.map(f => {
+        const temRes = f.investido !== null && f.resultado !== null;
+        return {
+          nome: f.label,
+          sub: f.pm !== null && f.preco !== null ? `${_consR(f.pm)} → ${_consR(f.preco)}` : 'sem cotação em bolsa',
+          qtd: f.qtd !== null ? f.qtd.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '',
+          saldo: f.valor,
+          res: temRes ? f.resultado : null,
+          resPct: temRes && f.investido > 0 ? f.resultado / f.investido * 100 : null,
+          dia: f.varDiaRS,
+          diaPct: f.varDia,
+          inv: temRes ? f.investido : null,
+        };
+      }));
       const cardTotal = `<div class="cons-card cons-card-total">
-        <div class="mob-card-top">
-          <span class="mob-card-ticker">Total</span>
-          <span class="mob-card-saldo">${_consR(tot.totSaldoTabela)}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:11px;color:#bbb;">
-          <span>${tot.pctCartTotal === null ? '—' : _consPct(tot.pctCartTotal)}</span>
-          <span style="color:${!tot.temAlgumGanho ? '#bbb' : (tot.ganhoTotalRS >= 0 ? '#4ecdc4' : '#ff6b6b')};font-weight:600;">${!tot.temAlgumGanho ? '—' : (tot.ganhoTotalRS >= 0 ? '+' : '') + _consR(tot.ganhoTotalRS) + ' (' + (tot.pctGanhoTotal >= 0 ? '+' : '') + tot.pctGanhoTotal.toFixed(2).replace('.', ',') + '%)'}</span>
+        <div class="cc-head"><div class="cc-ticker">Total</div></div>
+        <div class="cc-body">
+          ${linha('Posição', _consR(tot.totSaldoTabela), '#fff', tot.pctCartTotal === null ? '' : _consPct(tot.pctCartTotal), '#bbb')}
+          ${linha('Res. Aberto', !tot.temAlgumGanho ? '—' : sinalR(tot.ganhoTotalRS), !tot.temAlgumGanho ? '#bbb' : (tot.ganhoTotalRS >= 0 ? '#4ecdc4' : '#ff6b6b'), !tot.temAlgumGanho ? '' : seta(tot.pctGanhoTotal) + pctTxt(tot.pctGanhoTotal), tot.pctGanhoTotal >= 0 ? '#4ecdc4' : '#ff6b6b')}
+          ${linha('Res. Dia', !tot.algumTemVar ? '—' : sinalR(tot.totVarDiaRS), !tot.algumTemVar ? '#bbb' : (tot.totVarDiaRS >= 0 ? '#4ecdc4' : '#ff6b6b'), tot.pctTotal === null ? '' : seta(tot.pctTotal) + pctTxt(tot.pctTotal), tot.pctTotal !== null && tot.pctTotal >= 0 ? '#4ecdc4' : '#ff6b6b')}
+          ${linha('Investido', _consR(tot.totInvestido), '#ddd', '', '#bbb')}
         </div>
       </div>`;
-      mc.innerHTML = cardsAtivos + cardsFixos + cardTotal;
+      mc.innerHTML = itens.map(card).join('') + cardTotal;
     }
 
   // ── Carteira Ideal do casal ──
