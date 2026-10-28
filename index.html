@@ -12853,10 +12853,17 @@ function renderConsolidado() {
   // .dono/.classe/.segmento também -- junta os dois sem reler o DOM de novo.
   const _detTitular = nome => d.ativos.filter(a => (a.donos[nome] || 0) > 0).map(a => ({ label: a.ticker, amount: a.donos[nome] }))
     .concat(d.fixos.filter(f => f.dono === nome).map(f => ({ label: f.label, amount: f.valor })));
-  const _detClasse = classe => d.ativos.filter(a => a.classe === classe).map(a => ({ label: a.ticker, amount: a.saldo }))
-    .concat(d.fixos.filter(f => f.classe === classe).map(f => ({ label: f.label, amount: f.valor })));
-  const _detSegmento = seg => d.ativos.filter(a => a.seg === seg).map(a => ({ label: a.ticker, amount: a.saldo }))
-    .concat(d.fixos.filter(f => f.segmento === seg).map(f => ({ label: f.label, amount: f.valor })));
+  const _rotuloFixoDet = (lista, f) => lista.filter(x => x.label === f.label).length > 1 ? `${f.label} (${f.dono})` : f.label;
+  const _detClasse = classe => {
+    const fx = d.fixos.filter(f => f.classe === classe);
+    return d.ativos.filter(a => a.classe === classe).map(a => ({ label: a.ticker, amount: a.saldo }))
+      .concat(fx.map(f => ({ label: _rotuloFixoDet(fx, f), amount: f.valor })));
+  };
+  const _detSegmento = seg => {
+    const fx = d.fixos.filter(f => f.segmento === seg);
+    return d.ativos.filter(a => a.seg === seg).map(a => ({ label: a.ticker, amount: a.saldo }))
+      .concat(fx.map(f => ({ label: _rotuloFixoDet(fx, f), amount: f.valor })));
+  };
   _consBarChart('chartConsTitular', d.porTitular, d.totalGeral, _detTitular);
   _consBarChart('chartConsClasse', d.porClasse, d.totalGeral, _detClasse);
   _consBarChart('chartConsSegmento', d.porSegmento, d.totalGeral, _detSegmento);
