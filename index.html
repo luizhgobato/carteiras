@@ -8813,6 +8813,18 @@ function renderRpProgress(tableId, containerId) {
 // sem duplicar números). Para Luiz, as classes não-ações (Fundos/ETFs) não existem como
 // linhas individuais em luizPosBody — mescla-as a partir da tabela de Patrimônio via
 // opts.classeTableId, pulando os rótulos já cobertos pelas linhas de ações (opts.skipLabels).
+// Agrupamento de segmentos nos gráficos de rosca "por Segmento" -- pedido do usuário em
+// 28/10/2026: Seguros+Resseguros viram um grupo só, Shoppings+Varejo também, porque pra efeito
+// de risco de carteira são a mesma exposição econômica (seguradora e resseguradora seguem o
+// mesmo ciclo; shopping depende do mesmo consumo que o varejo). O data-segmento de cada ativo
+// no HTML continua intacto (usado em outros filtros/tabelas) -- isso só agrupa na hora de
+// montar o gráfico.
+function _segAgrupa(seg) {
+  if (seg === 'Resseguros') return 'Seguros';
+  if (seg === 'Shoppings') return 'Varejo';
+  return seg;
+}
+
 function renderRpSegmentoChart(tbodyId, containerId, opts) {
   opts = opts || {};
   const tbody = document.getElementById(tbodyId), el = document.getElementById(containerId);
@@ -8820,7 +8832,7 @@ function renderRpSegmentoChart(tbodyId, containerId, opts) {
   const pctSelector = opts.pctSelector || '.cw-pct-cart';
   const map = {};
   Array.from(tbody.querySelectorAll('tr[data-segmento]')).forEach(tr => {
-    const seg = tr.dataset.segmento;
+    const seg = _segAgrupa(tr.dataset.segmento);
     if (!seg) return;
     const cell = tr.querySelector(pctSelector);
     const v = _rpParseNum(cell?.textContent);
@@ -12544,7 +12556,7 @@ function coletarConsolidado() {
       const preco = parseFloat(tr.dataset.preco) || _consNum(tr.querySelector('.cw-preco')?.textContent);
       const investido = qtd * _consNum(tr.querySelector('.cw-pm')?.value);
       const classe = tr.dataset.classe === 'rf' ? 'Renda Fixa' : 'Ações BR';
-      const seg = tr.dataset.segmento || 'Sem segmento';
+      const seg = _segAgrupa(tr.dataset.segmento || 'Sem segmento');
       const grupo = tr.dataset.classe === 'rf' ? 'rf' : (tr.dataset.grupo || 'sem-grupo');
       // Mesmo ticker rende o mesmo % hoje nas duas carteiras (é a mesma ação no mercado) — só
       // o efeito em R$ muda por causa da quantidade, por isso soma o R$ mas só guarda o %.
@@ -12579,7 +12591,7 @@ function coletarConsolidado() {
       // declara 'Renda Fixa' nos três, pra entrar junto com o LFTB11 (mesma classe, mesmo
       // segmento, mesmo grupo da régua 65/20/15) — ver comentário na config acima.
       const classeKey = f.classe || f.label;
-      const segKey = f.segmento || f.label;
+      const segKey = _segAgrupa(f.segmento || f.label);
       const grpKey = f.grupo || 'fora';
       porClasse[classeKey] = (porClasse[classeKey] || 0) + f.valor;
       porSegmento[segKey] = (porSegmento[segKey] || 0) + f.valor;
