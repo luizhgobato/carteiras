@@ -616,6 +616,12 @@ tbody td.left{text-align:left;}
 .btn-olho{display:inline-flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;font-family:inherit;transition:all 0.2s;}
 .btn-olho:hover{border-color:var(--accent);color:var(--accent);}
 .btn-olho.oculto{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+/* Filtro Luiz/Flavia/Consolidado da Consolidada -- pedido do usuario pra poder ver so a parte
+   de um dos dois sem precisar abrir a aba individual (essas continuam existindo e sao onde
+   Qtd/PM/Atualizar Cotacao/Previdencia/etc. sao editados -- o filtro aqui e so visual). */
+.cons-filtro-btn{background:#f4f4f2;border:1px solid #e5e5e5;border-radius:20px;padding:6px 16px;font:inherit;font-size:12px;font-weight:600;color:#555;cursor:pointer;transition:all .15s;}
+.cons-filtro-btn:hover{background:#ebebe8;}
+.cons-filtro-btn.active{background:#1e1a2e;color:#fff;border-color:#1e1a2e;}
 /* Modo privacidade — oculta valores R$ e mostra % */
 body.privado .kpi-val{filter:blur(6px);user-select:none;}
 body.privado .kpi-val:hover{filter:none;}
@@ -1951,6 +1957,12 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       </div>
     </div>
 
+    <div style="display:flex;gap:6px;margin-bottom:0.75rem;flex-wrap:wrap;" role="group" aria-label="Filtrar por pessoa">
+      <button type="button" class="cons-filtro-btn active" data-filtro="consolidado" onclick="_consSetFiltro('consolidado')">Consolidado</button>
+      <button type="button" class="cons-filtro-btn" data-filtro="Luiz" onclick="_consSetFiltro('Luiz')">Luiz</button>
+      <button type="button" class="cons-filtro-btn" data-filtro="Flavia" onclick="_consSetFiltro('Flavia')">Flavia</button>
+    </div>
+
     <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;">
       <button class="btn-olho" onclick="atualizarCotacaoFamilia()" style="cursor:pointer;">🔄 Atualizar Cotação (as duas)</button>
       <span id="consUpdateStatus" style="font-size:11px;color:#888;"></span>
@@ -1969,7 +1981,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
         <div class="rp-details-body">
           <div class="rp-table-wrap rp-tw-bleed rp-tw-bleed-deep">
             <table class="rp-table rp-freeze-first" id="tblConsAtivos">
-              <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia</th><th>Var. Dia R$</th><th>Investido</th><th>Saldo somado (Luiz+Flavia)</th><th>% do casal</th><th>Result.</th></tr></thead>
+              <thead><tr><th>Ativo</th><th>Qtd</th><th>PM</th><th>Preço</th><th>Var. Dia</th><th>Var. Dia R$</th><th>Investido</th><th id="thConsSaldo">Saldo somado (Luiz+Flavia)</th><th id="thConsPct">% do casal</th><th>Result.</th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
@@ -12412,6 +12424,18 @@ const CONS_CARTEIRAS = [
   { nome: 'Flavia', prefix: 'Flavia', bodyId: 'flaviaPosBody', classeTableId: 'tblFlaviaClasse', cor: '#eb6834' },
 ];
 
+// Filtro Luiz/Flavia/Consolidado da Consolidada (pedido do usuário em 28/10/2026): só visual
+// -- reusa coletarConsolidado() restrito a uma carteira em vez de somar as duas, as abas
+// "Carteira Luiz"/"Carteira da Flavia" continuam existindo e são onde Qtd/PM/Atualizar
+// Cotação/Previdência/etc. são editados. 'consolidado' é o default (soma as duas, comportamento
+// de sempre); 'Luiz' ou 'Flavia' restringe a UMA carteira em coletarConsolidado().
+let _consFiltro = 'consolidado';
+function _consSetFiltro(nome) {
+  _consFiltro = nome;
+  document.querySelectorAll('.cons-filtro-btn').forEach(b => b.classList.toggle('active', b.dataset.filtro === nome));
+  if (typeof renderConsolidado === 'function') renderConsolidado();
+}
+
 // Alvo de alocação do casal. Os dois planos individuais usam 65/20/15 — como são iguais, a
 // meta consolidada é a mesma, sem precisar de média ponderada. Se um dia divergirem, é AQUI
 // que a ponderação por patrimônio precisa entrar (e o comentário deixa de valer).
@@ -12499,7 +12523,14 @@ function coletarConsolidado() {
   const porTitularDet = {};
   let totalGeral = 0;
 
-  CONS_CARTEIRAS.forEach(c => {
+  // Filtro Luiz/Flavia/Consolidado: restringe a carteira(s) somada(s) abaixo. Com 1 carteira
+  // só, todo o resto da função (ativos, fixos, porSegmento/Classe/Grupo, totais) já sai certo
+  // sem nenhuma lógica extra — é literalmente a carteira daquela pessoa, igual à página dela.
+  const carteirasFiltradas = (_consFiltro === 'consolidado')
+    ? CONS_CARTEIRAS
+    : CONS_CARTEIRAS.filter(c => c.nome === _consFiltro);
+
+  carteirasFiltradas.forEach(c => {
     const tbody = document.getElementById(c.bodyId);
     if (!tbody) return;
     let subtotal = 0;
@@ -12586,7 +12617,7 @@ function coletarConsolidado() {
   // Renda mensal estimada: lida do card já calculado em cada página individual, para não
   // criar uma segunda projeção de dividendos que possa divergir da de lá.
   let rendaMes = 0;
-  CONS_CARTEIRAS.forEach(c => {
+  carteirasFiltradas.forEach(c => {
     const cfg = (typeof RP_PATRIMONIO_CFG !== 'undefined') ? RP_PATRIMONIO_CFG[c.prefix] : null;
     if (!cfg) return;
     document.querySelectorAll(`#${cfg.pageId} .rp-exec-item`).forEach(item => {
@@ -12694,10 +12725,17 @@ function renderConsolidado() {
       const pctTot = det.investido > 0 ? det.resultado / det.investido * 100 : null;
       return cardResultado(`Resultado — ${nome}`, det.varDiaRS, pctDia, det.resultado, pctTot);
     }).join('');
+    const labelPatrimonio = _consFiltro === 'consolidado' ? 'Patrimônio do casal' : `Patrimônio — ${_consFiltro}`;
+    const cardSplit = _consFiltro === 'consolidado'
+      ? `<div class="rp-exec-item"><div class="rp-exec-label">Luiz / Flavia</div><div class="rp-exec-value">${_consPct(luiz / d.totalGeral * 100)} / ${_consPct(flavia / d.totalGeral * 100)}</div></div>`
+      : '';
+    const cardCasal = _consFiltro === 'consolidado'
+      ? cardResultado('Resultado — Casal', tot.totVarDiaRS, tot.pctTotal, tot.ganhoTotalRS, tot.pctGanhoTotal)
+      : '';
     exec.innerHTML = `
-      <div class="rp-exec-item"><div class="rp-exec-label">Patrimônio do casal</div><div class="rp-exec-value">${_consR0(d.totalGeral)}</div></div>
-      <div class="rp-exec-item"><div class="rp-exec-label">Luiz / Flavia</div><div class="rp-exec-value">${_consPct(luiz / d.totalGeral * 100)} / ${_consPct(flavia / d.totalGeral * 100)}</div></div>
-      ${cardResultado('Resultado — Casal', tot.totVarDiaRS, tot.pctTotal, tot.ganhoTotalRS, tot.pctGanhoTotal)}
+      <div class="rp-exec-item"><div class="rp-exec-label">${labelPatrimonio}</div><div class="rp-exec-value">${_consR0(d.totalGeral)}</div></div>
+      ${cardSplit}
+      ${cardCasal}
       ${resultadoPessoas}`;
   }
 
@@ -12722,6 +12760,10 @@ function renderConsolidado() {
   }
 
   // ── Tabela por ativo, com quem detém o quê ──
+  const thSaldo = document.getElementById('thConsSaldo');
+  const thPct = document.getElementById('thConsPct');
+  if (thSaldo) thSaldo.textContent = _consFiltro === 'consolidado' ? 'Saldo somado (Luiz+Flavia)' : `Saldo — ${_consFiltro}`;
+  if (thPct) thPct.textContent = _consFiltro === 'consolidado' ? '% do casal' : '% da carteira';
   const tb = document.querySelector('#tblConsAtivos tbody');
   if (tb) {
     // Totais (tot.*) já vêm prontos de _consCalcularTotais(d), chamado uma vez no topo da
