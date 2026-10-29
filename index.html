@@ -348,7 +348,26 @@ thead tr.col-header,#fundTable thead tr{overflow:visible;}
 .rp-scroll-hint{display:none;}
 /* #tblConsAtivos: desktop mostra a tabela, mobile vira lista de cards (ver @media abaixo) —
    nenhum dos dois aparece junto, evita duplicar a mesma informação na tela. */
-.cons-mobile-cards{display:none;}
+/* Posições da Consolidada em cards (estilo app da corretora) em TODAS as larguras -- no desktop
+   a tabela de 10 colunas com rolagem lateral deu lugar a uma grade de cards (pedido do usuário
+   em 29/10/2026: "arrume outro jeito mais eficiente de mostrar"). A tabela continua no HTML,
+   só não aparece. */
+.cons-table-desktop{display:none;}
+.cons-mobile-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:0.75rem;}
+.cons-card{background:#fff;border:1px solid var(--border);border-left:4px solid #999;border-radius:10px;overflow:hidden;}
+.cc-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0.75rem 0.9rem;background:#f6f6f8;}
+.cc-ticker{font-size:16px;font-weight:800;color:#111;}
+.cc-sub{font-size:12px;color:#777;margin-top:2px;white-space:nowrap;}
+.cc-badge{flex-shrink:0;font-size:13px;font-weight:700;color:#7a5a00;background:#fff6dc;border:1px solid #e9c46a;border-radius:6px;padding:2px 8px;}
+.cc-body{padding:0.6rem 0.9rem 0.7rem;}
+.cc-row{display:grid;grid-template-columns:82px 1fr auto;align-items:baseline;gap:6px;padding:4px 0;}
+.cc-lbl{font-size:12px;color:#888;}
+.cc-val{font-size:14px;font-weight:700;white-space:nowrap;}
+.cc-pct{font-size:12.5px;font-weight:600;white-space:nowrap;text-align:right;}
+.cons-card.cons-card-total{background:#1e1a2e;border-color:#1e1a2e;}
+.cons-card.cons-card-total .cc-head{background:#28233d;}
+.cons-card.cons-card-total .cc-ticker{color:#fff;}
+.cons-card.cons-card-total .cc-lbl{color:#aaa;}
 .rp-table{border-collapse:collapse;width:100%;font-size:12px;}
 .rp-table thead tr{background:#f7f7f5;}
 .rp-table thead th{padding:9px 12px;text-align:left;font-weight:600;color:#555;white-space:nowrap;border-bottom:1px solid #efefef;font-size:11px;}
@@ -783,8 +802,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
   /* #tblConsAtivos no mobile: tabela de 10 colunas vira lista de cards empilhados (sem rolagem
      nenhuma) -- usuário reportou 2x (28/10/2026) que a tabela "vazava" mesmo com a dica de
      arrastar, então trocou de abordagem em vez de insistir no scroll horizontal. */
-  .cons-table-desktop{display:none;}
-  .cons-mobile-cards{display:flex!important;flex-direction:column;gap:0.6rem;}
+  .cons-mobile-cards{grid-template-columns:1fr;gap:0.6rem;}
   /* Eram 3 caixas aninhadas (.rp-section > .rp-details > card), cada uma com borda e ~24px de
      padding -- o card ficava com ~260px num celular de 390px. Usuário pediu card mais largo e
      menos bordas (28/10/2026): o <details> vira transparente (sem borda/padding) e a lista
@@ -793,20 +811,6 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
   .cons-mobile-cards{margin:0 -16px;}
   /* Card no estilo do app da corretora: faixa colorida à esquerda, cabeçalho cinza com
      ticker/"PM → Preço"/badge de quantidade, corpo com linhas rótulo | R$ | %. */
-  .cons-card{background:#fff;border:1px solid var(--border);border-left:4px solid #999;border-radius:10px;overflow:hidden;}
-  .cc-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0.75rem 0.9rem;background:#f6f6f8;}
-  .cc-ticker{font-size:16px;font-weight:800;color:#111;}
-  .cc-sub{font-size:12px;color:#777;margin-top:2px;white-space:nowrap;}
-  .cc-badge{flex-shrink:0;font-size:13px;font-weight:700;color:#7a5a00;background:#fff6dc;border:1px solid #e9c46a;border-radius:6px;padding:2px 8px;}
-  .cc-body{padding:0.6rem 0.9rem 0.7rem;}
-  .cc-row{display:grid;grid-template-columns:82px 1fr auto;align-items:baseline;gap:6px;padding:4px 0;}
-  .cc-lbl{font-size:12px;color:#888;}
-  .cc-val{font-size:14px;font-weight:700;white-space:nowrap;}
-  .cc-pct{font-size:12.5px;font-weight:600;white-space:nowrap;text-align:right;}
-  .cons-card.cons-card-total{background:#1e1a2e;border-color:#1e1a2e;}
-  .cons-card.cons-card-total .cc-head{background:#28233d;}
-  .cons-card.cons-card-total .cc-ticker{color:#fff;}
-  .cons-card.cons-card-total .cc-lbl{color:#aaa;}
 
   /* CHARTS — empilhados */
   .charts-grid{grid-template-columns:1fr;padding:0 1rem 0.75rem;}
@@ -2033,7 +2037,7 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       <div class="rp-section-title">📈 Exposição por ativo (casal)</div>
       <div id="chartConsAtivo" style="margin-bottom:0.75rem;"></div>
       <details class="rp-details cons-ativos-details" open>
-        <summary>📋 Ver tabela — quem detém o quê</summary>
+        <summary>📋 Posições — quem detém o quê</summary>
         <div class="rp-details-body">
           <!-- Desktop: tabela com rolagem horizontal (1ª coluna congelada). Mobile: vira lista
                de cards empilhados (sem rolagem nenhuma) -- rolar lateral numa tabela de 10
