@@ -354,6 +354,8 @@ thead tr.col-header,#fundTable thead tr{overflow:visible;}
    só não aparece. */
 .cons-table-desktop{display:none;}
 .cons-mobile-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:0.75rem;}
+.rr-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0.75rem;}
+@media(max-width:768px){.rr-cards{grid-template-columns:1fr;}}
 .cons-card{background:#fff;border:1px solid var(--border);border-left:4px solid #999;border-radius:10px;overflow:hidden;}
 .cc-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0.75rem 0.9rem;background:#f6f6f8;}
 .cc-ticker{font-size:16px;font-weight:800;color:#111;}
@@ -967,6 +969,9 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
     </div>
     <div class="nav-tab" onclick="showPage('radar')">
       <span class="nav-tab-icon">🔭</span> Radar
+    </div>
+    <div class="nav-tab" onclick="showPage('rendas')">
+      <span class="nav-tab-icon">💰</span> Radar de Renda
     </div>
     <div class="nav-tab" onclick="showPage('dados')">
       <span class="nav-tab-icon">📊</span> Base de Dados
@@ -2087,6 +2092,34 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       <ul id="consRiscos" style="padding-left:18px;margin:0;"></ul>
     </div>
 
+  </div>
+</div>
+
+<!-- RADAR DE RENDA — preço teto por dividendo (Bazin) com duas estimativas lado a lado: a do
+     agente (Claude, a partir dos releases de RI/CVM) e a do especialista que o usuário segue há
+     7+ anos (planilha mensal dele). Criado em 10/11/2026 a pedido do usuário. Dados em
+     RADAR_RENDA (script abaixo); cotação e posição do casal são lidas ao vivo das carteiras. -->
+<div class="page" id="page-rendas">
+  <div class="report-body" style="max-width:1000px;">
+    <div class="rp-header">
+      <div class="rp-header-left">
+        <h1>Radar de Renda</h1>
+        <p id="rrSub">Preço teto por dividendo · agente vs. especialista</p>
+      </div>
+    </div>
+    <div class="rp-section">
+      <div class="rp-section-title">📐 Como ler</div>
+      <p style="font-size:12.5px;line-height:1.65;color:#555;margin:0;">
+        <b>Preço teto</b> = dividendo por ação esperado ÷ <b id="rrRegua">7,71%</b> (taxa do Tesouro IPCA+ longo — se a ação pagar menos que isso, o Tesouro paga mais sem risco).
+        <b>Margem</b> = quanto a cotação está abaixo do teto. 🟢 margem ≥ 10% · 🟡 entre −5% e 10% · 🔴 abaixo de −5%.
+        Cada empresa mostra duas estimativas: a do <b>agente</b> (feita a partir do release oficial) e a do <b>especialista</b> (planilha mensal dele). Quando os dividendos estimados divergem mais de 15%, aparece ⚠️ com o motivo.
+      </p>
+    </div>
+    <div class="rp-section">
+      <div class="rp-section-title">💰 Empresas</div>
+      <div class="rr-cards" id="rrCards"></div>
+    </div>
+    <p class="rp-estim" id="rrRodape" style="font-size:11px;line-height:1.6;"></p>
   </div>
 </div>
 
@@ -7834,7 +7867,7 @@ function showPage(id){
   document.querySelectorAll('.nav-tab').forEach(t=>{
     const txt = t.textContent.toLowerCase();
     if(id==='carteira'&&txt.includes('minha carteira')) t.classList.add('active');
-    if(id==='radar'&&txt.includes('radar')) t.classList.add('active');
+    if(id==='radar'&&txt.includes('radar')&&!txt.includes('renda')) t.classList.add('active');
     if(id==='dados'&&txt.includes('base de dados')) t.classList.add('active');
     if(id==='flavia'&&txt.includes('carteira da flavia')) t.classList.add('active');
     if(id==='resumoluiz'&&txt.includes('carteira luiz')) t.classList.add('active');
@@ -13319,5 +13352,188 @@ function attachSortHandlers(tableEl, skipCols) {
   if (tCons) attachSortHandlers(tCons, [0]);
 })();
 </script>
+<script>
+// ══════════════════════════════════════════════════════════════════════════════════════════
+// RADAR DE RENDA (10/11/2026) — ver comentário no #page-rendas.
+// lucro/payout/acoes => dividendo por ação = lucro × payout ÷ ações; ou `dps` fixo quando a
+// estimativa vem direto de guidance da empresa (ALOS3) ou de histórico (GMAT3).
+// ATUALIZAR: a cada planilha nova do especialista (bloco `esp`) e a cada temporada de
+// resultados (bloco `agente`). Registro com data em claude/agente-analista-registro.md.
+// ══════════════════════════════════════════════════════════════════════════════════════════
+const RADAR_RENDA = {
+  regua: 0.0771,
+  reguaFonte: 'Tesouro IPCA+ 2037, mesma régua da aba "Preço teto Bazin adaptado" da planilha do especialista',
+  atualizadoAgente: '10/11/2026',
+  planilhaEspecialista: 'novembro/2026',
+  itens: [
+    { tk: 'ALOS3', nome: 'Allos', status: '3T26 · release',
+      agente: { dps: 3.48, base: 'Guidance da empresa para 2027: R$ 0,28 a R$ 0,30 por ação por mês (ponto médio R$ 0,29).',
+        risco: 'Distribui ~102% do FFO 2027E (lucro de caixa) e a dívida sobe para ~2,0x EBITDA — pago com venda de shoppings (acordo Kinea). Garantido para 2027; depois depende de novas vendas.',
+        fontes: [['Genial Analisa 3T26', 'https://analisa.genialinvestimentos.com.br/acoes/ALOS3/ALLOS-ALOS3--Resultado-3T26-Imobiliario-Puxa-o-Numero-Aluguel-Resiliente/'],
+                 ['Mercado&Consumo 06/11/2026', 'https://mercadoeconsumo.com.br/06/11/2026/mc-capital/allos-tem-lucro-liquido-de-r-2736-milhoes-no-3o-trimestre-salto-de-151-em-um-ano/']] },
+      esp: { lucro: 1.65e9, payout: 1.06, acoes: 500106986 } },
+    { tk: 'BBSE3', nome: 'BB Seguridade', status: '3T26 · RI/CVM',
+      agente: { lucro: 8.6e9, payout: 0.88, acoes: 1.97e9,
+        base: 'Lucro 9M26 R$ 6,80 bi (−0,1% a/a). Payout do 1S26: 88% (R$ 1,98/ação); 2025: 96%. Estimativa 2027 abaixo de 2026 por juros menores e corte do guidance de prêmios da Brasilseg (−3% a −15%).',
+        risco: 'Lucro estagnado: o dividendo depende de payout alto, não de crescimento.',
+        fontes: [['Investidor10 3T26', 'https://investidor10.com.br/noticias/lucro-da-bb-seguridade-bbse3-recua-5-1-no-3t26-para-r-2-43-bilhoes-123670/'],
+                 ['Comunicado CVM dividendos 1S26', 'https://www.meusdividendos.com/news/bbse3-anuncia-dividendos-de-r198-por-acao-payout-de-88-no-1s26']] },
+      esp: { lucro: 9.0e9, payout: 0.85, acoes: 1941248544 } },
+    { tk: 'BBDC3', nome: 'Bradesco', status: '3T26 · RI/CVM',
+      agente: { lucro: 30.5e9, payout: 0.60, acoes: 11175567081,
+        base: 'Relatório de Análise Econômica 3T26 (RI): lucro recorrente 9M26 R$ 20,97 bi; dividendos+JCP brutos 9M26 R$ 12,08 bi = payout 66%. 2027E entre a planilha (R$ 29 bi) e a Genial (R$ 32,2 bi); payout 60% por cautela.',
+        risco: 'Aumento de capital de R$ 10 bi em 2026 aumenta o número de ações; ON recebe 10% menos que PN.',
+        fontes: [['Bradesco — Relatório 3T26 (CVM)', 'https://investidor10.com.br/acoes/link_comunicado/BBDC3/51180/'],
+                 ['Genial Analisa 3T26', 'https://analisa.genialinvestimentos.com.br/acoes/BBDC4/Bradesco-BBDC4--Resultado-3T26-Decimo-Primeiro-Trimestre-Agora-Sem-Muita-Folga']] },
+      esp: { lucro: 29.0e9, payout: 0.55, acoes: 11175567081 } },
+    { tk: 'ITUB3', nome: 'Itaú Unibanco', status: '3T26 · release',
+      agente: { lucro: 53.0e9, payout: 0.70, acoes: 10705698245,
+        base: 'Lucro recorrente 9M26 R$ 37,3 bi (+8,1%); 2026E ≈ R$ 50,6 bi. Payout base 70%; em 2025 o banco distribuiu R$ 48,9 bi (≈100% do lucro) somando extraordinários — se repetir, o teto sobe bastante.',
+        risco: 'Extraordinários dependem de sobra de capital (CET1 12,7%); não são garantidos.',
+        fontes: [['Investidor10 3T26', 'https://investidor10.com.br/noticias/itau-itub4-supera-r-12-bi-em-lucro-no-3t26-veja-os-destaques-do-balanco-123668/'],
+                 ['Rio Times — dividendos 2025', 'https://www.riotimesonline.com/a-bank-beat-an-oil-giant-as-brazils-top-dividend-payer']] },
+      esp: { lucro: 52.0e9, payout: 0.70, acoes: 10753776126 } },
+    { tk: 'CXSE3', nome: 'Caixa Seguridade', status: 'pendente 3T26 (11/11)',
+      agente: { lucro: 5.0e9, payout: 0.92, acoes: 3.0e9,
+        base: '2T26: lucro R$ 1,14 bi (+9,5%), dividendos R$ 1,05 bi (92%). Estimativa provisória até o 3T26.',
+        fontes: [['Investidor10 2T26', 'https://investidor10.com.br/noticias/caixa-seguridade-cxse3-lucra-r-1-14-bi-no-2t26-e-aprova-r-1-05-bi-em-dividendos-121972/']] },
+      esp: { lucro: 5.2e9, payout: 0.92, acoes: 3.0e9 } },
+    { tk: 'BBAS3', nome: 'Banco do Brasil', status: 'pendente 3T26 (11/11)',
+      agente: { lucro: 18.0e9, payout: 0.30, acoes: 5708696148,
+        base: 'Guidance 2026 R$ 18–22 bi, mas 1S26 foi R$ 7,3 bi (ritmo abaixo do piso). Payout oficial 30% em 2026. Estimativa provisória até o 3T26.',
+        risco: 'Inadimplência no agro; banco já cortou o guidance duas vezes.',
+        fontes: [['InfoMoney — guidance', 'https://www.infomoney.com.br/mercados/banco-do-brasil-bbas3-em-novo-tri-de-decepcoes-pior-noticia-veio-do-guidance-cautela-mercado-desempenho-acoes/'],
+                 ['Investidor10 — payout 2026', 'https://investidor10.com.br/noticias/dividendos-do-banco-do-brasil-bbas3-cfo-descarta-payout-maior-para-2026-118597/']] },
+      esp: { lucro: 20.0e9, payout: 0.25, acoes: 5708696148 } },
+    { tk: 'IRBR3', nome: 'IRB(Re)', status: 'pendente 3T26 (12/11)',
+      agente: { lucro: 0.55e9, payout: 0.50, acoes: 81843000, copiado: true,
+        base: 'Lucro recorrente 12m R$ 592 mi (R$ 501 mi após reforma tributária), mas o resultado IFRS 17 (balanço oficial) do 2T26 foi −R$ 3 mi. Dividendo pago em 2026: R$ 0,59/ação. Lucro ainda igual ao do especialista — estimativa própria sai com o 3T26.',
+        risco: 'Diferença grande entre o lucro que a empresa destaca e o balanço oficial.',
+        fontes: [['Legismap 2T26', 'https://legismap.com.br/conteudos/artigos-e-noticias/irb-re-registra-lucro-liquido-recorrente-de-r-185-milhoes-no-2t26']] },
+      esp: { lucro: 0.55e9, payout: 0.50, acoes: 81843000, obs: 'Planilha usa R$ 550 mi na aba Bazin e R$ 650 mi na aba Dados.' } },
+    { tk: 'FIQE3', nome: 'Unifique', status: 'pendente 3T26',
+      agente: { lucro: 0.23e9, payout: 0.40, acoes: 399087000, copiado: true,
+        base: 'Dividendo recorrente ~4% a.a.; o especial de 2025 é pago em parcelas até 2028 (R$ 0,18/ação em 2027, R$ 0,23 em 2028) e não entra no teto. Lucro ainda igual ao do especialista.',
+        fontes: [['Dados de Mercado — proventos', 'https://www.dadosdemercado.com.br/acoes/fiqe3/dividendos']] },
+      esp: { lucro: 0.23e9, payout: 0.50, acoes: 399087000 } },
+    { tk: 'GMAT3', nome: 'Grupo Mateus', status: 'pendente 3T26 (12/11)',
+      agente: { dps: 0.249, base: 'Sem estimativa ainda: usa o dividendo pago em 2025 (R$ 0,249/ação, só JCP). Empresa de crescimento, payout ~30%.',
+        fontes: [['Dados de Mercado — proventos', 'https://www.dadosdemercado.com.br/acoes/gmat3/dividendos']] },
+      esp: null },
+  ],
+};
+
+function _rrDps(e) {
+  if (!e) return null;
+  if (typeof e.dps === 'number') return e.dps;
+  if (e.lucro > 0 && e.payout > 0 && e.acoes > 0) return e.lucro * e.payout / e.acoes;
+  return null;
+}
+function _rrCotacao(tk) {
+  for (const id of ['flaviaPosBody', 'luizPosBody']) {
+    const tr = document.querySelector(`#${id} tr[data-ticker="${tk}.SA"]`);
+    const v = tr ? _consNum(tr.querySelector('.cw-preco')?.textContent) : 0;
+    if (v > 0) return v;
+  }
+  const rr = document.querySelector(`tr[data-ticker="${tk}.SA"][data-preco-justo]`);
+  const v = rr ? _consNum(rr.querySelector('.cotacao-cell')?.textContent) : 0;
+  return v > 0 ? v : null;
+}
+function _rrPosicao(tk) {
+  const out = {};
+  [['Flavia', 'flaviaPosBody'], ['Luiz', 'luizPosBody']].forEach(([nome, id]) => {
+    const tr = document.querySelector(`#${id} tr[data-ticker="${tk}.SA"]`);
+    if (!tr) return;
+    const q = _consNum(tr.querySelector('.cw-qtd')?.value);
+    const s = _consNum(tr.querySelector('.cw-saldo')?.textContent);
+    if (q > 0 && s > 0) out[nome] = s;
+  });
+  return out;
+}
+function _rrSinal(m) {
+  if (m === null) return { e: '⚪', t: 'sem dado', c: '#888' };
+  if (m >= 0.10) return { e: '🟢', t: 'abaixo do teto', c: '#0a8a4a' };
+  if (m >= -0.05) return { e: '🟡', t: 'perto do teto', c: '#b7791f' };
+  return { e: '🔴', t: 'acima do teto', c: '#d13b3b' };
+}
+function renderRadarRenda() {
+  const box = document.getElementById('rrCards');
+  if (!box) return;
+  const R = RADAR_RENDA.regua;
+  const pctR = v => (v * 100).toFixed(1).replace('.', ',') + '%';
+  const sgn = v => (v >= 0 ? '+' : '') + pctR(v);
+  const fmtLucro = v => v >= 1e9 ? 'R$ ' + (v / 1e9).toFixed(1).replace('.', ',') + ' bi' : 'R$ ' + Math.round(v / 1e6) + ' mi';
+  const totalCasal = (typeof coletarConsolidado === 'function' && typeof _consFiltro !== 'undefined' && _consFiltro === 'consolidado')
+    ? (coletarConsolidado().totalGeral || 0) : 0;
+  const linhas = RADAR_RENDA.itens.map(it => {
+    const cot = _rrCotacao(it.tk);
+    const dA = _rrDps(it.agente), dE = _rrDps(it.esp);
+    const tA = dA ? dA / R : null, tE = dE ? dE / R : null;
+    const mA = (tA && cot) ? 1 - cot / tA : null, mE = (tE && cot) ? 1 - cot / tE : null;
+    const pos = _rrPosicao(it.tk);
+    const posTot = Object.values(pos).reduce((a, b) => a + b, 0);
+    return { it, cot, dA, dE, tA, tE, mA, mE, pos, posTot };
+  }).sort((a, b) => (b.mA ?? -9) - (a.mA ?? -9));
+  box.innerHTML = linhas.map((l, i) => {
+    const s = _rrSinal(l.mA), sE = _rrSinal(l.mE);
+    const diverge = (l.dA && l.dE) ? Math.abs(l.dA / l.dE - 1) > 0.15 : false;
+    const val = (v, f) => v === null || v === undefined ? '—' : f(v);
+    const linha = (rot, a, e, ca, ce) => `<div class="cc-row" style="grid-template-columns:96px 1fr 1fr;"><span class="cc-lbl">${rot}</span><span class="cc-val" style="color:${ca || '#111'};">${a}</span><span class="cc-val" style="text-align:right;color:${ce || '#555'};font-weight:600;">${e}</span></div>`;
+    const posTxt = l.posTot > 0
+      ? Object.entries(l.pos).map(([n, v]) => `${n} ${_consR(v).replace(/,\d\d$/, '')}`).join(' · ') + (totalCasal > 0 ? ` · ${pctR(l.posTot / totalCasal)} do casal` : '')
+      : 'vocês não têm';
+    const notas = [];
+    if (diverge) notas.push(`⚠️ Dividendo estimado diverge ${pctR(Math.abs(l.dA / l.dE - 1))}: agente ${val(l.it.agente.payout, pctR)} de payout${l.it.agente.lucro ? ' sobre ' + fmtLucro(l.it.agente.lucro) : ''}, especialista ${val(l.it.esp && l.it.esp.payout, pctR)}${l.it.esp && l.it.esp.lucro ? ' sobre ' + fmtLucro(l.it.esp.lucro) : ''}.`);
+    if (l.it.agente.copiado) notas.push('ℹ️ Lucro do agente ainda igual ao do especialista — não conta como opinião independente.');
+    if (l.it.esp && l.it.esp.obs) notas.push('ℹ️ ' + l.it.esp.obs);
+    if (!l.it.esp) notas.push('ℹ️ Fora da planilha do especialista.');
+    return `<div class="cons-card" style="border-left-color:${s.c};">
+      <div class="cc-head">
+        <div style="min-width:0;"><div class="cc-ticker">${l.it.tk} <span style="font-weight:500;font-size:12px;color:#777;">${l.it.nome}</span></div>
+          <div class="cc-sub">${l.it.status}</div></div>
+        <span class="cc-badge" style="background:#fff;border-color:${s.c};color:${s.c};">${s.e} ${s.t}</span>
+      </div>
+      <div class="cc-body">
+        ${linha('', '<span style="font-size:10.5px;color:#888;font-weight:600;">AGENTE</span>', '<span style="font-size:10.5px;color:#888;">ESPECIALISTA</span>')}
+        ${linha('Cotação', val(l.cot, _consR), '')}
+        ${linha('Div./ação', val(l.dA, _consR), val(l.dE, _consR))}
+        ${linha('Div. yield', (l.dA && l.cot) ? pctR(l.dA / l.cot) : '—', (l.dE && l.cot) ? pctR(l.dE / l.cot) : '—')}
+        ${linha('Preço teto', val(l.tA, _consR), val(l.tE, _consR))}
+        ${linha('Margem', val(l.mA, sgn), l.mE === null ? '—' : sE.e + ' ' + sgn(l.mE), s.c, sE.c)}
+        <div class="cc-row" style="grid-template-columns:96px 1fr;"><span class="cc-lbl">Vocês têm</span><span style="font-weight:600;font-size:12.5px;color:#444;white-space:normal;line-height:1.45;">${posTxt}</span></div>
+        ${notas.length ? `<div style="font-size:11.5px;line-height:1.5;color:#7a5a00;background:#fff8e6;border-radius:6px;padding:6px 8px;margin-top:6px;">${notas.join('<br>')}</div>` : ''}
+        <details style="margin-top:6px;"><summary style="font-size:11.5px;color:#666;cursor:pointer;">Premissas e fontes</summary>
+          <div style="font-size:11.5px;line-height:1.55;color:#555;padding-top:4px;">
+            ${l.it.agente.base}${l.it.agente.risco ? `<br><b>Risco:</b> ${l.it.agente.risco}` : ''}
+            <br>${(l.it.agente.fontes || []).map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join(' · ')}
+          </div></details>
+      </div></div>`;
+  }).join('');
+  const sub = document.getElementById('rrSub');
+  if (sub) sub.textContent = `Agente atualizado em ${RADAR_RENDA.atualizadoAgente} · planilha do especialista de ${RADAR_RENDA.planilhaEspecialista} · cotações ao vivo`;
+  const reg = document.getElementById('rrRegua');
+  if (reg) reg.textContent = (R * 100).toFixed(2).replace('.', ',') + '%';
+  const rod = document.getElementById('rrRodape');
+  if (rod) rod.textContent = `Régua: ${RADAR_RENDA.reguaFonte}. Ordenado pela margem do agente. Estimativas são projeções, não garantia de pagamento — não é recomendação de investimento.`;
+}
+(function patchShowPageRendas() {
+  const orig = window.showPage;
+  if (typeof orig !== 'function') return;
+  window.showPage = function (id) {
+    orig(id);
+    if (id !== 'rendas') return;
+    document.querySelectorAll('.nav-tab').forEach(t => { if (t.textContent.toLowerCase().includes('radar de renda')) t.classList.add('active'); else if (t.textContent.toLowerCase().includes('radar')) t.classList.remove('active'); });
+    renderRadarRenda();
+  };
+  const origProp = window._cwPropagar;
+  if (typeof origProp === 'function') {
+    window._cwPropagar = function (tbodyId) {
+      origProp(tbodyId);
+      if (document.getElementById('page-rendas')?.classList.contains('active')) renderRadarRenda();
+    };
+  }
+})();
+</script>
+
 </body>
 </html>
