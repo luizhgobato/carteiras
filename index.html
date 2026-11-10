@@ -356,6 +356,21 @@ thead tr.col-header,#fundTable thead tr{overflow:visible;}
 .cons-mobile-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:0.75rem;}
 .rr-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0.75rem;}
 @media(max-width:768px){.rr-cards{grid-template-columns:1fr;}}
+.rr-est-btn{display:block;width:100%;margin-top:8px;padding:8px 10px;border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;font-weight:700;font-size:12.5px;border-radius:8px;cursor:pointer;}
+.rr-est{display:none;position:fixed;inset:0;background:rgba(17,24,39,0.55);z-index:1000;padding:24px 12px;}
+.rr-est.open{display:block;}
+.rr-est-panel{position:relative;max-width:860px;height:100%;margin:0 auto;background:#fff;border-radius:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:22px 24px 30px;}
+.rr-est-close{position:sticky;top:0;float:right;border:none;background:#f3f4f6;border-radius:50%;width:34px;height:34px;font-size:16px;cursor:pointer;z-index:2;}
+.rr-est-top{padding-bottom:10px;border-bottom:1px solid #eee;margin-bottom:6px;}
+.rr-est-sec{margin-top:16px;}
+.rr-est-sec h3{font-size:14px;font-weight:800;color:#1e1a2e;margin:0 0 6px;}
+.rr-est-sec p,.rr-est-sec li{font-size:13px;line-height:1.6;color:#333;}
+.rr-est-sec ul,.rr-est-sec ol{margin:4px 0;padding-left:20px;}
+.rr-est-nota{font-size:11.5px!important;color:#777!important;}
+.rr-est .rp-table thead th,.rr-est .rp-table tbody td{font-size:12px;vertical-align:top;white-space:normal!important;text-align:left!important;padding:7px 9px;line-height:1.45;}
+.rr-est .rp-table tbody td:first-child{font-weight:600;color:#333;}
+@media(max-width:768px){.rr-est{padding:0;}.rr-est-panel{border-radius:0;padding:16px 14px 28px;}.rr-est .rp-table thead th,.rr-est .rp-table tbody td{font-size:11.5px;padding:6px 6px;}}
+
 .cons-card{background:#fff;border:1px solid var(--border);border-left:4px solid #999;border-radius:10px;overflow:hidden;}
 .cc-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0.75rem 0.9rem;background:#f6f6f8;}
 .cc-ticker{font-size:16px;font-weight:800;color:#111;}
@@ -2120,6 +2135,12 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       <div class="rr-cards" id="rrCards"></div>
     </div>
     <p class="rp-estim" id="rrRodape" style="font-size:11px;line-height:1.6;"></p>
+  </div>
+  <div class="rr-est" id="rrEstudo" onclick="if(event.target===this)fecharEstudoRenda()">
+    <div class="rr-est-panel">
+      <button type="button" class="rr-est-close" onclick="fecharEstudoRenda()" aria-label="Fechar">✕</button>
+      <div class="rr-est-body"></div>
+    </div>
   </div>
 </div>
 
@@ -13423,6 +13444,168 @@ const RADAR_RENDA = {
   ],
 };
 
+// ══════════════════════════════════════════════════════════════════════════════════════════
+// ESTUDOS COMPLETOS por empresa (botão "Ver estudo completo" no card do Radar de Renda).
+// Pedido do usuário em 10/11/2026: por que comprar, como a empresa ganha dinheiro, resultado e
+// não recorrentes, dividendos e sustentabilidade, guidance e chance de entregar, premissas e
+// requisitos da tese, cenários, riscos, gatilhos e fontes. Segue a METODOLOGIA ANALISE.md do
+// projeto (testes de qualidade 1-3, motor por setor), adaptada ao foco em renda.
+// ⚠️ marca dado estimado ou com divergência entre fontes. Piloto: ALOS3.
+// ══════════════════════════════════════════════════════════════════════════════════════════
+const RADAR_RENDA_ESTUDOS = {
+  ALOS3: {
+    atualizado: '10/11/2026', base: 'Resultado 3T26 (divulgado em 05/11/2026)', cotacaoRef: 27.23,
+    setor: 'Shoppings (imobiliário) · motor de valuation: cap rate/NAV, validado por dividendo (Bazin) — P/L e P/VP×ROE não servem para shopping (imóvel a custo histórico distorce os dois).',
+    resumo: [
+      ['Veredicto do agente', '🟢 Abaixo do teto — mesmo no cenário pessimista a margem fica positiva (+15%).'],
+      ['Convicção', '★★★☆☆ média — tese boa, mas o dividendo de 2026–27 é maior que a geração de caixa recorrente e depende de venda de shoppings.'],
+      ['Em uma frase', 'Paga ~R$ 0,29 por ação todo mês (≈12,8% ao ano na cotação de referência) e cumpriu a promessa de 2026; o preço só faz sentido se você aceitar que parte desse dividendo vem de vender shoppings caro, não do aluguel.'],
+    ],
+    tese: [
+      '<b>Renda mensal alta e previsível:</b> desde jan/2026 paga R$ 0,2919–0,2925 por ação todo mês (R$ 3,51 no ano). Para 2027 a empresa prometeu manter R$ 0,28–0,30/mês.',
+      '<b>Cumpriu o que prometeu:</b> em nov/2025 anunciou que triplicaria o dividendo mensal em 2026 (de ~R$ 0,10 para ~R$ 0,29) — e pagou exatamente isso em todos os meses.',
+      '<b>Vende shoppings mais caro do que a bolsa avalia a própria empresa:</b> a venda de fatias de 7 shoppings ao fundo KAML11 sai a cap rate de ~9,5% (≈10,5 anos de aluguel líquido), enquanto a ação embute um retorno operacional de ~13% ao ano ⚠️ (comparação aproximada: EBITDA/valor da empresa). Na prática, ela vende ativos por um preço que a bolsa não paga por ela — e devolve o dinheiro ao acionista.',
+      '<b>Diversifica a carteira de vocês:</b> é o único ativo relevante do casal fora de bancos e seguradoras, que já passam de 40% do patrimônio.',
+    ],
+    negocio: {
+      texto: 'É a maior operadora de shoppings do Brasil (fusão Aliansce Sonae + brMalls, 2023). Pense num <b>condomínio de lojas</b>: o dinheiro vem principalmente do aluguel que os lojistas pagam (mínimo fixo corrigido pela inflação + um percentual sobre as vendas), do estacionamento e, cada vez mais, de mídia e serviços. Aluguel corrigido pela inflação é o que dá previsibilidade ao dividendo.',
+      tabela: [
+        ['Aluguel de lojistas', 'R$ 497,3 mi', '61%', '+1,7% a/a — fraco (vacância Casas Bahia)'],
+        ['Estacionamento', 'R$ 140,4 mi', '17%', '+11,1% a/a'],
+        ['Serviços e mídia (Hello)', 'R$ 113,0 mi', '14%', '+31,4% a/a — o que mais cresce'],
+        ['Desenvolvimento imobiliário', 'R$ 50,4 mi', '6%', 'Projeto no Shopping da Bahia com Moura Dubeux — não recorrente'],
+        ['Outros (inclui seguro do incêndio do Tijuca)', 'R$ 19,9 mi', '2%', 'Não recorrente'],
+      ],
+      nota: 'Receita bruta por linha no 3T26 (soma R$ 821 mi; receita líquida R$ 776,5 mi, +17,1% a/a). Fonte: Mercado&Consumo citando o release.',
+    },
+    resultado: {
+      tabela: [
+        ['Receita líquida', 'R$ 776,5 mi', '+17,1%', 'Inflada por imobiliário e seguro'],
+        ['EBITDA ajustado', 'R$ 580–598 mi ⚠️', '+19%', 'Fontes divergem (ver Qualidade dos dados)'],
+        ['FFO (lucro de caixa do shopping)', 'R$ 384,5 mi · R$ 0,77/ação', '+26,1%', 'Bom, mas parte vem de itens não recorrentes'],
+        ['Lucro líquido', 'R$ 273,6–291,3 mi ⚠️', '+131% a +151%', 'Dobrou por não recorrentes e imposto'],
+        ['Dívida líquida', 'R$ 4,0 bi', '+9,9% no tri', '1,8x EBITDA (era 1,7x)'],
+        ['Vendas mesmas lojas (SSS) ⚠️', '+2,5%', '', 'Abaixo da inflação'],
+        ['Aluguel mesmas lojas (SSR) ⚠️', '+4,1%', '', 'Levemente abaixo da inflação (IPCA ~4,5%)'],
+        ['Vacância ⚠️', '4,8%', '+1,3 p.p.', 'Recuperação judicial da Casas Bahia'],
+        ['Inadimplência ⚠️', '1,5%', '+0,6 p.p.', 'Piorou'],
+      ],
+      leitura: 'O FFO cresceu 26%, mas o <b>aluguel — o coração do negócio — cresceu só 1,7%</b>. O salto veio de imobiliário, mídia e itens pontuais. Para renda, o que importa é o aluguel recorrente.',
+    },
+    naoRecorrentes: [
+      ['Resultado não recorrente no lucro', 'R$ 39,5 mi', 'Genial'],
+      ['Benefício de imposto diferido', 'R$ 23,2 mi', 'Genial — reduz o imposto contábil, não é caixa novo'],
+      ['Receita de desenvolvimento imobiliário', 'R$ 50,4 mi', 'Projeto pontual com Moura Dubeux'],
+      ['Seguro de lucros cessantes (incêndio Tijuca)', 'parte de R$ 19,9 mi', 'Indenização, não se repete'],
+      ['Venda de 60% do São Bernardo Plaza', 'R$ 352,1 mi (R$ 252,8 mi à vista)', 'Ganho na venda não divulgado'],
+    ],
+    naoRecorrentesLeitura: 'Tirando os itens pontuais, o lucro "limpo" do trimestre é bem menor que a manchete de +131%. Pela metodologia (Teste 2), o crescimento é <b>majoritariamente não operacional</b>.',
+    dividendos: {
+      tabela: [
+        ['2023', 'R$ 0,52', '1,9%'], ['2024', 'R$ 1,53', '8,4%'], ['2025', 'R$ 1,58', '5,6%'],
+        ['2026 (12 parcelas de ~R$ 0,29)', 'R$ 3,51', '12,9% ⚠️'], ['2027 — guidance R$ 0,28–0,30/mês', 'R$ 3,36–3,60', '12,3–13,2%'],
+      ],
+      payout: [
+        ['Dividendo 2026 ÷ FFO do 3T26 anualizado (R$ 0,77 × 4)', '≈ 114%'],
+        ['Dividendo 2027 ÷ FFO 2027E (Genial: R$ 1,72 bi)', '≈ 101%'],
+      ],
+      origem: 'Pela tabela da metodologia (Teste 3), o excedente vem de <b>venda/reciclagem de ativos</b> — gravidade <b>alta</b>: é finito e reduz a base de aluguel futura. A dívida sobe de 1,8x para ~2,0x EBITDA em 2027 segundo a própria empresa.',
+      conclusao: 'Sustentável em 2027 (prometido e com venda ao KAML11 em curso). <b>Não é sustentável para sempre no nível de ~13%</b>: se as vendas pararem e o FFO não crescer, o dividendo tende a cair para algo como 80% do FFO (~R$ 2,46–2,76/ação, 9–10% ao ano). Ainda assim acima da régua de 7,71%.',
+    },
+    guidance: [
+      ['Dividendo 2026: ~R$ 0,29/mês', '✅ Entregue', 'Pago todos os meses de jan a dez/2026.'],
+      ['Dividendo 2027: R$ 0,28–0,30/mês', '🟢 Alta', 'Mesmo nível de 2026, com caixa da venda ao KAML11 e da São Bernardo.'],
+      ['Alavancagem 2027: ~2,0x EBITDA', '🟡 Média', 'Já está em 1,8x; depende do KAML11 captar o mínimo e do EBITDA não cair.'],
+      ['Venda de fatias de 7 shoppings ao KAML11 (até R$ 1 bi)', '🟡 Média', 'Só fecha se o fundo captar ≥ R$ 600 mi; 80% à vista, 20% em 24/36/48 meses.'],
+    ],
+    premissas: [
+      ['KAML11 captar pelo menos R$ 600 mi', '⏳ Em andamento', 'Oferta começou em 22/10/2026. Sem isso, o dividendo de 2027 pesa mais na dívida.'],
+      ['Aluguel mesmas lojas (SSR) acima da inflação', '🟡 No limite', '+4,1% no 3T26 ⚠️ vs IPCA ~4,5% — um pouco abaixo. Precisa voltar a superar a inflação.'],
+      ['Vacância voltar para menos de 4%', '❌ Ainda não', '4,8% com a Casas Bahia; área já em negociação, segundo a empresa.'],
+      ['Dívida ≤ ~2,0x EBITDA', '✅ Atendida', '1,8x hoje.'],
+      ['Juros caindo (dívida atrelada ao CDI)', '✅ Favorável', 'Selic em ciclo de corte; resultado financeiro de −R$ 144 mi/tri estável.'],
+      ['FFO recorrente crescer até cobrir o dividendo', '❌ Ainda não', 'Hoje cobre ~90% (sem os itens pontuais, menos). É a premissa que decide 2028 em diante.'],
+    ],
+    cenarios: [
+      ['Pessimista', 'Vendas param; dividendo cai para 80% do FFO atual', 'R$ 2,46', '9,0%', 'R$ 31,96', '+15%'],
+      ['Normalizado', '80% do FFO 2027E (Genial)', 'R$ 2,76', '10,1%', 'R$ 35,80', '+24%'],
+      ['Base (guidance)', 'R$ 0,29/mês', 'R$ 3,48', '12,8%', 'R$ 45,14', '+40%'],
+      ['Otimista', 'Topo do guidance, R$ 0,30/mês', 'R$ 3,60', '13,2%', 'R$ 46,69', '+42%'],
+    ],
+    embutido: 'Retorno embutido (dividendo + crescimento do aluguel, sem contar valorização): ~12,8% + ~4% ≈ <b>16,8% ao ano</b>, ou <b>~11,8% acima da inflação</b> (Fisher, IPCA 4,5%) — acima da Selic real de 9,09%. No pessimista: 9,0% + 4% ≈ 13% nominal, ~8% real — abaixo da Selic real.',
+    riscos: [
+      '<b>Dividendo maior que a geração de caixa recorrente</b> (~101–114% do FFO), pago com venda de shoppings. Cada venda reduz o aluguel futuro.',
+      '<b>Aluguel crescendo pouco</b> (+1,7% no 3T26) e vacância subindo por causa da Casas Bahia.',
+      '<b>KAML11 não captar o mínimo</b> — a venda não fecha e a dívida sobe mais rápido.',
+      '<b>Juros parando de cair ou voltando a subir</b> encarecem a dívida de R$ 4 bi.',
+      '<b>Qualidade dos dados desta análise:</b> fontes divergem em EBITDA e lucro do 3T26 (ver abaixo).',
+    ],
+    gatilhos: [
+      'Encerramento da oferta do KAML11 (captou ≥ R$ 600 mi?).',
+      '4T26 (fev–mar/2027): vacância, inadimplência e aluguel mesmas lojas.',
+      'Anúncio do dividendo mensal de 2028 — sinal de quanto a empresa consegue sustentar sem vender ativos.',
+      'Dívida líquida/EBITDA acima de 2,2x → revisar a tese.',
+    ],
+    encaixe: 'Flavia tem 2.900 e Luiz 1.400 ações (≈6,8% do patrimônio do casal). É o principal diversificador fora do setor financeiro. Aumentar a posição melhora a diversificação, mas concentra num único papel cuja renda depende de reciclagem de ativos — vale um limite por ação (ex.: 10%).',
+    qualidade: [
+      'Não encontrei o release oficial completo do 3T26 no RI — os números vêm de 4 veículos que citam o release, e eles divergem: EBITDA R$ 530 mi (Eu Quero Investir) / R$ 580,1 mi (Mercado&Consumo) / R$ 598 mi (brapi); lucro R$ 273,6 mi / R$ 291,3 mi (provável diferença entre lucro total e dos controladores). Usei FFO R$ 384,5 mi, que bate em duas fontes independentes.',
+      'SSS, SSR, vacância e inadimplência vêm de uma única fonte (Eu Quero Investir) que também traz o EBITDA divergente — tratar com cautela ⚠️.',
+      'Dividendos pagos (Dados de Mercado) e guidance 2027 (citado por Genial, Mercado&Consumo e BTG) são consistentes entre fontes.',
+      'Para fechar: release e ITR do 3T26 no site de RI da Allos ou na CVM.',
+    ],
+    fontes: [
+      ['Genial Analisa — Resultado 3T26', 'https://analisa.genialinvestimentos.com.br/acoes/ALOS3/ALLOS-ALOS3--Resultado-3T26-Imobiliario-Puxa-o-Numero-Aluguel-Resiliente/'],
+      ['Mercado&Consumo — 3T26 (06/11/2026)', 'https://mercadoeconsumo.com.br/06/11/2026/mc-capital/allos-tem-lucro-liquido-de-r-2736-milhoes-no-3o-trimestre-salto-de-151-em-um-ano/'],
+      ['Eu Quero Investir — 3T26 e guidance', 'https://euqueroinvestir.com/acoes/allos-alos3-tem-trimestre-solido-e-projeta-dividend-yield-de-ate-145'],
+      ['brapi — 3T26', 'https://brapi.dev/news/allos-lucra-r-291-mi-no-3-tri-alta-de-131-e-9c714133'],
+      ['Investidor10 — venda ao KAML11 (23/10/2026)', 'https://investidor10.com.br/noticias/allos-alos3-vende-fatias-de-sete-shoppings-para-fii-da-kinea-123459/'],
+      ['Dados de Mercado — histórico de dividendos', 'https://www.dadosdemercado.com.br/acoes/alos3/dividendos'],
+      ['InfoMoney — promessa de triplicar o dividendo (nov/2025)', 'https://www.infomoney.com.br/?p=3102378'],
+    ],
+  },
+};
+
+function abrirEstudoRenda(tk) {
+  const e = RADAR_RENDA_ESTUDOS[tk];
+  const box = document.getElementById('rrEstudo');
+  if (!e || !box) return;
+  const it = RADAR_RENDA.itens.find(x => x.tk === tk) || { nome: '' };
+  const tab = (head, rows) => `<div class="rp-table-wrap" style="margin:6px 0 10px;"><table class="rp-table rr-est-tab"><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const sec = (t, html) => `<div class="rr-est-sec"><h3>${t}</h3>${html}</div>`;
+  const ul = arr => `<ul>${arr.map(x => `<li>${x}</li>`).join('')}</ul>`;
+  const cot = _rrCotacao(tk);
+  box.querySelector('.rr-est-body').innerHTML = `
+    <div class="rr-est-top">
+      <div><div style="font-size:20px;font-weight:800;">${tk} <span style="font-weight:500;font-size:14px;color:#777;">${it.nome}</span></div>
+      <div style="font-size:12px;color:#777;">${e.base} · estudo de ${e.atualizado} · cotação de referência ${_consR(e.cotacaoRef)}${cot ? ' · hoje ' + _consR(cot) : ''}</div>
+      <div style="font-size:12px;color:#555;margin-top:4px;">${e.setor}</div></div>
+    </div>
+    ${sec('Resumo', tab(['', ''], e.resumo.map(([a, b]) => [`<b>${a}</b>`, b])))}
+    ${sec('1. Por que comprar', ul(e.tese))}
+    ${sec('2. Como a empresa ganha dinheiro', `<p>${e.negocio.texto}</p>${tab(['Linha', '3T26', 'Peso', 'Leitura'], e.negocio.tabela)}<p class="rr-est-nota">${e.negocio.nota}</p>`)}
+    ${sec('3. Resultado do trimestre', tab(['Indicador', '3T26', 'Var. a/a', 'Leitura'], e.resultado.tabela) + `<p>${e.resultado.leitura}</p>`)}
+    ${sec('4. Itens não recorrentes', tab(['Item', 'Valor', 'Observação'], e.naoRecorrentes) + `<p>${e.naoRecorrentesLeitura}</p>`)}
+    ${sec('5. Dividendos e sustentabilidade', tab(['Ano', 'Dividendo/ação', 'Dividend yield'], e.dividendos.tabela) + tab(['Payout', 'Valor'], e.dividendos.payout) + `<p>${e.dividendos.origem}</p><p><b>Conclusão:</b> ${e.dividendos.conclusao}</p>`)}
+    ${sec('6. Guidance e chance de entregar', tab(['Promessa da empresa', 'Chance', 'Por quê'], e.guidance))}
+    ${sec('7. Premissas e requisitos da tese', `<p class="rr-est-nota">O que precisa ser verdade para a compra fazer sentido — e se está sendo cumprido hoje.</p>` + tab(['Requisito', 'Status', 'Evidência'], e.premissas))}
+    ${sec('8. Cenários de dividendo e preço teto', tab(['Cenário', 'Premissa', 'Div./ação', 'Yield', 'Preço teto (÷7,71%)', 'Margem'], e.cenarios) + `<p>${e.embutido}</p>`)}
+    ${sec('9. Riscos (do mais grave ao menos)', `<ol>${e.riscos.map(x => `<li>${x}</li>`).join('')}</ol>`)}
+    ${sec('10. Gatilhos de monitoramento', ul(e.gatilhos))}
+    ${sec('11. Encaixe na carteira de vocês', `<p>${e.encaixe}</p>`)}
+    ${sec('⚠️ Qualidade dos dados', ul(e.qualidade))}
+    ${sec('Fontes', ul(e.fontes.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${t}</a>`)))}
+    <p class="rr-est-nota">Estudo feito por IA a partir de fontes públicas. Não é recomendação de investimento — a decisão é sua.</p>`;
+  box.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  box.querySelector('.rr-est-panel').scrollTop = 0;
+}
+function fecharEstudoRenda() {
+  const box = document.getElementById('rrEstudo');
+  if (box) box.classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') fecharEstudoRenda(); });
+
 function _rrDps(e) {
   if (!e) return null;
   if (typeof e.dps === 'number') return e.dps;
@@ -13502,6 +13685,7 @@ function renderRadarRenda() {
         ${linha('Margem', val(l.mA, sgn), l.mE === null ? '—' : sE.e + ' ' + sgn(l.mE), s.c, sE.c)}
         <div class="cc-row" style="grid-template-columns:96px 1fr;"><span class="cc-lbl">Vocês têm</span><span style="font-weight:600;font-size:12.5px;color:#444;white-space:normal;line-height:1.45;">${posTxt}</span></div>
         ${notas.length ? `<div style="font-size:11.5px;line-height:1.5;color:#7a5a00;background:#fff8e6;border-radius:6px;padding:6px 8px;margin-top:6px;">${notas.join('<br>')}</div>` : ''}
+        ${RADAR_RENDA_ESTUDOS[l.it.tk] ? `<button type="button" class="rr-est-btn" onclick="abrirEstudoRenda('${l.it.tk}')">📖 Ver estudo completo</button>` : ''}
         <details style="margin-top:6px;"><summary style="font-size:11.5px;color:#666;cursor:pointer;">Premissas e fontes</summary>
           <div style="font-size:11.5px;line-height:1.55;color:#555;padding-top:4px;">
             ${l.it.agente.base}${l.it.agente.risco ? `<br><b>Risco:</b> ${l.it.agente.risco}` : ''}
