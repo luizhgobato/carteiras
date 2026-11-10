@@ -2125,7 +2125,9 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
     <div class="rp-section">
       <div class="rp-section-title">📐 Como ler</div>
       <p style="font-size:12.5px;line-height:1.65;color:#555;margin:0;">
-        <b>Preço teto</b> = dividendo por ação esperado ÷ <b id="rrRegua">7,71%</b> (taxa do Tesouro IPCA+ longo — se a ação pagar menos que isso, o Tesouro paga mais sem risco).
+        <b>Dividendo por ação</b> = lucro estimado × payout (parte do lucro que vira dividendo) ÷ número de ações.
+        <b>Preço teto</b> = dividendo por ação ÷ <b id="rrRegua">7,71%</b>. É o <b>preço máximo que você pode pagar para a ação te render pelo menos 7,71% ao ano só em dividendos</b>. Os 7,71% são a taxa acima da inflação do Tesouro IPCA+ 2037 — a mesma régua da planilha do especialista: se a ação render menos que isso em dividendo, o Tesouro paga mais, sem risco.
+        Exemplo: dividendo de R$ 3,48 ÷ 0,0771 = preço teto de R$ 45,14. Comprando a R$ 27,23, você recebe 12,8% ao ano.
         <b>Margem</b> = quanto a cotação está abaixo do teto. 🟢 margem ≥ 10% · 🟡 entre −5% e 10% · 🔴 abaixo de −5%.
         Cada empresa mostra duas estimativas: a do <b>agente</b> (feita a partir do release oficial) e a do <b>especialista</b> (planilha mensal dele). Quando os dividendos estimados divergem mais de 15%, aparece ⚠️ com o motivo.
       </p>
@@ -13388,7 +13390,7 @@ const RADAR_RENDA = {
   planilhaEspecialista: 'novembro/2026',
   itens: [
     { tk: 'ALOS3', nome: 'Allos', status: '3T26 · release',
-      agente: { dps: 3.48, base: 'Guidance da empresa para 2027: R$ 0,28 a R$ 0,30 por ação por mês (ponto médio R$ 0,29).',
+      agente: { dps: 3.48, lucroTxt: 'FFO R$ 1,72 bi', payoutTxt: '~101% do FFO', base: 'Guidance da empresa para 2027: R$ 0,28 a R$ 0,30 por ação por mês (ponto médio R$ 0,29).',
         risco: 'Distribui ~102% do FFO 2027E (lucro de caixa) e a dívida sobe para ~2,0x EBITDA — pago com venda de shoppings (acordo Kinea). Garantido para 2027; depois depende de novas vendas.',
         fontes: [['Genial Analisa 3T26', 'https://analisa.genialinvestimentos.com.br/acoes/ALOS3/ALLOS-ALOS3--Resultado-3T26-Imobiliario-Puxa-o-Numero-Aluguel-Resiliente/'],
                  ['Mercado&Consumo 06/11/2026', 'https://mercadoeconsumo.com.br/06/11/2026/mc-capital/allos-tem-lucro-liquido-de-r-2736-milhoes-no-3o-trimestre-salto-de-151-em-um-ano/']] },
@@ -13438,7 +13440,7 @@ const RADAR_RENDA = {
         fontes: [['Dados de Mercado — proventos', 'https://www.dadosdemercado.com.br/acoes/fiqe3/dividendos']] },
       esp: { lucro: 0.23e9, payout: 0.50, acoes: 399087000 } },
     { tk: 'GMAT3', nome: 'Grupo Mateus', status: 'pendente 3T26 (12/11)',
-      agente: { dps: 0.249, base: 'Sem estimativa ainda: usa o dividendo pago em 2025 (R$ 0,249/ação, só JCP). Empresa de crescimento, payout ~30%.',
+      agente: { dps: 0.249, lucroTxt: '—', payoutTxt: '—', base: 'Sem estimativa ainda: usa o dividendo pago em 2025 (R$ 0,249/ação, só JCP). Empresa de crescimento, payout ~30%.',
         fontes: [['Dados de Mercado — proventos', 'https://www.dadosdemercado.com.br/acoes/gmat3/dividendos']] },
       esp: null },
   ],
@@ -13645,7 +13647,7 @@ function renderRadarRenda() {
   const R = RADAR_RENDA.regua;
   const pctR = v => (v * 100).toFixed(1).replace('.', ',') + '%';
   const sgn = v => (v >= 0 ? '+' : '') + pctR(v);
-  const fmtLucro = v => v >= 1e9 ? 'R$ ' + (v / 1e9).toFixed(1).replace('.', ',') + ' bi' : 'R$ ' + Math.round(v / 1e6) + ' mi';
+  const fmtLucro = v => v >= 1e9 ? 'R$ ' + (v / 1e9).toFixed(v < 1e10 ? 2 : 1).replace('.', ',') + ' bi' : 'R$ ' + Math.round(v / 1e6) + ' mi';
   const totalCasal = (typeof coletarConsolidado === 'function' && typeof _consFiltro !== 'undefined' && _consFiltro === 'consolidado')
     ? (coletarConsolidado().totalGeral || 0) : 0;
   const linhas = RADAR_RENDA.itens.map(it => {
@@ -13678,10 +13680,13 @@ function renderRadarRenda() {
       </div>
       <div class="cc-body">
         ${linha('', '<span style="font-size:10.5px;color:#888;font-weight:600;">AGENTE</span>', '<span style="font-size:10.5px;color:#888;">ESPECIALISTA</span>')}
+        ${linha('Lucro estim.', l.it.agente.lucroTxt || (l.it.agente.lucro ? fmtLucro(l.it.agente.lucro) : '—'), l.it.esp ? (l.it.esp.lucro ? fmtLucro(l.it.esp.lucro) : '—') : '—')}
+        ${linha('Payout', l.it.agente.payoutTxt || (l.it.agente.payout ? pctR(l.it.agente.payout).replace(',0%', '%') : '—'), l.it.esp && l.it.esp.payout ? pctR(l.it.esp.payout).replace(',0%', '%') : '—')}
         ${linha('Cotação', val(l.cot, _consR), '')}
         ${linha('Div./ação', val(l.dA, _consR), val(l.dE, _consR))}
         ${linha('Div. yield', (l.dA && l.cot) ? pctR(l.dA / l.cot) : '—', (l.dE && l.cot) ? pctR(l.dE / l.cot) : '—')}
         ${linha('Preço teto', val(l.tA, _consR), val(l.tE, _consR))}
+        <div style="font-size:10.5px;color:#999;margin:-2px 0 2px 102px;line-height:1.35;">= div./ação ÷ ${(R * 100).toFixed(2).replace('.', ',')}% — preço máximo para render isso em dividendos</div>
         ${linha('Margem', val(l.mA, sgn), l.mE === null ? '—' : sE.e + ' ' + sgn(l.mE), s.c, sE.c)}
         <div class="cc-row" style="grid-template-columns:96px 1fr;"><span class="cc-lbl">Vocês têm</span><span style="font-weight:600;font-size:12.5px;color:#444;white-space:normal;line-height:1.45;">${posTxt}</span></div>
         ${notas.length ? `<div style="font-size:11.5px;line-height:1.5;color:#7a5a00;background:#fff8e6;border-radius:6px;padding:6px 8px;margin-top:6px;">${notas.join('<br>')}</div>` : ''}
