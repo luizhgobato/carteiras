@@ -13386,7 +13386,7 @@ function attachSortHandlers(tableEl, skipCols) {
 const RADAR_RENDA = {
   regua: 0.0771,
   reguaFonte: 'Tesouro IPCA+ 2037, mesma régua da aba "Preço teto Bazin adaptado" da planilha do especialista',
-  atualizadoAgente: '10/11/2026',
+  atualizadoAgente: '11/11/2026',
   planilhaEspecialista: 'novembro/2026',
   itens: [
     { tk: 'ALOS3', nome: 'Allos', status: '3T26 · release',
@@ -13403,8 +13403,8 @@ const RADAR_RENDA = {
                  ['Comunicado CVM dividendos 1S26', 'https://www.meusdividendos.com/news/bbse3-anuncia-dividendos-de-r198-por-acao-payout-de-88-no-1s26']] },
       esp: { lucro: 9.0e9, payout: 0.85, acoes: 1941248544 } },
     { tk: 'BBDC3', nome: 'Bradesco', status: '3T26 · RI/CVM',
-      agente: { lucro: 30.5e9, payout: 0.60, acoes: 11175567081,
-        base: 'Relatório de Análise Econômica 3T26 (RI): lucro recorrente 9M26 R$ 20,97 bi; dividendos+JCP brutos 9M26 R$ 12,08 bi = payout 66%. 2027E entre a planilha (R$ 29 bi) e a Genial (R$ 32,2 bi); payout 60% por cautela.',
+      agente: { lucro: 30.5e9, payout: 0.50, acoes: 11175567081,
+        base: 'Relatório de Análise Econômica 3T26 (RI): lucro recorrente 9M26 R$ 20,97 bi; dividendos+JCP brutos 9M26 R$ 12,08 bi = payout 66%. 2027E entre a planilha (R$ 29 bi) e a Genial (R$ 32,2 bi). Payout 50%: o de 2026 (66%) veio junto com JCP antecipado e um aumento de capital de R$ 10 bi; com ROE de 15,6%, o sustentável fica entre 42% e 55%.',
         risco: 'Aumento de capital de R$ 10 bi em 2026 aumenta o número de ações; ON recebe 10% menos que PN.',
         fontes: [['Bradesco — Relatório 3T26 (CVM)', 'https://investidor10.com.br/acoes/link_comunicado/BBDC3/51180/'],
                  ['Genial Analisa 3T26', 'https://analisa.genialinvestimentos.com.br/acoes/BBDC4/Bradesco-BBDC4--Resultado-3T26-Decimo-Primeiro-Trimestre-Agora-Sem-Muita-Folga']] },
@@ -13565,6 +13565,312 @@ const RADAR_RENDA_ESTUDOS = {
       ['InfoMoney — promessa de triplicar o dividendo (nov/2025)', 'https://www.infomoney.com.br/?p=3102378'],
     ],
   },
+  ITUB3: {
+    atualizado: '11/11/2026', base: 'Resultado 3T26 (divulgado em 03/11/2026)', cotacaoRef: 46.15,
+    setor: 'Banco · motor de valuation: P/VP × ROE (metodologia) — aqui o teto é por dividendo (Bazin), como no resto do Radar de Renda.',
+    resumo: [
+      ['Veredicto do agente', '🟡 Perto do teto — margem de −3% no cenário base; só fica barato se os dividendos extraordinários se repetirem.'],
+      ['Convicção', '★★★★☆ alta na empresa, média no preço — a qualidade é a melhor do setor; o preço já reflete isso.'],
+      ['Em uma frase', 'O banco mais rentável do país (ROE 23,6%) e que mais devolve capital ao acionista; o problema não é a empresa, é o preço: no dividendo "normal" (~70% do lucro) rende ~7,5% ao ano, logo abaixo da régua de 7,71%.'],
+    ],
+    tese: [
+      '<b>Rentabilidade de referência:</b> ROE recorrente de 23,6% no 3T26 (24,1% no acumulado do ano) e eficiência de 35,7% no Brasil — gasta ~R$ 0,36 para cada R$ 1 de receita.',
+      '<b>Devolve o capital que sobra:</b> em 2025 distribuiu R$ 48,9 bi (≈ R$ 4,57 por ação ⚠️, somando extraordinários e JCP) — praticamente todo o lucro do ano.',
+      '<b>Cresce com qualidade:</b> carteira de crédito de R$ 1,54 tri (+10,9% em 12 meses) com inadimplência acima de 90 dias de 2,0%, praticamente estável.',
+      '<b>Lucro previsível:</b> +8,1% no acumulado de 9 meses (R$ 37,3 bi) e guidance de 2026 mantido em todas as linhas.',
+    ],
+    negocio: {
+      texto: 'Banco ganha dinheiro de três jeitos: (1) <b>spread</b> — empresta mais caro do que capta (o grosso do lucro); (2) <b>tarifas e serviços</b> — cartões, gestão de recursos, banco de investimento; (3) <b>seguros e previdência</b>. Cerca de 94% do lucro vem do Brasil; o resto, de outros países da América Latina.',
+      tabela: [
+        ['Varejo (Brasil)', 'R$ 5,2 bi', '~41%', '−5% no trimestre'],
+        ['Atacado (Brasil)', 'R$ 5,7 bi', '~45%', '+1,1% no tri; −4,6% em 12 meses'],
+        ['Tesouraria e corporação', 'R$ 1,72 bi', '~14%', '+32,1% no tri — resultado de mercado, oscila'],
+        ['América Latina', '~6% do lucro', '', 'Ganhando peso'],
+      ],
+      nota: 'Lucro por segmento no 3T26 (Jornal do Brasil, citando o release; o jornal tem erros de formatação em alguns números ⚠️).',
+    },
+    resultado: {
+      tabela: [
+        ['Lucro recorrente', 'R$ 12,62 bi', '+6,2% a +6,7% ⚠️', 'Em linha com o consenso'],
+        ['Lucro 9M26', 'R$ 37,3 bi', '+8,1%', ''],
+        ['ROE recorrente', '23,6%', '+0,3 p.p.', '−0,7 p.p. no trimestre'],
+        ['Margem com clientes', '+2,6% no tri', '+6,6% em 12m', 'Carteira maior'],
+        ['Serviços', '+0,2% no tri', '', 'Fraco (banco de investimento)'],
+        ['Custo do crédito', 'R$ 10,4 bi', '2,7% da carteira', 'Estável'],
+        ['Inadimplência > 90 dias', '2,0%', '+0,1 p.p.', 'PME subiu de 2,0% para 2,1%'],
+        ['Carteira de crédito', 'R$ 1,54 tri', '+10,9%', 'Puxada por imobiliário (+4,4% no tri)'],
+        ['Eficiência (Brasil)', '35,7%', '−1,4 p.p.', 'Melhorou'],
+        ['Capital principal (CET1)', '12,7%', '+0,4 p.p. no tri', 'Folga para distribuir'],
+      ],
+      leitura: 'Resultado sólido e "sem surpresas". Dois pontos: o <b>varejo caiu 5%</b> no trimestre e a <b>tesouraria subiu 32%</b> — parte do lucro veio de resultado de mercado, que oscila.',
+    },
+    naoRecorrentes: [
+      ['Diferença lucro recorrente × contábil', 'não localizada ⚠️', 'Conferir no release (Teste 1 da metodologia)'],
+      ['Alíquota de imposto do guidance reduzida (29,5–32,5% → 28–29%)', 'efeito fiscal', 'Aumenta o lucro de 2026 sem melhora operacional (Teste 2)'],
+      ['Tesouraria e corporação', 'R$ 1,72 bi (+32% no tri)', 'Resultado de mercado — não se repete no mesmo nível'],
+      ['Saída do varejo na Colômbia', 'efeito nas comparações', 'Números "ex-Colômbia" um pouco melhores'],
+    ],
+    naoRecorrentesLeitura: 'Crescimento <b>majoritariamente operacional</b> (carteira e margem). Imposto menor e tesouraria ajudam na margem do resultado — não são o motor.',
+    dividendos: {
+      tabela: [
+        ['2025 — total distribuído', 'R$ 48,9 bi (≈ R$ 4,57/ação ⚠️)', '≈ 10% (com extraordinários)'],
+        ['2026 — JCP anunciado', 'R$ 3,99 bi', 'mais dividendos mensais e complementares'],
+        ['2027 — estimativa base (70% do lucro)', 'R$ 3,47/ação', '7,5%'],
+      ],
+      payout: [
+        ['Payout que se sustenta sozinho: 1 − crescimento (8%) ÷ ROE (23,6%)', '≈ 66%'],
+        ['Payout de 2025 com extraordinários', '≈ 100%'],
+      ],
+      origem: 'O que passa de ~66% vem de <b>excesso de capital</b> (CET1 de 12,7%). Gravidade <b>baixa</b> enquanto o capital sobra — não é dívida nem venda de ativo.',
+      conclusao: '60–70% do lucro é sustentável sem esforço. Acima disso depende de sobra de capital a cada ano. <b>Para render acima de 7,71% no preço atual, os extraordinários precisam se repetir.</b>',
+    },
+    guidance: [
+      ['Carteira de crédito 2026: +5,5% a +9,5%', '🟢 Alta', 'Já cresce +10,9% em 12 meses — acima do topo.'],
+      ['Custo do crédito: R$ 38,5–43,5 bi', '🟢 Alta', 'R$ 10,4 bi/tri ≈ R$ 41–42 bi no ano.'],
+      ['Despesas não juros: +1,5% a +5,5%', '🟢 Alta', '+2,4% no tri, puxado pelo dissídio de 4,6%.'],
+      ['Alíquota efetiva: 28% a 29% (revisada para baixo)', '🟢 Alta', 'Revisão a favor do lucro.'],
+    ],
+    premissas: [
+      ['ROE acima de 20%', '✅ Atendida', '23,6% no 3T26.'],
+      ['Inadimplência > 90 dias até 2,5%', '🟡 Atenção', '2,0%, subiu 0,1 p.p. no tri (PME).'],
+      ['Capital sobrando para seguir com extraordinários', '✅ Atendida', 'CET1 12,7%.'],
+      ['Lucro crescendo acima da inflação', '✅ Atendida', '+8,1% nos 9 meses.'],
+      ['Preço abaixo do teto', '❌ Não', 'Margem de −3% no cenário base.'],
+    ],
+    cenarios: [
+      ['Pessimista', 'Lucro de 2026 repete (R$ 50,6 bi); payout 60%', 'R$ 2,84', '6,1%', 'R$ 36,78', '−25%'],
+      ['Base', 'R$ 53 bi; payout 70%', 'R$ 3,47', '7,5%', 'R$ 44,95', '−3%'],
+      ['Otimista', 'R$ 54 bi; payout 85% (extraordinários)', 'R$ 4,29', '9,3%', 'R$ 55,61', '+17%'],
+    ],
+    embutido: 'Retorno embutido: ~7,5% de dividendo + ~8% de crescimento do lucro ≈ <b>15,5% ao ano</b>, ou <b>~10,5% acima da inflação</b> — acima da Selic real de 9,09%. Leitura da metodologia: <b>bom negócio a preço justo</b>; a margem de segurança é pequena.',
+    riscos: [
+      '<b>Preço já no teto:</b> o yield só passa de 7,71% com extraordinários.',
+      '<b>Spreads menores com a Selic caindo</b> podem pressionar a rentabilidade.',
+      '<b>Inadimplência de pequenas empresas</b> subindo devagar.',
+      '<b>Varejo perdendo força</b> (−5% no trimestre).',
+      '<b>Concentração:</b> mais um banco numa carteira com mais de 40% em financeiro.',
+    ],
+    gatilhos: [
+      'Anúncio de dividendos extraordinários (normalmente com o 4T26, em fev/2027 ⚠️).',
+      'Guidance 2027 (fev/2027).',
+      'Inadimplência > 90 dias acima de 2,3%.',
+      'ROE abaixo de 21%.',
+    ],
+    encaixe: 'Flavia 800 e Luiz 1.800 ações (≈ R$ 120 mil, 7,0% do casal). Qualidade excelente, mas soma ao bloco bancos + seguros. Para renda, faz mais sentido comprar perto do pessimista (≤ R$ 37) do que no preço atual.',
+    qualidade: [
+      'Números de notícias que citam o release (Jornal do Brasil, NeoFeed, Investidor10, Seu Dinheiro) e da Genial. O JB tem erros de formatação (9M de R$ 37,305 bi no texto e R$ 37,405 bi no título); o crescimento a/a aparece como +6,2% e +6,7%.',
+      'Lucro contábil do 3T26 não localizado — Teste 1 (recorrente × contábil) pendente.',
+      'Distribuição de 2025 (R$ 48,9 bi) vem de levantamento da Elos Ayta citado pela imprensa; por ação é cálculo meu.',
+    ],
+    fontes: [
+      ['Investidor10 — Itaú 3T26', 'https://investidor10.com.br/noticias/itau-itub4-supera-r-12-bi-em-lucro-no-3t26-veja-os-destaques-do-balanco-123668/'],
+      ['Genial Analisa — Itaú 3T26', 'https://analisa.genialinvestimentos.com.br/acoes/ITUB4/Itau-ITUB4--Resultado-3T26-Margem-e-Aliquota-Compensam-Servicos-e-Seguros-Mais-Fracos/'],
+      ['Jornal do Brasil — 3T26 por segmento', 'https://www.jb.com.br/economia/2026/11/1061443-itau-lucra-rs-12-617-bilhoes-no-trimestre-e-rs-37-405-bilhoes-em-2026-mas-al-cresce-mais-do-que-o-brasil.html'],
+      ['NeoFeed — 3T26', 'https://neofeed.com.br/negocios/itau-entrega-balanco-como-sempre-lucro-de-r-126-bilhoes-e-inadimplencia-sob-controle/'],
+      ['Seu Dinheiro — guidance 3T26', 'https://www.seudinheiro.com/2026/empresas/itau-itub4-com-lucro-roe-rentabilidade-banco-balanco-do-3t26-miql/'],
+      ['Rio Times — dividendos 2025', 'https://www.riotimesonline.com/a-bank-beat-an-oil-giant-as-brazils-top-dividend-payer'],
+    ],
+  },
+  BBDC3: {
+    atualizado: '11/11/2026', base: 'Resultado 3T26 (divulgado em 22/10/2026) — relatório oficial via CVM', cotacaoRef: 13.42,
+    setor: 'Banco · motor de valuation: P/VP × ROE (metodologia) — aqui o teto é por dividendo (Bazin).',
+    resumo: [
+      ['Veredicto do agente', '🟢 Abaixo do teto — margem de +24% no cenário base; no pessimista fica praticamente no teto (+2%).'],
+      ['Convicção', '★★☆☆☆ baixa a média — recuperação em curso, mas o banco ainda rende menos que o custo do capital e precisou de R$ 10 bi dos acionistas.'],
+      ['Em uma frase', 'Lucro subindo há 11 trimestres e dividendo alto, mas o payout de 66% de 2026 não é o "normal": o banco pagou JCP antecipado e, ao mesmo tempo, pediu R$ 10 bi aos acionistas.'],
+    ],
+    tese: [
+      '<b>Recuperação consistente:</b> 11º trimestre seguido de alta no lucro recorrente (R$ 7,11 bi, +14,6% a/a).',
+      '<b>Rentabilidade subindo:</b> ROE de 15,6% (16,1% sem o efeito do aumento de capital), +1,4 p.p. em 12 meses.',
+      '<b>Seguros forte:</b> resultado de seguros +8,6% em 9 meses, acima do topo do guidance (6–8%).',
+      '<b>Barato no dividendo:</b> mesmo com payout conservador de 50%, rende ~10% ao ano no preço atual.',
+    ],
+    negocio: {
+      texto: 'Banco de varejo grande, com uma das maiores seguradoras do país (Bradesco Seguros). Ganha no <b>spread</b> do crédito, em <b>tarifas</b> (cartões, contas, gestão) e em <b>seguros, previdência e capitalização</b>. Está no meio de uma reestruturação (turnaround) para voltar à rentabilidade de antes de 2023.',
+      tabela: [
+        ['Margem com clientes', '+1,5% no tri', '', 'Crescendo devagar'],
+        ['Provisão para perdas (PDD expandida)', '+6,6% no tri', '', 'Cresce mais rápido que a margem ⚠️'],
+        ['Serviços (9M26)', 'R$ 31,8 bi', '', '+3,6% a/a, dentro do guidance'],
+        ['Resultado de seguros (9M26)', '+8,6% a/a', '', 'Acima do guidance'],
+      ],
+      nota: 'Peso de cada linha no lucro não localizado nas fontes. Fontes: Genial Analisa e BB-BI sobre o 3T26.',
+    },
+    resultado: {
+      tabela: [
+        ['Lucro recorrente', 'R$ 7,11 bi', '+14,6%', '+0,8% no trimestre'],
+        ['Lucro recorrente 9M26', 'R$ 20,97 bi', '', 'Relatório oficial'],
+        ['Lucro contábil 9M26', 'R$ 19,19 bi', '', '8,5% abaixo do recorrente'],
+        ['ROE', '15,6% (16,1% ex-aumento)', '+1,4 p.p.', 'Ainda abaixo do custo de capital (~16%)'],
+        ['Capital principal (CET1)', '12,1%', 'de 11,3%', 'Subiu por causa do aumento de capital'],
+        ['Custo do crédito', '3,72%', '', 'No topo da faixa de 3,6–3,7%'],
+        ['Margem com clientes líquida de PDD', '4,5%', 'caiu', ''],
+        ['Eficiência (12 meses)', '47,2%', 'piorou', 'Bem pior que o Itaú (35,7%)'],
+      ],
+      leitura: 'O lucro sobe, mas <b>a provisão para perdas cresce mais rápido que a margem</b> (+6,6% contra +1,5% no trimestre). A Genial resumiu: "décimo primeiro trimestre, agora sem muita folga".',
+    },
+    naoRecorrentes: [
+      ['Lucro contábil × recorrente (9M26)', 'R$ 1,78 bi de ajustes (8,5%)', 'Teste 1: diferença moderada; detalhar itens no release ⚠️'],
+      ['Aumento de capital (ago–set/2026)', 'até R$ 10 bi a R$ 15,43 (ON) e R$ 17,64 (PN)', 'Não é lucro, mas elevou o capital em ~0,8–0,9 p.p.'],
+      ['JCP antecipado', 'R$ 6,5 bi', 'Parcelas de out/2026 e jan/2027 pagas em ago/2026 — infla o payout de 2026'],
+    ],
+    naoRecorrentesLeitura: 'O lucro recorrente é razoavelmente limpo; o que distorce a leitura é o <b>payout de 2026</b>: parte do dividendo pago "voltou" para o banco no aumento de capital.',
+    dividendos: {
+      tabela: [
+        ['2022', 'R$ 0,39', '2,9%'], ['2023', 'R$ 1,54', '10,1%'], ['2024', 'R$ 1,01', '9,5%'], ['2025', 'R$ 1,31', '8,4%'],
+        ['2026 (até nov)', 'R$ 1,12', '8,3% ⚠️ parcial'], ['2027 — estimativa base (50%)', 'R$ 1,36', '10,2%'],
+      ],
+      payout: [
+        ['Payout bruto 9M26 (relatório oficial)', '66%'],
+        ['Payout que se sustenta: 1 − crescimento da carteira (7–9%) ÷ ROE (15,6%)', '≈ 42–55%'],
+      ],
+      origem: 'Em 2026 o banco <b>distribuiu e captou ao mesmo tempo</b>: pagou R$ 6,5 bi de JCP antecipado e pediu até R$ 10 bi aos acionistas. Gravidade <b>média</b>: com ROE de 15,6%, reter menos que ~50% do lucro trava o crescimento ou exige novo aumento de capital.',
+      conclusao: 'Uso <b>50%</b> como base (antes era 60%). Esta é uma revisão para baixo da rodada anterior, feita depois de entender o aumento de capital.',
+    },
+    guidance: [
+      ['Carteira de crédito 2026: +8,5% a +10,5%', '🔴 Baixa', 'Genial projeta +7,1%, abaixo do piso.'],
+      ['Margem financeira líquida: R$ 42–48 bi', '🟡 Média', 'Tende a fechar no piso.'],
+      ['Serviços: +3% a +5%', '✅ Entregando', '+3,6% em 9 meses.'],
+      ['Despesas: +6% a +8%', '🟢 Alta', 'No piso ou abaixo.'],
+      ['Seguros: +6% a +8%', '✅ Acima', '+8,6% em 9 meses.'],
+    ],
+    premissas: [
+      ['ROE acima do custo de capital (~16%)', '❌ Ainda não', '15,6% (16,1% ex-aumento).'],
+      ['Custo do crédito estável (≤ 3,7%)', '🟡 No limite', '3,72%, no topo da faixa.'],
+      ['Capital suficiente sem novo aumento', '✅ Atendida', 'CET1 de 12,1% após o aumento.'],
+      ['Lucro seguir crescendo', '✅ Atendida', '11 trimestres seguidos.'],
+      ['Eficiência melhorar', '❌ Não', '47,2% em 12 meses, piorando.'],
+    ],
+    cenarios: [
+      ['Pessimista', 'R$ 28 bi; payout 42% (sustentável)', 'R$ 1,05', '7,8%', 'R$ 13,65', '+2%'],
+      ['Base', 'R$ 30,5 bi; payout 50%', 'R$ 1,36', '10,2%', 'R$ 17,70', '+24%'],
+      ['Especialista', 'R$ 29 bi; payout 55%', 'R$ 1,43', '10,6%', 'R$ 18,51', '+28%'],
+      ['Otimista', 'R$ 32,2 bi (Genial); payout 60%', 'R$ 1,73', '12,9%', 'R$ 22,42', '+40%'],
+    ],
+    embutido: 'Retorno embutido: ~10,2% de dividendo + ~7,8% de crescimento (ROE 15,6% × 50% retido) ≈ <b>18% ao ano</b>, ou <b>~12,9% acima da inflação</b> — acima da Selic real. Depende de o ROE continuar subindo.',
+    riscos: [
+      '<b>Recuperação não se completar:</b> ROE preso abaixo do custo de capital.',
+      '<b>Novo aumento de capital</b> se o crédito crescer e o lucro não acompanhar — dilui quem não acompanhar.',
+      '<b>Provisões crescendo mais que a margem.</b>',
+      '<b>Payout voltar para 40–45%</b> em 2027, reduzindo o dividendo.',
+      '<b>BBDC3 (ON) recebe 10% menos dividendo que BBDC4 (PN).</b>',
+    ],
+    gatilhos: [
+      '4T26 e guidance 2027 (fev/2027).',
+      'ROE trimestral ≥ 16%.',
+      'Custo do crédito acima de 3,8%.',
+      'Política de JCP de 2027.',
+    ],
+    encaixe: 'Flavia tem 4.000 ações (≈ R$ 54 mil, 3,1% do casal). Mesmo ciclo de ITUB3 e BBAS3 — se for aumentar, faz sentido no lugar de outro banco, não além deles.',
+    qualidade: [
+      'Lucro recorrente e contábil de 9M26 e payout de 66% vêm do relatório oficial (via CVM). ROE, custo do crédito e eficiência vêm de Genial e BB-BI.',
+      'O número de ações após o aumento de capital não foi confirmado — usei 11,18 bi.',
+      'A Genial cita BBDC4 a R$ 20,17, o que não bate com as cotações do painel — ignorado.',
+    ],
+    fontes: [
+      ['Bradesco — Relatório de Análise Econômica 3T26 (via CVM)', 'https://investidor10.com.br/acoes/link_comunicado/BBDC3/51180/'],
+      ['Bradesco — Demonstrações 9M26 (via CVM)', 'https://investidor10.com.br/acoes/link_comunicado/BBDC3/51185/'],
+      ['Genial Analisa — Bradesco 3T26', 'https://analisa.genialinvestimentos.com.br/acoes/BBDC4/Bradesco-BBDC4--Resultado-3T26-Decimo-Primeiro-Trimestre-Agora-Sem-Muita-Folga'],
+      ['BB-BI — Bradesco 3T26', 'https://investalk.bb.com.br/noticias/mercado/BBDC3T26'],
+      ['Eu Quero Investir — aumento de capital (BTG)', 'https://euqueroinvestir.com/acoes/bradesco-aumento-de-capital-e-passo-necessario-no-turnaround-diz-btg'],
+      ['Dados de Mercado — dividendos BBDC3', 'https://www.dadosdemercado.com.br/acoes/bbdc3/dividendos'],
+    ],
+  },
+  BBSE3: {
+    atualizado: '11/11/2026', base: 'Resultado 3T26 (divulgado em 03/11/2026)', cotacaoRef: 38.59,
+    setor: 'Seguradora (holding) · motor de valuation: P/VP × ROE (metodologia) — aqui o teto é por dividendo (Bazin).',
+    resumo: [
+      ['Veredicto do agente', '🟢 Abaixo do teto — +23% no cenário base e +14% no pessimista.'],
+      ['Convicção', '★★★☆☆ média — paga muito e está barata, mas o lucro está parado e os prêmios de seguro estão caindo.'],
+      ['Em uma frase', 'Máquina de dividendos (~10% ao ano) que precisa de pouco capital, mas não cresce: o lucro está estável e depende do Banco do Brasil vender seguros.'],
+    ],
+    tese: [
+      '<b>Distribui quase todo o lucro:</b> payout de 96% em 2025 e 88% no 1S26. Holding de seguros precisa de pouco capital para crescer.',
+      '<b>Dividendo alto e constante:</b> R$ 4,26/ação em 2025 e R$ 4,59 em 2026 (≈ 11,9% ao ano).',
+      '<b>Barata mesmo no pessimista:</b> margem de +14% com lucro de R$ 8,0 bi.',
+      '<b>Previdência forte:</b> a Brasilprev tinha R$ 484 bi em reservas em mar/2026 (+10% em 12 meses) e cobra taxa de gestão sobre isso.',
+    ],
+    negocio: {
+      texto: 'É uma <b>holding</b> que vende seguros, previdência e capitalização pelas agências do Banco do Brasil: <b>Brasilseg</b> (seguro rural, vida, prestamista, residencial), <b>Brasilprev</b> (previdência — ganha taxa de gestão sobre as reservas), <b>Brasilcap</b> (capitalização) e <b>BB Corretora</b> (comissão). Também ganha juros sobre o caixa e as reservas — o <b>resultado financeiro</b>, ~27% do lucro no 3T26.',
+      tabela: [
+        ['Brasilseg', 'principal operação', '', 'Contribuição menor no 3T26; prêmios em queda'],
+        ['Brasilprev', 'reservas R$ 484 bi (mar/26)', '', '+10% em 12m; taxa de gestão +6% (1T26)'],
+        ['Brasilcap', 'arrecadação +8% (1T26)', '', ''],
+        ['BB Corretora', 'margem 61,7% (1T26)', '', 'Contribuição menor no 3T26'],
+        ['Resultado financeiro (combinado)', 'R$ 655,7 mi', '≈ 27%', '−8,3% a/a — cai com a Selic'],
+      ],
+      nota: 'Detalhe por empresa do 3T26 não localizado; usei a teleconferência do 1T26 e as notícias do 3T26.',
+    },
+    resultado: {
+      tabela: [
+        ['Lucro gerencial recorrente', 'R$ 2,43 bi', '−5,1%', '+13% no trimestre; acima do consenso (R$ 2,2 bi)'],
+        ['Lucro 9M26', 'R$ 6,80 bi', '+0,1%', 'Parado'],
+        ['Resultado financeiro', 'R$ 655,7 mi', '−8,3%', 'Juros caindo'],
+        ['Queda do lucro a/a', 'R$ 129,8 mi', '', 'Vinda de Brasilseg e BB Corretora'],
+        ['Guidance de prêmios Brasilseg 2026', 'queda de 11% a 15% ⚠️', '', 'Era −3% a +2% no início do ano'],
+      ],
+      leitura: 'O lucro está <b>parado há um ano</b>. A venda de seguros pelo BB desacelerou e a queda da Selic vai reduzir o resultado financeiro, que é ~1/4 do lucro.',
+    },
+    naoRecorrentes: [
+      ['Lucro gerencial × contábil do 3T26', 'não localizado ⚠️', 'Conferir no release (Teste 1)'],
+      ['Defasagem do IGP-M em planos de benefício definido', 'R$ 108 mi no 1T26', 'Efeito temporário no resultado financeiro'],
+    ],
+    naoRecorrentesLeitura: 'Poucos itens pontuais. O ponto de atenção não é o não recorrente: é a <b>dependência do resultado financeiro</b>, que encolhe com juros menores.',
+    dividendos: {
+      tabela: [
+        ['2021', 'R$ 1,00', '4,8%'], ['2022', 'R$ 1,97', '5,8%'], ['2023', 'R$ 3,49', '10,4%'], ['2024', 'R$ 2,65', '7,3%'],
+        ['2025', 'R$ 4,26', '11,8%'], ['2026 (R$ 2,61 em mar + R$ 1,98 em set)', 'R$ 4,59', '11,9%'], ['2027 — estimativa base (88%)', 'R$ 3,84', '10,0%'],
+      ],
+      payout: [['2025', '96%'], ['1S26 (comunicado à CVM)', '88%'], ['2026 segundo o CFO', 'até 90% é "totalmente possível"']],
+      origem: 'O dividendo sai do <b>lucro do próprio ano</b> — não há excedente pago com dívida ou venda de ativos. Gravidade <b>baixa</b>; o risco é o lucro cair.',
+      conclusao: 'Payout de 85–95% é sustentável para uma holding de seguros. O dividendo de 2027 deve ser <b>menor que o de 2026</b> (R$ 3,84 contra R$ 4,59) se o lucro cair ~5%.',
+    },
+    guidance: [
+      ['Prêmios Brasilseg 2026', '🔴 Cortado', 'Começou em −3% a +2%; no 3T26 passou para queda de 11% a 15% ⚠️.'],
+      ['Reservas de previdência (PGBL/VGBL): +8% a +11%', '🟢 Alta', 'Acima de 10% no 1T26.'],
+      ['Resultado operacional sem juros: −7% a −3%', '🟢 Alta', 'A empresa vinha superando essa faixa.'],
+      ['Payout de ~90%', '🟢 Alta', 'Indicado pelo CFO.'],
+    ],
+    premissas: [
+      ['BB voltar a acelerar a venda de crédito e seguros', '❌ Ainda não', 'Ritmo comercial fraco no BB (Bradesco BBI).'],
+      ['Sinistralidade rural controlada', '🟡 Atenção', 'Melhorou no 2T26; El Niño no 2S26 é risco citado pela empresa.'],
+      ['Selic alta', '🟡 Desfavorável', 'Cortes reduzem o resultado financeiro (~27% do lucro).'],
+      ['Payout ≥ 85%', '✅ Atendida', '88% no 1S26.'],
+      ['Contrato de distribuição com o BB', '✅ Vigente ⚠️', 'Prazo não verificado nesta análise.'],
+    ],
+    cenarios: [
+      ['Pessimista', 'Lucro R$ 8,0 bi; payout 85%', 'R$ 3,45', '8,9%', 'R$ 44,77', '+14%'],
+      ['Base', 'R$ 8,6 bi; payout 88%', 'R$ 3,84', '10,0%', 'R$ 49,83', '+23%'],
+      ['Otimista', 'R$ 9,1 bi; payout 95%', 'R$ 4,39', '11,4%', 'R$ 56,92', '+32%'],
+    ],
+    embutido: 'Retorno embutido: ~10% de dividendo + ~1% de crescimento ≈ <b>11% ao ano</b>, ou <b>~6,2% acima da inflação</b> — <b>abaixo da Selic real (9,09%)</b>. Leitura: renda alta hoje, sem crescimento; em 5 anos, sem valorização da ação, tende a render menos que o Tesouro.',
+    riscos: [
+      '<b>Canal único:</b> depende do Banco do Brasil para vender.',
+      '<b>Prêmios caindo 11–15%</b> em 2026.',
+      '<b>Selic em queda</b> reduz ~1/4 do lucro.',
+      '<b>Sinistralidade rural</b> (El Niño no 2S26).',
+      '<b>Correlação com BBAS3 e CXSE3:</b> mesmo ciclo de crédito e juros.',
+    ],
+    gatilhos: [
+      'Resultado do Banco do Brasil no 3T26 (11/11/2026) — sinal do ritmo comercial.',
+      'Dividendo do 2S26 (fev–mar/2027): payout ≥ 85%?',
+      'Guidance 2027 (fev/2027).',
+    ],
+    encaixe: 'Flavia 1.405 e Luiz 3.372 ações (≈ R$ 184 mil, 10,7% do casal) — a maior posição pagadora. Já está no limite de 10% por ação sugerido; aumentar concentra mais no bloco BB (BBAS3 + BBSE3).',
+    qualidade: [
+      'Lucro e guidance do 3T26 vêm de notícias (Investidor10, brapi, Visno). O guidance de prêmios diverge: duas fontes dizem queda de 11% a 15%, uma diz queda de 3% a 15% — usei 11% a 15%.',
+      'Payout do 1S26 (88%) vem de comunicado à CVM; histórico de dividendos da Dados de Mercado.',
+      'Detalhe por empresa do 3T26 não localizado; usei a teleconferência do 1T26 como contexto.',
+    ],
+    fontes: [
+      ['Investidor10 — BB Seguridade 3T26', 'https://investidor10.com.br/noticias/lucro-da-bb-seguridade-bbse3-recua-5-1-no-3t26-para-r-2-43-bilhoes-123670/'],
+      ['brapi — 3T26 e corte de projeção', 'https://brapi.dev/news/lucro-da-bb-seguridade-supera-consenso-mas-projecao-da-brasilseg-e-cortada-bde74fc3'],
+      ['Visno — revisão do guidance de prêmios', 'https://visnoinvest.com.br/news/16056/bb-seguridade-bbse3-revisa-projecao-de-premios-da-brasilseg-para-15-a-11'],
+      ['Comunicado CVM — dividendos 1S26', 'https://www.meusdividendos.com/news/bbse3-anuncia-dividendos-de-r198-por-acao-payout-de-88-no-1s26'],
+      ['Investidor10 — CFO sobre dividendos 2026', 'https://investidor10.com.br/noticias/bb-seguridade-bbse3-cfo-diz-o-que-esperar-dos-dividendos-em-2026-118546/'],
+      ['Eu Quero Investir — 2T26 (Bradesco BBI)', 'https://euqueroinvestir.com/acoes/sinistralidade-do-agro-melhora-na-bb-seguridade-mas-ritmo-do-bb-pesa'],
+      ['Dados de Mercado — dividendos BBSE3', 'https://www.dadosdemercado.com.br/acoes/bbse3/dividendos'],
+    ],
+  },
 };
 
 function abrirEstudoRenda(tk) {
@@ -13590,7 +13896,7 @@ function abrirEstudoRenda(tk) {
     ${sec('5. Dividendos e sustentabilidade', tab(['Ano', 'Dividendo/ação', 'Dividend yield'], e.dividendos.tabela) + tab(['Payout', 'Valor'], e.dividendos.payout) + `<p>${e.dividendos.origem}</p><p><b>Conclusão:</b> ${e.dividendos.conclusao}</p>`)}
     ${sec('6. Guidance e chance de entregar', tab(['Promessa da empresa', 'Chance', 'Por quê'], e.guidance))}
     ${sec('7. Premissas e requisitos da tese', `<p class="rr-est-nota">O que precisa ser verdade para a compra fazer sentido — e se está sendo cumprido hoje.</p>` + tab(['Requisito', 'Status', 'Evidência'], e.premissas))}
-    ${sec('8. Cenários de dividendo e preço teto', tab(['Cenário', 'Premissa', 'Div./ação', 'Yield', 'Preço teto (÷7,71%)', 'Margem'], e.cenarios) + `<p>${e.embutido}</p>`)}
+    ${sec('8. Cenários de dividendo e preço teto', tab(['Cenário', 'Div./ação', 'Yield', 'Teto', 'Margem'], e.cenarios.map(([n, pr, d, y, t, m]) => [`${n}<br><span style="font-weight:400;color:#777;font-size:11px;">${pr}</span>`, d, y, t, m])) + `<p>${e.embutido}</p>`)}
     ${sec('9. Riscos (do mais grave ao menos)', `<ol>${e.riscos.map(x => `<li>${x}</li>`).join('')}</ol>`)}
     ${sec('10. Gatilhos de monitoramento', ul(e.gatilhos))}
     ${sec('11. Encaixe na carteira de vocês', `<p>${e.encaixe}</p>`)}
