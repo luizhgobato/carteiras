@@ -988,6 +988,9 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
     <div class="nav-tab" onclick="showPage('rendas')">
       <span class="nav-tab-icon">💰</span> Radar de Renda
     </div>
+    <div class="nav-tab" onclick="showPage('rendaproj')">
+      <span class="nav-tab-icon">📅</span> Renda Projetada
+    </div>
     <div class="nav-tab" onclick="showPage('dados')">
       <span class="nav-tab-icon">📊</span> Base de Dados
     </div>
@@ -2089,28 +2092,6 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
     </div>
 
     <div class="rp-section">
-      <div class="rp-section-title">📊 LPA &amp; DY Projetado 2027 (casal)</div>
-      <div class="rp-table-wrap">
-        <table class="rp-table">
-          <thead><tr><th>Ativo</th><th>Qtd (Flavia+Luiz)</th><th>LPA 2027 (proj.)</th><th>Payout</th><th>Div./Ação 2027</th><th>DY esperado</th><th>Lucro Total (proj.)</th><th>Dividendo Total (proj.)</th></tr></thead>
-          <tbody>
-            <tr><td class="rp-bold">ALOS3</td><td>2.200</td><td>R$ 3,63</td><td>60%</td><td>R$ 2,18</td><td>7,64%</td><td>R$ 7.984,88</td><td>R$ 4.790,93</td></tr>
-            <tr><td class="rp-bold">BBSE3</td><td>4.477</td><td>R$ 4,14</td><td>71%</td><td>R$ 2,94</td><td>7,32%</td><td>R$ 18.547,73</td><td>R$ 13.168,95</td></tr>
-            <tr><td class="rp-bold">ITUB3</td><td>2.600</td><td>R$ 5,71</td><td>50%</td><td>R$ 2,85</td><td>6,11%</td><td>R$ 14.839,96</td><td>R$ 7.419,98</td></tr>
-            <tr><td class="rp-bold">IRBR3</td><td>3.887</td><td>R$ 3,40</td><td>71%</td><td>R$ 2,41</td><td>3,96%</td><td>R$ 13.220,93</td><td>R$ 9.386,87</td></tr>
-            <tr><td class="rp-bold">CXSE3</td><td>5.889</td><td>R$ 1,66</td><td>80%</td><td>R$ 1,33</td><td>6,62%</td><td>R$ 9.803,65</td><td>R$ 7.842,92</td></tr>
-            <tr><td class="rp-bold">BBAS3</td><td>1.758</td><td>R$ 1,88</td><td>45%</td><td>R$ 0,85</td><td>3,84%</td><td>R$ 3.302,07</td><td>R$ 1.485,94</td></tr>
-            <tr><td class="rp-bold">FIQE3</td><td>7.000</td><td>R$ 0,63</td><td>34%</td><td>R$ 0,21</td><td>4,07%</td><td>R$ 4.380,60</td><td>R$ 1.489,40</td></tr>
-            <tr><td class="rp-bold">GMAT3</td><td>4.500</td><td>R$ 0,97</td><td>32%</td><td>R$ 0,31</td><td>6,43%</td><td>R$ 4.385,48</td><td>R$ 1.403,35</td></tr>
-            <tr style="background:#faf8f0;"><td class="rp-bold">LFTB11</td><td>4.621</td><td>—</td><td>—</td><td>—</td><td>11,81%</td><td>R$ 69.167,10</td><td>—</td></tr>
-            <tr style="background:#faf8f0;"><td class="rp-bold">Previdência</td><td>90.627,1</td><td>—</td><td>—</td><td>—</td><td>10,00%</td><td>R$ 15.659,63</td><td>—</td></tr>
-            <tr data-role="total-lpady-cons" style="background:#1e1a2e;color:#fff;font-weight:700;"><td>TOTAL (ações)</td><td>—</td><td>—</td><td>—</td><td>—</td><td>5,75%</td><td>R$ 76.465,30</td><td>R$ 47.183,37</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="rp-section">
       <div class="rp-section-title">⚠️ Riscos que só aparecem somando</div>
       <ul id="consRiscos" style="padding-left:18px;margin:0;"></ul>
     </div>
@@ -2151,6 +2132,74 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       <button type="button" class="rr-est-close" onclick="fecharEstudoRenda()" aria-label="Fechar">✕</button>
       <div class="rr-est-body"></div>
     </div>
+  </div>
+</div>
+
+<!-- RENDA PROJETADA 2027 — quanto o casal deve receber (pedido do usuário em 12/11/2026,
+     substitui a tabela estática "LPA & DY Projetado 2027 (casal)" que ficava na Consolidada).
+     Uma fonte só: dividendo por ação vem de RADAR_RENDA / RADAR_RENDA_ESTUDOS (dados de RI);
+     quantidades e saldos vêm ao vivo das carteiras. Script RPJ no fim do arquivo. -->
+<div class="page" id="page-rendaproj">
+  <div class="report-body" style="max-width:1000px;">
+    <div class="rp-header">
+      <div class="rp-header-left">
+        <h1>Renda Projetada 2027</h1>
+        <p id="rpjSub">Quanto o casal deve receber em dividendos e JCP · cenários pessimista, base e otimista</p>
+      </div>
+    </div>
+    <div class="rp-exec"><div class="rp-exec-grid" id="rpjExec"></div></div>
+    <div class="rp-section">
+      <div class="rp-section-title">📐 Como ler</div>
+      <p style="font-size:12.5px;line-height:1.65;color:#555;margin:0;">
+        <b>Renda</b> = quantidade de ações de vocês × <b>dividendo por ação de 2027</b>. O dividendo por ação é o mesmo do Radar de Renda: lucro estimado × payout ÷ número de ações, com dados dos sites de RI das empresas. <b>Pessimista</b> e <b>otimista</b> são os cenários de cada estudo do Radar de Renda.
+        Valores <b>brutos</b>: JCP tem imposto retido na fonte; dividendo não. A <b>renda fixa</b> aparece separada, porque é juro, não dividendo — e a Previdência não vira renda no bolso, fica acumulada no plano.
+      </p>
+    </div>
+    <div class="rp-section">
+      <div class="rp-section-title">🧭 O que o estudo mostra</div>
+      <ul id="rpjAchados" style="padding-left:18px;margin:0;font-size:13px;line-height:1.65;"></ul>
+    </div>
+    <div class="rp-section">
+      <div class="rp-section-title">📊 De onde vem a renda (cenário base)</div>
+      <div id="rpjChartAtivo"></div>
+    </div>
+    <div class="rp-section">
+      <div class="rp-section-title">🧾 Renda por ativo</div>
+      <div class="rp-table-wrap">
+        <table class="rp-table" id="rpjTabela">
+          <thead><tr><th>Ativo</th><th>Luiz</th><th>Flavia</th><th>Div./ação 2027<br><span style="font-weight:400;">pess. · base · otim.</span></th><th>Renda base/ano</th><th>% da renda</th><th>Yield na cotação</th><th>Risco da renda</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="rp-section">
+      <div class="rp-section-title">👥 Por pessoa</div>
+      <div class="rp-exec-grid" id="rpjPessoas"></div>
+    </div>
+    <div class="rp-section">
+      <div class="rp-section-title">📅 Calendário aproximado de 2027 (cenário base)</div>
+      <div id="rpjCalendario"></div>
+      <p class="rp-estim" style="font-size:11px;line-height:1.6;margin-top:6px;">Distribui o dividendo anual de cada empresa pelos meses em que ela pagou em 2025–2026 (páginas oficiais de dividendos). As datas de 2027 ainda não foram anunciadas, exceto as da tabela abaixo. ⚠️ Onde a empresa não divulga o padrão, marquei a estimativa.</p>
+    </div>
+    <div class="rp-section">
+      <div class="rp-section-title">✅ Já aprovado e com data em 2027</div>
+      <div class="rp-table-wrap">
+        <table class="rp-table" id="rpjAprovados">
+          <thead><tr><th>Data</th><th>Ativo</th><th>Provento</th><th>Por ação</th><th>Vocês recebem</th><th>Fonte</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="rp-section">
+      <div class="rp-section-title">🏦 Renda fixa (separada)</div>
+      <div class="rp-table-wrap">
+        <table class="rp-table" id="rpjRF">
+          <thead><tr><th>Aplicação</th><th>Saldo hoje</th><th>Taxa de referência 2027</th><th>Rendimento esperado/ano</th><th>Observação</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <p class="rp-estim" id="rpjRodape" style="font-size:11px;line-height:1.6;"></p>
   </div>
 </div>
 
@@ -16522,5 +16571,245 @@ function renderRadarRenda() {
 })();
 </script>
 
+<script>
+// ══════════════════════════════════════════════════════════════════════════════════════════
+// RENDA PROJETADA 2027 (pedido do usuário em 12/11/2026). Uma fonte só para o dividendo por
+// ação: RADAR_RENDA (cenário base = estimativa do agente no card) e RADAR_RENDA_ESTUDOS
+// (pessimista/otimista = cenários do estudo). Quantidades e saldos: ao vivo das carteiras.
+// Calendário: padrão oficial de pagamentos de 2025–2026 de cada empresa (páginas de dividendos
+// dos sites de RI). Selic: Relatório Focus do Banco Central.
+// ══════════════════════════════════════════════════════════════════════════════════════════
+const RPJ = {
+  selicMedia: 0.13125,
+  selicFonte: 'Relatório Focus (Banco Central) de 06/11/2026: Selic de 13,75% no fim de 2026 e 12,50% no fim de 2027 — uso a média simples (13,1%) como referência para 2027 ⚠️',
+  // pesos: fração do dividendo anual paga em cada mês (0 = jan). fixoMensal: JCP mensal fixo por ação.
+  calendario: {
+    ALOS3: { pesos: { 0:1/12,1:1/12,2:1/12,3:1/12,4:1/12,5:1/12,6:1/12,7:1/12,8:1/12,9:1/12,10:1/12,11:1/12 }, fonte: 'Mensal (guidance 2027, Relatório de Resultados 3T26)' },
+    ITUB3: { fixoMensal: 0.018182, pesos: { 2:0.125, 7:0.241, 11:0.634 }, fonte: 'JCP mensal de R$ 0,018182 + complementares em mar, ago e dez (padrão 2025–2026, página Dividendos e JCP)' },
+    BBDC3: { fixoMensal: 0.017250, pesos: { 0:0.25, 3:0.25, 6:0.25, 9:0.25 }, fonte: 'JCP mensal de R$ 0,01725 (ON) + intermediários trimestrais (página Remuneração aos Acionistas); meses dos intermediários aproximados ⚠️' },
+    BBSE3: { pesos: { 2:0.568, 8:0.432 }, fonte: 'Semestral: mar (2º semestre) e set (1º semestre) — página Dividendos e Recompras' },
+    CXSE3: { pesos: { 0:0.25, 3:0.25, 6:0.25, 9:0.25 }, fonte: 'Trimestral; o do 3T26 sai em 13/01/2027 (aviso aos acionistas); demais meses aproximados ⚠️' },
+    BBAS3: { pesos: { 2:1 }, fonte: 'Sem intermediários em 2027 (fato relevante 11/11/2026): o complemento de 2026 sai em 10/03/2027; o de 2027 só em 2028' },
+    IRBR3: { pesos: { 3:0.388, 4:0.204, 5:0.204, 6:0.204 }, fonte: 'Padrão de 2026: dividendo em abr e JCP em mai, jun e jul (histórico de dividendos do RI)' },
+    FIQE3: { pesos: { 2:1/3, 7:1/3, 9:1/3 }, fonte: 'Padrão de 2026: mar, ago e out (página Remuneração aos Acionistas)' },
+    GMAT3: { pesos: { 11:1 }, fonte: 'Datas de JCP não divulgadas no RI — coloquei em dez ⚠️' },
+  },
+  // Já aprovados pelas empresas, com data em 2027 (sites de RI). extra: true = NÃO está dentro do
+  // dividendo por ação base (ex.: parcelas de lucros antigos da Unifique) e soma à renda.
+  aprovados: [
+    { data: '04/01/2027', tk: 'ITUB3', tipo: 'JCP mensal (competência dez/26)', vps: 0.018182, fonte: 'Itaú RI — Dividendos e JCP' },
+    { data: '04/01/2027', tk: 'BBDC3', tipo: 'JCP mensal (competência dez/26)', vps: 0.017250, fonte: 'Bradesco RI — Remuneração aos Acionistas' },
+    { data: '13/01/2027', tk: 'CXSE3', tipo: 'Dividendo do 3T26', vps: 0.36, fonte: 'Caixa Seguridade RI — aviso aos acionistas 3T26' },
+    { data: '29/01/2027', tk: 'BBDC3', tipo: 'JCP intermediário (jun/26)', vps: 0.315359, fonte: 'Bradesco RI — Remuneração aos Acionistas' },
+    { data: '10/03/2027', tk: 'BBAS3', tipo: 'Complemento de 2026 (valor sai em 17/02/2027)', vps: null, fonte: 'BB RI — fato relevante de 11/11/2026' },
+    { data: '16/03/2027', tk: 'FIQE3', tipo: 'Dividendo (lucros de 2022–2024), parcela', vps: 0.092041, extra: true, fonte: 'Unifique RI — Remuneração aos Acionistas' },
+    { data: '30/04/2027', tk: 'BBDC3', tipo: 'JCP intermediário (set/26)', vps: 0.342390, fonte: 'Bradesco RI — Remuneração aos Acionistas' },
+    { data: '15/10/2027', tk: 'FIQE3', tipo: 'Dividendo (lucros de 2022–2024), parcela', vps: 0.092041, extra: true, fonte: 'Unifique RI — Remuneração aos Acionistas' },
+  ],
+  // Quão segura é a renda de cada ativo (resumo do estudo do Radar de Renda).
+  risco: {
+    ALOS3: ['🟡', 'Dividendo maior que o FFO (113–127%), pago em parte com venda de shoppings. Garantido para 2027 pelo guidance.'],
+    BBSE3: ['🟡', 'Payout alto e estável, mas lucro parado e prêmios caindo; controlador (BB) em crise.'],
+    BBDC3: ['🟢', 'Lucro crescendo; payout de 50% fica abaixo dos 66% de 2026.'],
+    ITUB3: ['🟢', 'Payout base (70%) igual ao histórico; CET1 com folga.'],
+    CXSE3: ['🟢', 'ROE de ~70% e payout de ~91% sustentáveis.'],
+    BBAS3: ['🔴', 'Payout cortado para 25%; pagamento de 2027 condicionado ao capital e só em 2028.'],
+    IRBR3: ['🔴', 'Sem política de dividendos; lucro IFRS 17 muito abaixo do lucro Susep.'],
+    FIQE3: ['🔴', 'OPA do controlador pode tirar a ação da bolsa — a renda pode acabar.'],
+    GMAT3: ['🔴', 'Nenhum JCP no 1S26 e lucro abaixo do ritmo de 2025.'],
+  },
+};
+const _RPJ_MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+
+function _rpjQtd(tk) {
+  const out = { Luiz: 0, Flavia: 0 };
+  [['Flavia', 'flaviaPosBody'], ['Luiz', 'luizPosBody']].forEach(([nome, id]) => {
+    const tr = document.querySelector(`#${id} tr[data-ticker="${tk}.SA"]`);
+    if (tr) out[nome] = _consNum(tr.querySelector('.cw-qtd')?.value);
+  });
+  return out;
+}
+function _rpjCenarioDps(tk, chave) {
+  const est = (typeof RADAR_RENDA_ESTUDOS !== 'undefined') ? RADAR_RENDA_ESTUDOS[tk] : null;
+  if (!est || !Array.isArray(est.cenarios)) return null;
+  const row = est.cenarios.find(r => String(r[0]).toLowerCase().indexOf(chave) === 0);
+  return row ? _consNum(row[2]) : null;
+}
+function _rpjColetar() {
+  const itens = RADAR_RENDA.itens.map(it => {
+    const q = _rpjQtd(it.tk);
+    const qtd = q.Luiz + q.Flavia;
+    const base = _rrDps(it.agente);
+    const pess = _rpjCenarioDps(it.tk, 'pessim') ?? base;
+    const otim = _rpjCenarioDps(it.tk, 'otimis') ?? base;
+    const cot = _rrCotacao(it.tk);
+    const extra = RPJ.aprovados.filter(a => a.extra && a.tk === it.tk).reduce((s, a) => s + a.vps, 0);
+    return { tk: it.tk, nome: it.nome, q, qtd, base, pess, otim, cot, extra,
+      rBase: qtd * ((base || 0) + extra), rPess: qtd * ((pess || 0) + extra), rOtim: qtd * ((otim || 0) + extra),
+      valor: cot ? qtd * cot : 0 };
+  }).filter(x => x.qtd > 0).sort((a, b) => b.rBase - a.rBase);
+  const soma = k => itens.reduce((s, x) => s + x[k], 0);
+  return { itens, base: soma('rBase'), pess: soma('rPess'), otim: soma('rOtim'), valor: soma('valor') };
+}
+function _rpjVerEstudo(tk) { showPage('rendas'); setTimeout(() => abrirEstudoRenda(tk), 50); }
+
+function renderRendaProjetada() {
+  if (typeof RADAR_RENDA === 'undefined') return;
+  const d = _rpjColetar();
+  const meta = (typeof CONS_META_RENDA !== 'undefined' ? CONS_META_RENDA : 20000) * 12;
+  const yieldMedio = d.valor > 0 ? d.base / d.valor : 0;
+  const R0 = _consR0, P1 = v => (v * 100).toFixed(1).replace('.', ',') + '%';
+
+  // Renda fixa (separada)
+  let rfLinhas = [], rfTotal = 0;
+  try {
+    const c = coletarConsolidado();
+    c.ativos.filter(a => a.classe === 'Renda Fixa').forEach(a => {
+      const r = a.saldo * RPJ.selicMedia; rfTotal += r;
+      rfLinhas.push([a.ticker, a.saldo, r, 'ETF que acompanha o Tesouro Selic; antes do IR e da taxa do ETF.']);
+    });
+    _consMergeFixosPorLabel(c.fixos).filter(f => f.classe === 'Renda Fixa').forEach(f => {
+      const r = f.valor * RPJ.selicMedia;
+      rfLinhas.push([f.label, f.valor, r, 'Referência pela Selic — não é renda no bolso: fica acumulada no plano e o rendimento real depende do fundo ⚠️.']);
+    });
+  } catch (e) {}
+
+  // Cards do topo
+  const exec = document.getElementById('rpjExec');
+  if (exec) {
+    const pctMeta = meta > 0 ? d.base / meta : 0;
+    exec.innerHTML = `
+      <div class="rp-exec-item"><div class="rp-exec-label">Renda de ações 2027 — base</div><div class="rp-exec-value">${R0(d.base)}/ano</div><div style="font-size:11px;color:#888;margin-top:3px;">≈ ${R0(d.base / 12)}/mês · bruto</div></div>
+      <div class="rp-exec-item"><div class="rp-exec-label">Faixa (pessimista → otimista)</div><div class="rp-exec-value" style="font-size:15px;">${R0(d.pess)} → ${R0(d.otim)}</div><div style="font-size:11px;color:#888;margin-top:3px;">≈ ${R0(d.pess / 12)} a ${R0(d.otim / 12)}/mês</div></div>
+      <div class="rp-exec-item"><div class="rp-exec-label">Meta de R$ ${(meta / 12).toLocaleString('pt-BR')}/mês</div><div class="rp-exec-value">${P1(pctMeta)}</div><div style="background:#eee;border-radius:4px;height:8px;margin-top:6px;overflow:hidden;"><div style="width:${Math.min(pctMeta * 100, 100).toFixed(1)}%;height:100%;background:#0a8a4a;"></div></div></div>
+      <div class="rp-exec-item"><div class="rp-exec-label">Yield das ações (base)</div><div class="rp-exec-value">${P1(yieldMedio)}</div><div style="font-size:11px;color:#888;margin-top:3px;">sobre ${R0(d.valor)} em ações</div></div>
+      <div class="rp-exec-item"><div class="rp-exec-label">Renda fixa — referência</div><div class="rp-exec-value">${R0(rfLinhas.length ? rfLinhas[0][2] : 0)}/ano</div><div style="font-size:11px;color:#888;margin-top:3px;">LFTB11 pela Selic; Previdência à parte</div></div>`;
+  }
+
+  // Achados
+  const ach = document.getElementById('rpjAchados');
+  if (ach && d.base > 0) {
+    const top3 = d.itens.slice(0, 3), top3s = top3.reduce((s, x) => s + x.rBase, 0);
+    const alto = d.itens.filter(x => (RPJ.risco[x.tk] || [])[0] === '🔴'), altoS = alto.reduce((s, x) => s + x.rBase, 0);
+    const falta = Math.max(meta - d.base, 0);
+    const capital = yieldMedio > 0 ? falta / yieldMedio : 0;
+    const li = [];
+    li.push(`<b>No cenário base, as ações rendem ${R0(d.base)} em 2027 (≈ ${R0(d.base / 12)}/mês)</b>, ${P1(d.base / meta)} da meta de ${R0(meta / 12)}/mês. Entre o pessimista e o otimista a diferença é de ${R0(d.otim - d.pess)} no ano.`);
+    li.push(`<b>Concentração:</b> ${top3.map(x => `${x.tk} ${P1(x.rBase / d.base)}`).join(' · ')} — os 3 maiores somam ${P1(top3s / d.base)} da renda.`);
+    li.push(`<b>Renda com risco alto (🔴):</b> ${alto.length ? alto.map(x => `${x.tk} ${R0(x.rBase)}`).join(' · ') + ` = ${P1(altoS / d.base)} da renda` : 'nenhuma'}. É a parte que pode não vir.`);
+    if (falta > 0) li.push(`<b>Para chegar à meta:</b> faltam ${R0(falta)}/ano (${R0(falta / 12)}/mês). No yield médio atual das ações (${P1(yieldMedio)}), isso exigiria ~${R0(capital)} a mais investidos em ações pagadoras. Hoje há ${R0(rfLinhas.length ? rfLinhas[0][1] : 0)} em LFTB11, que pela Selic rende mais que esse yield (${P1(RPJ.selicMedia)} antes do IR).`);
+    li.push(`<b>Ações abaixo do teto do Radar de Renda</b> (as únicas que hoje pagam acima de 7,71% no preço): ${d.itens.filter(x => x.cot && x.base && x.base / 0.0771 * 0.9 >= x.cot).map(x => x.tk).join(', ') || 'nenhuma'}.`);
+    ach.innerHTML = li.map(t => `<li>${t}</li>`).join('');
+  }
+
+  // Gráfico de contribuição (cascata, soma = 100%)
+  const ch = document.getElementById('rpjChartAtivo');
+  if (ch && typeof renderRpHBarFmt === 'function') {
+    renderRpHBarFmt(ch, d.itens.map(x => ({ label: x.tk, value: x.rBase, amount: 0 })), v => R0(v) + '/ano · ' + (d.base > 0 ? (v / d.base * 100).toFixed(1).replace('.', ',') : '0') + '%', 'soma');
+  }
+
+  // Tabela
+  const tb = document.querySelector('#rpjTabela tbody');
+  if (tb) {
+    const f2 = v => v === null || v === undefined ? '—' : 'R$ ' + v.toFixed(2).replace('.', ',');
+    tb.innerHTML = d.itens.map(x => {
+      const rk = RPJ.risco[x.tk] || ['⚪', ''];
+      const y = x.cot && x.base ? (x.base + x.extra) / x.cot : null;
+      return `<tr>
+        <td class="rp-bold">${x.tk}</td>
+        <td>${x.q.Luiz ? x.q.Luiz.toLocaleString('pt-BR') : '—'}</td>
+        <td>${x.q.Flavia ? x.q.Flavia.toLocaleString('pt-BR') : '—'}</td>
+        <td style="white-space:nowrap;">${f2(x.pess)} · <b>${f2(x.base)}</b> · ${f2(x.otim)}${x.extra ? `<br><span style="font-size:10.5px;color:#888;">+ R$ ${x.extra.toFixed(2).replace('.', ',')} já aprovados</span>` : ''}</td>
+        <td class="rp-bold">${R0(x.rBase)}</td>
+        <td>${d.base > 0 ? P1(x.rBase / d.base) : '—'}</td>
+        <td>${y === null ? '—' : P1(y)}</td>
+        <td style="min-width:200px;white-space:normal;font-size:11.5px;">${rk[0]} ${rk[1]}</td>
+        <td><button type="button" class="rr-est-btn" onclick="_rpjVerEstudo('${x.tk}')">📖 Estudo</button></td>
+      </tr>`;
+    }).join('') + `<tr style="background:#1e1a2e;color:#fff;font-weight:700;"><td>Total</td><td></td><td></td><td></td><td>${R0(d.base)}</td><td>100%</td><td>${P1(yieldMedio)}</td><td style="white-space:normal;font-weight:400;">Pessimista ${R0(d.pess)} · Otimista ${R0(d.otim)}</td><td></td></tr>`;
+  }
+
+  // Por pessoa
+  const pe = document.getElementById('rpjPessoas');
+  if (pe) {
+    pe.innerHTML = ['Luiz', 'Flavia'].map(nome => {
+      const b = d.itens.reduce((s, x) => s + x.q[nome] * ((x.base || 0) + x.extra), 0);
+      const ps = d.itens.reduce((s, x) => s + x.q[nome] * ((x.pess || 0) + x.extra), 0);
+      const ot = d.itens.reduce((s, x) => s + x.q[nome] * ((x.otim || 0) + x.extra), 0);
+      const top = d.itens.filter(x => x.q[nome] > 0).sort((a, c) => c.q[nome] * c.base - a.q[nome] * a.base).slice(0, 3)
+        .map(x => `${x.tk} ${R0(x.q[nome] * ((x.base || 0) + x.extra))}`).join(' · ');
+      return `<div class="rp-exec-item"><div class="rp-exec-label">${nome}</div><div class="rp-exec-value">${R0(b)}/ano</div>
+        <div style="font-size:11px;color:#888;margin-top:3px;">≈ ${R0(b / 12)}/mês · faixa ${R0(ps)} → ${R0(ot)}</div>
+        <div style="font-size:11px;color:#555;margin-top:4px;">${top}</div></div>`;
+    }).join('');
+  }
+
+  // Calendário
+  const cal = document.getElementById('rpjCalendario');
+  if (cal) {
+    const meses = Array(12).fill(0), porMes = Array.from({ length: 12 }, () => []);
+    d.itens.forEach(x => {
+      const c = RPJ.calendario[x.tk]; if (!c || !x.base) return;
+      const fixo = c.fixoMensal ? Math.min(c.fixoMensal * 12, x.base) : 0;
+      const resto = x.base - fixo;
+      for (let m = 0; m < 12; m++) {
+        const v = x.qtd * (fixo / 12 + resto * (c.pesos[m] || 0));
+        if (v > 0) { meses[m] += v; porMes[m].push({ label: x.tk, amount: v }); }
+      }
+    });
+    RPJ.aprovados.filter(a => a.extra).forEach(a => {
+      const x = d.itens.find(i => i.tk === a.tk); if (!x) return;
+      const m = parseInt(a.data.split('/')[1], 10) - 1, v = x.qtd * a.vps;
+      meses[m] += v; porMes[m].push({ label: a.tk + ' (aprovado)', amount: v });
+    });
+    const mx = Math.max(...meses, 1);
+    cal.innerHTML = `<div style="display:flex;align-items:flex-end;gap:4px;height:150px;border-bottom:1px solid #e5e5e5;padding-top:18px;">` +
+      meses.map((v, m) => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;" title="${_RPJ_MESES[m]}: ${R0(v)} — ${porMes[m].sort((a, b) => b.amount - a.amount).map(p => p.label + ' ' + R0(p.amount)).join(', ')}">
+        <span style="font-size:9.5px;color:#555;white-space:nowrap;">${v >= 1000 ? (v / 1000).toFixed(1).replace('.', ',') + 'k' : Math.round(v)}</span>
+        <div style="width:100%;max-width:38px;height:${(v / mx * 110).toFixed(0)}px;background:#2a78d6;border-radius:3px 3px 0 0;"></div></div>`).join('') +
+      `</div><div style="display:flex;gap:4px;">${_RPJ_MESES.map(m => `<div style="flex:1;text-align:center;font-size:10.5px;color:#888;">${m}</div>`).join('')}</div>` +
+      `<details style="margin-top:8px;"><summary style="font-size:12px;color:#555;cursor:pointer;">Ver mês a mês e o padrão de cada empresa</summary>
+        <div style="font-size:12px;line-height:1.6;margin-top:6px;">${meses.map((v, m) => `<div><b>${_RPJ_MESES[m]}</b> ${R0(v)} — ${porMes[m].sort((a, b) => b.amount - a.amount).map(p => p.label + ' ' + R0(p.amount)).join(' · ') || '—'}</div>`).join('')}
+        <div style="margin-top:8px;color:#666;">${d.itens.map(x => `<div><b>${x.tk}:</b> ${(RPJ.calendario[x.tk] || {}).fonte || '—'}</div>`).join('')}</div></div></details>`;
+  }
+
+  // Aprovados
+  const ta = document.querySelector('#rpjAprovados tbody');
+  if (ta) {
+    let tot = 0;
+    ta.innerHTML = RPJ.aprovados.map(a => {
+      const q = _rpjQtd(a.tk), qt = q.Luiz + q.Flavia;
+      const v = a.vps ? qt * a.vps : null; if (v) tot += v;
+      return `<tr><td>${a.data}</td><td class="rp-bold">${a.tk}</td><td style="white-space:normal;">${a.tipo}</td><td>${a.vps ? 'R$ ' + a.vps.toFixed(4).replace('.', ',') : 'a definir'}</td><td>${v === null ? '—' : _consR(v)}</td><td style="white-space:normal;font-size:11px;">${a.fonte}</td></tr>`;
+    }).join('') + `<tr style="background:#f7f7f5;font-weight:700;"><td colspan="4">Total já aprovado (bruto)</td><td>${_consR(tot)}</td><td></td></tr>`;
+  }
+
+  // Renda fixa
+  const trf = document.querySelector('#rpjRF tbody');
+  if (trf) {
+    trf.innerHTML = rfLinhas.map(r => `<tr><td class="rp-bold">${r[0]}</td><td>${R0(r[1])}</td><td>${P1(RPJ.selicMedia)} (Selic média)</td><td>${R0(r[2])}</td><td style="white-space:normal;font-size:11.5px;">${r[3]}</td></tr>`).join('') || '<tr><td colspan="5">Sem renda fixa nas carteiras.</td></tr>';
+  }
+  const rod = document.getElementById('rpjRodape');
+  if (rod) rod.innerHTML = `Dividendo por ação: Radar de Renda (atualizado em ${RADAR_RENDA.atualizadoAgente}, dados dos sites de RI). Quantidades: carteiras de hoje. ${RPJ.selicFonte}. Valores brutos, antes do IR sobre JCP.`;
+}
+
+(function patchShowPageRendaProj() {
+  const orig = window.showPage;
+  if (typeof orig !== 'function') return;
+  window.showPage = function (id) {
+    orig(id);
+    if (id !== 'rendaproj') return;
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase().includes('renda projetada')));
+    renderRendaProjetada();
+  };
+  const origProp = window._cwPropagar;
+  if (typeof origProp === 'function') {
+    window._cwPropagar = function (tbodyId) {
+      origProp(tbodyId);
+      if (document.getElementById('page-rendaproj')?.classList.contains('active')) renderRendaProjetada();
+    };
+  }
+})();
+</script>
 </body>
 </html>
