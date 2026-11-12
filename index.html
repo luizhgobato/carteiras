@@ -8808,10 +8808,17 @@ function _rpTotalPatrimonio(classeTableId) {
 function makeSVGHBar(el, labels, values, colors, fmt, wideLabels, details, escala) {
   if (!el || !labels.length) { if (el) el.innerHTML = ''; return; }
   const soma = values.reduce((a, b) => a + (b > 0 ? b : 0), 0) || 1;
+  // Em cascata (pedido do usuário em 12/11/2026): a 1ª barra começa na esquerda e cada uma das
+  // seguintes começa onde a anterior terminou — lendo de cima para baixo, as fatias vão
+  // "preenchendo" os 100%. O deslocamento usa a fatia REAL acumulada (não a largura mínima de
+  // visibilidade), então a última barra termina exatamente no total somado.
+  let acumulado = 0;
   const rows = labels.map((l, i) => {
     const v = values[i];
-    const share = escala === 'soma' ? v / soma * 100 : v;
+    const share = Math.max(escala === 'soma' ? v / soma * 100 : v, 0);
     const pct = Math.min(Math.max(share, 0.8), 100);
+    const inicio = Math.max(Math.min(acumulado, 100 - pct), 0); // fatia mínima nunca vaza dos 100%
+    acumulado += share;
     const col = Array.isArray(colors) ? colors[i % colors.length] : colors;
     const txt = fmt ? fmt(v, i) : v;
     const header = `
@@ -8820,7 +8827,7 @@ function makeSVGHBar(el, labels, values, colors, fmt, wideLabels, details, escal
         <span style="font-size:12.5px;font-weight:700;color:#333;white-space:nowrap;flex-shrink:0;">${txt}</span>
       </div>
       <div style="background:#eee;border-radius:4px;height:11px;overflow:hidden;">
-        <div style="width:${pct.toFixed(1)}%;height:100%;background:${col};border-radius:4px;" title="${l}: ${txt}"></div>
+        <div style="margin-left:${inicio.toFixed(2)}%;width:${pct.toFixed(2)}%;height:100%;background:${col};border-radius:4px;" title="${l}: ${txt}"></div>
       </div>`;
     // Expandir pra ver posição por posição -- só quando há mais de 1 item (uma categoria com
     // 1 ativo só já É o detalhe, não faz sentido expandir pra ver a mesma coisa de novo).
