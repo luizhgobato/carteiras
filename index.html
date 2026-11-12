@@ -8800,12 +8800,18 @@ function _rpTotalPatrimonio(classeTableId) {
 // usuário). Com rótulo+valor numa linha (flex, quebra livre) e a barra numa LINHA DE BAIXO
 // ocupando 100% da largura disponível, não existe mais essa divisão de espaço fixo — a barra
 // sempre aparece por inteiro, em qualquer largura de tela.
-function makeSVGHBar(el, labels, values, colors, fmt, wideLabels, details) {
+// escala (pedido do usuário em 12/11/2026 — "a barra total seria os 100%"): a barra cinza é
+// SEMPRE o todo (100%) e a parte pintada é a fatia de cada item nesse todo, como num histograma
+// de participação. 'pct' (padrão): o valor já é % do total (ex.: 53,99% pinta 53,99% da barra).
+// 'soma': o valor é absoluto (ex.: R$ de dividendos) e a fatia é valor ÷ soma de todos.
+// Antes a maior barra sempre enchia 100% (escala pelo máximo), o que fazia 54% parecer 100%.
+function makeSVGHBar(el, labels, values, colors, fmt, wideLabels, details, escala) {
   if (!el || !labels.length) { if (el) el.innerHTML = ''; return; }
-  const maxV = Math.max(...values, 0.0001);
+  const soma = values.reduce((a, b) => a + (b > 0 ? b : 0), 0) || 1;
   const rows = labels.map((l, i) => {
     const v = values[i];
-    const pct = Math.max((v / maxV) * 100, 1.5);
+    const share = escala === 'soma' ? v / soma * 100 : v;
+    const pct = Math.min(Math.max(share, 0.8), 100);
     const col = Array.isArray(colors) ? colors[i % colors.length] : colors;
     const txt = fmt ? fmt(v, i) : v;
     const header = `
@@ -8855,7 +8861,7 @@ function renderRpPosicaoBar(tbodyId, containerId, pctSelector) {
     .sort((a, b) => b.value - a.value);
   renderRpHBarFmt(el, rows, v => v.toFixed(2).replace('.', ',') + '%');
 }
-function renderRpHBarFmt(el, rows, fmt) {
+function renderRpHBarFmt(el, rows, fmt, escala) {
   const anyAmount = rows.some(r => r.amount > 0);
   const fmtFinal = anyAmount
     ? (v, i) => {
@@ -8863,7 +8869,7 @@ function renderRpHBarFmt(el, rows, fmt) {
         return a + fmt(v);
       }
     : fmt;
-  makeSVGHBar(el, rows.map(r => r.label), rows.map(r => r.value), RP_COLORS, fmtFinal, anyAmount, rows.map(r => r.detail || null));
+  makeSVGHBar(el, rows.map(r => r.label), rows.map(r => r.value), RP_COLORS, fmtFinal, anyAmount, rows.map(r => r.detail || null), escala || 'pct');
 }
 // Lê qualquer coluna numérica de uma rp-table (ex.: "Div. 2026" da tabela Renda Esperada)
 // e desenha barra horizontal ordenada por magnitude — pula linhas de total/subtotal.
@@ -8871,7 +8877,7 @@ function renderRpTableHBar(tableId, containerId, labelIdx, valueIdx, fmt) {
   const table = document.getElementById(tableId), el = document.getElementById(containerId);
   if (!table || !el) return;
   const rows = _rpTableRows(table, labelIdx, valueIdx).filter(r => r.value > 0).sort((a, b) => b.value - a.value);
-  renderRpHBarFmt(el, rows, fmt);
+  renderRpHBarFmt(el, rows, fmt, 'soma');
 }
 
 // ── Barra divergente (desvio +/- vs. Ideal) ─────────────────────────────────────────────
