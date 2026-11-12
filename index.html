@@ -2030,6 +2030,14 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
       <button type="button" class="cons-filtro-btn" data-filtro="Luiz" onclick="_consSetFiltro('Luiz')">Luiz</button>
       <button type="button" class="cons-filtro-btn" data-filtro="Flavia" onclick="_consSetFiltro('Flavia')">Flavia</button>
     </div>
+    <div style="display:flex;gap:6px;margin-bottom:0.75rem;flex-wrap:wrap;" role="group" aria-label="Filtrar por tipo de investimento">
+      <button type="button" class="cons-filtro-btn cons-tipo-btn active" data-tipo="tudo" onclick="_consSetTipo('tudo')">Tudo</button>
+      <button type="button" class="cons-filtro-btn cons-tipo-btn" data-tipo="rvrf" onclick="_consSetTipo('rvrf')">Renda variável + fixa</button>
+      <button type="button" class="cons-filtro-btn cons-tipo-btn" data-tipo="rv" onclick="_consSetTipo('rv')">Só renda variável</button>
+      <button type="button" class="cons-filtro-btn cons-tipo-btn" data-tipo="rf" onclick="_consSetTipo('rf')">Só renda fixa</button>
+      <button type="button" class="cons-filtro-btn cons-tipo-btn" data-tipo="part" onclick="_consSetTipo('part')">Participações societárias</button>
+      <button type="button" class="cons-filtro-btn cons-tipo-btn" data-tipo="imovel" onclick="_consSetTipo('imovel')">Imóveis</button>
+    </div>
 
     <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;">
       <button class="btn-olho" onclick="atualizarCotacaoFamilia()" style="cursor:pointer;">🔄 Atualizar Cotação (as duas)</button>
@@ -12616,8 +12624,44 @@ const CONS_CARTEIRAS = [
 let _consFiltro = 'consolidado';
 function _consSetFiltro(nome) {
   _consFiltro = nome;
-  document.querySelectorAll('.cons-filtro-btn').forEach(b => b.classList.toggle('active', b.dataset.filtro === nome));
+  document.querySelectorAll('.cons-filtro-btn[data-filtro]').forEach(b => b.classList.toggle('active', b.dataset.filtro === nome));
   if (typeof renderConsolidado === 'function') renderConsolidado();
+}
+
+// Filtro por TIPO de investimento (pedido do usuário em 12/11/2026): Tudo / Renda variável +
+// fixa / só variável / só fixa / Participações societárias / Imóveis. Combina com o filtro de
+// pessoa acima. Só muda o que a Consolidada MOSTRA (cards, barras, tabela/cards por ativo) — a
+// Carteira Ideal (régua 65/20/15) e os Riscos continuam sobre o patrimônio inteiro, porque o
+// alvo da régua é sobre tudo e filtrar ali daria desvio falso. Ações BR e Internacionais =
+// renda variável; LFTB11 e Previdência = renda fixa; Academia = participação; Apartamento = imóvel.
+const CONS_TIPOS = {
+  tudo:   { label: 'Tudo',                         grupos: ['rv', 'rf', 'part', 'imovel'] },
+  rvrf:   { label: 'Renda variável + fixa',        grupos: ['rv', 'rf'] },
+  rv:     { label: 'Renda variável',               grupos: ['rv'] },
+  rf:     { label: 'Renda fixa',                   grupos: ['rf'] },
+  part:   { label: 'Participações societárias',    grupos: ['part'] },
+  imovel: { label: 'Imóveis',                      grupos: ['imovel'] },
+};
+let _consTipo = 'tudo';
+try { const t = localStorage.getItem('consTipo'); if (t && CONS_TIPOS[t]) _consTipo = t; } catch (e) {}
+function _consSetTipo(tipo) {
+  if (!CONS_TIPOS[tipo]) return;
+  _consTipo = tipo;
+  try { localStorage.setItem('consTipo', tipo); } catch (e) {}
+  document.querySelectorAll('.cons-tipo-btn').forEach(b => b.classList.toggle('active', b.dataset.tipo === tipo));
+  if (typeof renderConsolidado === 'function') renderConsolidado();
+}
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.cons-tipo-btn').forEach(b => b.classList.toggle('active', b.dataset.tipo === _consTipo));
+});
+// Grupo de tipo de uma linha de posição (classe rf/acao) ou de um fixo da config.
+function _consGrupoTipoLinha(tr) { return tr.dataset.classe === 'rf' ? 'rf' : 'rv'; }
+function _consGrupoTipoFixo(f) {
+  const c = f.classe || f.label;
+  if (c === 'Renda Fixa') return 'rf';
+  if (c === 'Participação Societária') return 'part';
+  if (c === 'Imóvel') return 'imovel';
+  return 'rv'; // Internacionais (ETFs) e qualquer outro fixo sem classe
 }
 
 // Alvo de alocação do casal. Os dois planos individuais usam 65/20/15 — como são iguais, a
@@ -12712,7 +12756,9 @@ function _consEtfiVarDiaPonderada() {
 // ── COLETA ────────────────────────────────────────────────────────────────────────────────
 // Devolve a fotografia consolidada. Tudo o que as seções desenham sai daqui — uma leitura só,
 // para que nenhuma seção possa discordar de outra sobre quanto o casal tem.
-function coletarConsolidado() {
+function coletarConsolidado(aplicarFiltroTipo) {
+  // Sem argumento (ex.: Radar de Renda, régua 65/20/15) = patrimônio inteiro, como sempre.
+  const gruposTipo = aplicarFiltroTipo ? CONS_TIPOS[_consTipo].grupos : ['rv', 'rf', 'part', 'imovel'];
   const porTitular = {}, porTicker = {}, porSegmento = {}, porClasse = {}, porGrupo = {};
   const fixosConsolidados = [];
   // porTitularDet: mesmos totais de _consCalcularTotais(d), só que por titular — acumulados
@@ -12737,6 +12783,7 @@ function coletarConsolidado() {
     tbody.querySelectorAll('tr[data-ticker]').forEach(tr => {
       const saldo = _consNum(tr.querySelector('.cw-saldo')?.textContent);
       if (!(saldo > 0)) return;
+      if (!gruposTipo.includes(_consGrupoTipoLinha(tr))) return;
       const ticker = (tr.dataset.ticker || '').replace(/\.SA$/i, '');
       const qtd = _consNum(tr.querySelector('.cw-qtd')?.value);
       const preco = parseFloat(tr.dataset.preco) || _consNum(tr.querySelector('.cw-preco')?.textContent);
@@ -12771,6 +12818,7 @@ function coletarConsolidado() {
     const fixos = (typeof RP_PATRIMONIO_CFG !== 'undefined' && RP_PATRIMONIO_CFG[c.prefix])
       ? RP_PATRIMONIO_CFG[c.prefix].fixos : [];
     fixos.forEach(f => {
+      if (!gruposTipo.includes(_consGrupoTipoFixo(f))) return;
       subtotal += f.valor;
       // classe/segmento/grupo são opcionais na config — por padrão cada fixo é sua própria
       // classe (Previdência vira "Previdência" sozinha), mas a Previdência agora
@@ -12815,7 +12863,7 @@ function coletarConsolidado() {
   // Renda mensal estimada: lida do card já calculado em cada página individual, para não
   // criar uma segunda projeção de dividendos que possa divergir da de lá.
   let rendaMes = 0;
-  carteirasFiltradas.forEach(c => {
+  if (gruposTipo.includes('rv')) carteirasFiltradas.forEach(c => {
     const cfg = (typeof RP_PATRIMONIO_CFG !== 'undefined') ? RP_PATRIMONIO_CFG[c.prefix] : null;
     if (!cfg) return;
     document.querySelectorAll(`#${cfg.pageId} .rp-exec-item`).forEach(item => {
@@ -12901,8 +12949,18 @@ function _consMergeFixosPorLabel(fixos) {
 }
 
 function renderConsolidado() {
-  const d = coletarConsolidado();
-  if (!(d.totalGeral > 0)) return;
+  const d = coletarConsolidado(true);
+  const _dTudo = _consTipo === 'tudo' ? d : coletarConsolidado(false);
+  const _tipoLbl = _consTipo === 'tudo' ? '' : ' · ' + CONS_TIPOS[_consTipo].label;
+  if (!(d.totalGeral > 0)) {
+    // Combinação sem nada (ex.: Flavia + Imóveis): limpa a página em vez de deixar o filtro
+    // anterior na tela.
+    const exec = document.getElementById('consExec');
+    if (exec) exec.innerHTML = `<div class="rp-exec-item"><div class="rp-exec-label">${_consFiltro === 'consolidado' ? 'Casal' : _consFiltro}${_tipoLbl}</div><div class="rp-exec-value">Nada nesta seleção</div></div>`;
+    ['chartConsTitular', 'chartConsClasse', 'chartConsSegmento', 'chartConsAtivo', 'consMobileCards'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
+    const tb0 = document.querySelector('#tblConsAtivos tbody'); if (tb0) tb0.innerHTML = '';
+    return;
+  }
   const tot = _consCalcularTotais(d);
   const fixosMerged = _consMergeFixosPorLabel(d.fixos);
 
@@ -12938,7 +12996,7 @@ function renderConsolidado() {
       const pctTot = det.investido > 0 ? det.resultado / det.investido * 100 : null;
       return cardResultado(`Resultado — ${nome}`, det.varDiaRS, pctDia, det.resultado, pctTot);
     }).join('');
-    const labelPatrimonio = _consFiltro === 'consolidado' ? 'Patrimônio do casal' : `Patrimônio — ${_consFiltro}`;
+    const labelPatrimonio = (_consFiltro === 'consolidado' ? 'Patrimônio do casal' : `Patrimônio — ${_consFiltro}`) + _tipoLbl;
     const cardSplit = _consFiltro === 'consolidado'
       // Mesmo layout dos cards de Resultado (rótulo pequeno à esquerda, valor à direita) --
       // pedido do usuário em 28/10/2026 pra ficar no padrão dos demais cards.
@@ -13006,7 +13064,7 @@ function renderConsolidado() {
   const thSaldo = document.getElementById('thConsSaldo');
   const thPct = document.getElementById('thConsPct');
   if (thSaldo) thSaldo.textContent = _consFiltro === 'consolidado' ? 'Saldo somado (Luiz+Flavia)' : `Saldo — ${_consFiltro}`;
-  if (thPct) thPct.textContent = _consFiltro === 'consolidado' ? '% do casal' : '% da carteira';
+  if (thPct) thPct.textContent = _consTipo !== 'tudo' ? '% da seleção' : (_consFiltro === 'consolidado' ? '% do casal' : '% da carteira');
   const tb = document.querySelector('#tblConsAtivos tbody');
   if (tb) {
     // Totais (tot.*) já vêm prontos de _consCalcularTotais(d), chamado uma vez no topo da
@@ -13137,6 +13195,9 @@ function renderConsolidado() {
       mc.innerHTML = itens.map(card).join('') + cardTotal;
     }
 
+  // Régua e riscos: sempre sobre o patrimônio inteiro (ver CONS_TIPOS) — o bloco abaixo usa
+  // um "d" local que ignora o filtro por tipo.
+  { const d = _dTudo;
   // ── Carteira Ideal do casal ──
   // Mesma régua 65/20/15 das páginas individuais, aplicada sobre o patrimônio somado. Os
   // grupos vêm de data-grupo em cada linha — reclassificar um ativo lá reflete aqui sozinho.
@@ -13163,6 +13224,7 @@ function renderConsolidado() {
 
   // ── Riscos que só aparecem somando ──
   renderConsRiscos(d);
+  }
 
   // ── Rodapé de sincronia ──
   const st = document.getElementById('consStatus');
