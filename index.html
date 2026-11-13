@@ -888,7 +888,16 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
      já usado em .fund-table-wrap/.rp-table-wrap. Menos margem/moldura: a tabela sangra até a
      borda da tela em vez de ficar encaixotada. */
   .table-container{padding:0.5rem 0 1rem;}
+  /* overflow-x:auto SEMPRE força o overflow-y computado pra "auto" também (regra do CSS:
+     eixo "visible" do lado de um eixo não-visible vira "auto" — overflow-y:visible explícito
+     não escapa disso, o browser ignora). Isso faz .table-wrap virar um contêiner de rolagem
+     vertical próprio, e o thead sticky (pensado pra rolar junto da PÁGINA) passa a "flutuar"
+     dentro dele de forma errática — foi o que apareceu quebrado no celular (header no meio da
+     tabela). Sem reintroduzir duas barras de rolagem (decisão de 07/09/2026), a saída é tirar
+     o sticky do thead só no mobile: a tabela rola pro lado normalmente, o cabeçalho rola junto
+     com o conteúdo em vez de ficar fixo no topo. */
   .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  #mainTable thead{position:static;}
 
   /* REPORT PAGE mobile */
   .report-topbar{padding:0.6rem 1rem;top:48px;gap:0.5rem;flex-wrap:wrap;}
