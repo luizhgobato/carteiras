@@ -16538,7 +16538,15 @@ function renderRadarRenda() {
       <div class="cc-body">
         ${linha('', '<span style="font-size:10.5px;color:#888;font-weight:600;">AGENTE</span>', '<span style="font-size:10.5px;color:#888;">ESPECIALISTA</span>')}
         ${linha('Lucro estim.', l.it.agente.lucroTxt || (l.it.agente.lucro ? fmtLucro(l.it.agente.lucro) : '—'), l.it.esp ? (l.it.esp.lucro ? fmtLucro(l.it.esp.lucro) : '—') : '—')}
-        ${linha('Payout', l.it.agente.payoutTxt || (l.it.agente.payout ? pctR(l.it.agente.payout).replace(',0%', '%') : '—'), l.it.esp && l.it.esp.payout ? pctR(l.it.esp.payout).replace(',0%', '%') : '—')}
+        ${(() => {
+          const payoutRaw = l.it.agente.payoutTxt || (l.it.agente.payout ? pctR(l.it.agente.payout).replace(',0%', '%') : '—');
+          const m = payoutRaw.match(/^~?\d+(?:,\d+)?%/);
+          const curto = m ? m[0] : payoutRaw;
+          const temNota = curto !== payoutRaw;
+          const payoutEsp = l.it.esp && l.it.esp.payout ? pctR(l.it.esp.payout).replace(',0%', '%') : '—';
+          return linha('Payout' + (temNota ? ' <span class="rr-ic" onclick="_rrToggleInfo(this)">ⓘ</span>' : ''), curto, payoutEsp)
+            + (temNota ? `<div class="rr-note">${payoutRaw}</div>` : '');
+        })()}
         ${linha('Cotação', val(l.cot, _consR), '')}
         ${linha('Div./ação', val(l.dA, _consR), val(l.dE, _consR))}
         ${linha('Div. yield', (l.dA && l.cot) ? pctR(l.dA / l.cot) : '—', (l.dE && l.cot) ? pctR(l.dE / l.cot) : '—')}
