@@ -9707,10 +9707,12 @@ async function atualizarCotacaoCarteira(tbodyId, statusId, outrosFixos, prefetch
   // política de rede do sandbox. Só dá pra buscar ao vivo daqui, no navegador de quem abre a
   // página — por isso entra junto com o clique em "Atualizar Cotação" do Luiz, não como rotina
   // separada.
-  if (tbodyId === 'luizPosBody' && typeof atualizarETFsInternacionaisLuiz === 'function') {
+  // _cwSoCache: aplicação instantânea do cache no carregamento (ver CW_COT_CACHE_KEY) — não
+  // dispara busca de rede de ETFs/Previdência aqui; a busca de verdade vem logo em seguida.
+  if (tbodyId === 'luizPosBody' && !window._cwSoCache && typeof atualizarETFsInternacionaisLuiz === 'function') {
     atualizarETFsInternacionaisLuiz();
   }
-  if (tbodyId === 'luizPosBody' && typeof atualizarPrevidenciaLuiz === 'function') {
+  if (tbodyId === 'luizPosBody' && !window._cwSoCache && typeof atualizarPrevidenciaLuiz === 'function') {
     atualizarPrevidenciaLuiz();
   }
 }
@@ -9875,7 +9877,7 @@ function _cwAnexarMotivoFalha(statusEl, falhas) {
   const contagem = {};
   tickers.forEach(t => { const m = falhas[t]; contagem[m] = (contagem[m] || 0) + 1; });
   const partes = Object.entries(contagem).map(([motivo, n]) => {
-    const rotulo = motivo === '429' || motivo === 429 ? 'limite da API' : (motivo === 'timeout' ? 'timeout' : (motivo === 'rede' ? 'rede' : (motivo === 'sem-preco' ? 'sem preço' : 'HTTP ' + motivo)));
+    const rotulo = String(motivo).indexOf('cache') === 0 ? 'falhou, usei a cotação das ' + String(motivo).slice(6) : motivo === '429' || motivo === 429 ? 'limite da API' : (motivo === 'timeout' ? 'timeout' : (motivo === 'rede' ? 'rede' : (motivo === 'sem-preco' ? 'sem preço' : 'HTTP ' + motivo)));
     return `${n}× ${rotulo}`;
   });
   statusEl.textContent += ` (${partes.join(', ')})`;
@@ -13419,19 +13421,79 @@ if (!_consIniciado) {
   _consIniciado = true;
   if (typeof renderConsolidado === 'function') renderConsolidado();
 }
-// Limita a busca automática a 1x a cada 5 min por navegador — sem isso, cada F5/reabertura
-// da aba disparava as 17 buscas de novo, e o plano free do brapi.dev tem limite de
-// requisições/minuto: era isso que fazia "algumas" cotações voltarem com erro (429) sem
-// motivo aparente. O botão "Atualizar Cotação" continua manual e sem esse limite.
-const CW_AUTOFETCH_KEY = 'carteira_ultimo_autofetch';
-const CW_AUTOFETCH_INTERVALO_MS = 5 * 60 * 1000;
+// ── COTAÇÕES AO ABRIR/ATUALIZAR A PÁGINA (pedido do usuário em 13/11/2026) ─────────────────
+// Antes: a busca automática só rodava 1x a cada 5 min (pra poupar o limite do plano free do
+// brapi.dev); num F5 dentro desse intervalo a página ficava com os preços gravados no arquivo
+// (às vezes de dias atrás) — por isso "os valores estão errados quando atualizo a página".
+// Agora, a cada carregamento:
+//   1) aplica NA HORA as últimas cotações buscadas neste navegador (cache local, até 24h), pra
+//      página já abrir com valores recentes em vez dos do arquivo;
+//   2) busca as cotações novas (as duas carteiras de uma vez). Se a última busca completa foi
+//      há menos de 1 min, pula a rede e fica com o cache — evita estourar o limite com F5 seguidos.
+// Toda busca (automática ou pelo botão) grava o cache; ticker que falhar na busca usa o valor
+// do cache (até 6h) em vez de ficar com o preço velho do arquivo.
+const CW_COT_CACHE_KEY = 'carteira_cotacoes_cache_v1';
+const CW_COT_CACHE_MAX_MS = 24 * 60 * 60 * 1000;
+const CW_COT_FALLBACK_MAX_MS = 6 * 60 * 60 * 1000;
+const CW_COT_SEM_REDE_MS = 60 * 1000;
+function _cwLerCacheCot() {
+  try { const c = JSON.parse(localStorage.getItem(CW_COT_CACHE_KEY) || 'null'); return c && c.map ? c : null; } catch { return null; }
+}
+function _cwSalvarCacheCot(map) {
+  try {
+    const c = _cwLerCacheCot() || { map: {}, ts: 0 };
+    const agora = Date.now();
+    Object.keys(map).forEach(t => { if (map[t] && map[t].preco > 0 && !map[t].doCache) c.map[t] = { ...map[t], ts: agora }; });
+    c.ts = agora;
+    localStorage.setItem(CW_COT_CACHE_KEY, JSON.stringify(c));
+  } catch {}
+}
+if (typeof fetchCotacoesBatchComVar === 'function') {
+  const _cwFetchOrig = fetchCotacoesBatchComVar;
+  fetchCotacoesBatchComVar = async function (tickers) {
+    const r = await _cwFetchOrig(tickers);
+    _cwSalvarCacheCot(r.map);
+    const cache = _cwLerCacheCot();
+    if (cache) Object.keys(r.falhas).forEach(t => {
+      const c = cache.map[t];
+      if (c && c.preco > 0 && Date.now() - c.ts < CW_COT_FALLBACK_MAX_MS) {
+        r.map[t] = { preco: c.preco, varDia: c.varDia, varDiaRS: c.varDiaRS, doCache: true };
+        r.falhas[t] = 'cache ' + new Date(c.ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      }
+    });
+    return r;
+  };
+}
+async function _cwAplicarCacheCot() {
+  const cache = _cwLerCacheCot();
+  if (!cache) return null;
+  const map = {};
+  Object.keys(cache.map).forEach(t => { if (Date.now() - cache.map[t].ts < CW_COT_CACHE_MAX_MS) map[t] = cache.map[t]; });
+  if (!Object.keys(map).length) return null;
+  window._cwSoCache = true;
+  try {
+    for (const c of CONS_CARTEIRAS) {
+      const outros = document.getElementById(c.bodyId)?.dataset.outrosFixos || 0;
+      try { await atualizarCotacaoCarteira(c.bodyId, null, parseFloat(outros) || 0, { map, falhas: {} }); } catch {}
+      const cfg = (typeof RP_PATRIMONIO_CFG !== 'undefined') ? RP_PATRIMONIO_CFG[c.prefix] : null;
+      if (cfg && typeof atualizarResumoPatrimonio === 'function') atualizarResumoPatrimonio(c.prefix);
+    }
+    if (typeof renderConsolidado === 'function') renderConsolidado();
+    const hhmm = new Date(cache.ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    Object.values(CW_STATUS_ID_POR_BODY).forEach(id => { const el = document.getElementById(id); if (el) el.textContent = `Cotações de ${hhmm} (última busca neste navegador)`; });
+  } finally { window._cwSoCache = false; }
+  return cache.ts;
+}
 if (typeof atualizarCotacaoFamilia === 'function') {
-  let ultimoAutoFetch = 0;
-  try { ultimoAutoFetch = parseInt(localStorage.getItem(CW_AUTOFETCH_KEY) || '0', 10) || 0; } catch {}
-  if (Date.now() - ultimoAutoFetch > CW_AUTOFETCH_INTERVALO_MS) {
+  (async () => {
+    const tsCache = await _cwAplicarCacheCot();
+    const st = document.getElementById('consUpdateStatus');
+    if (tsCache && Date.now() - tsCache < CW_COT_SEM_REDE_MS) {
+      if (st) st.textContent = `Cotações de ${new Date(tsCache).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} (buscadas há menos de 1 min)`;
+      return;
+    }
     atualizarCotacaoFamilia();
-    try { localStorage.setItem(CW_AUTOFETCH_KEY, String(Date.now())); } catch {}
-  }
+  })();
 }
 
 // ── ORDENAÇÃO POR CLIQUE NO CABEÇALHO (tabelas de ativos: Flavia, Luiz, Consolidada) ──
