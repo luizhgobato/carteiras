@@ -13510,7 +13510,7 @@ function attachSortHandlers(tableEl, skipCols) {
 const RADAR_RENDA = {
   regua: 0.0771,
   reguaFonte: 'Tesouro IPCA+ 2037, mesma régua da aba "Preço teto Bazin adaptado" da planilha do especialista',
-  atualizadoAgente: '12/11/2026',
+  atualizadoAgente: '13/11/2026',
   planilhaEspecialista: 'novembro/2026',
   itens: [
     {
@@ -13674,17 +13674,17 @@ const RADAR_RENDA = {
     {
       "tk": "IRBR3",
       "nome": "IRB(Re)",
-      "status": "2T26 · RI (3T26 sai 12/11)",
+      "status": "3T26 · RI oficial",
       "agente": {
         "lucro": 600000000.0,
         "payout": 0.3,
         "acoes": 81168796,
-        "base": "Estimativa própria (dados do 2T26): lucro Susep 1S26 R$ 259 mi (R$ 307 mi sem a baixa de PIS/COFINS); 12 meses até jun/26 R$ 501,1 mi → 2027E R$ 600 mi com PIS/COFINS zero. Payout 30%: em 2026 pagou R$ 1,52/ação (R$ 126,5 mi ≈ 25% do lucro de 12 meses). Lucro IFRS 17 do 1S26: só R$ 90 mi.",
-        "risco": "Lucro oficial IFRS 17 muito abaixo do lucro Susep; não divulga política de dividendos.",
+        "base": "Estimativa própria: 3T26 com prejuízo de R$ 456 mi (Susep) pela baixa de créditos tributários (não caixa); ajustado R$ 74 mi. 9M26: −R$ 197 mi (ajustado +R$ 381 mi). 2027E R$ 600 mi com a CSLL caindo de 15% para 9%. Payout 30% sobre 2027 (pago em 2028); sobre 2026 o dividendo é improvável e o limite de JCP de 2026 já foi usado.",
+        "risco": "Índice combinado de 110,6% no 3T26; pouca ou nenhuma renda em caixa em 2027.",
         "fontes": [
           [
-            "IRB RI — Release 2T26",
-            "https://api.mziq.com/mzfilemanager/v2/d/0d797649-90df-4c56-aa01-6ee9c8a13d75/b41b5ae3-2660-80fc-03ca-a4f683e5b125?origin=2"
+            "IRB RI — Release 3T26",
+            "https://filemanager-cdn.mziq.com/published/0d797649-90df-4c56-aa01-6ee9c8a13d75/2c3485b7-95f2-48b3-8450-66e25b71d3ce"
           ],
           [
             "IRB RI — Histórico de dividendos",
@@ -13733,17 +13733,17 @@ const RADAR_RENDA = {
     {
       "tk": "GMAT3",
       "nome": "Grupo Mateus",
-      "status": "2T26 · RI (3T26 pendente)",
+      "status": "3T26 · RI oficial",
       "agente": {
         "lucro": 1100000000.0,
         "payout": 0.3,
         "acoes": 2300047621,
-        "base": "Estimativa própria (dados do 2T26): lucro 1S26 R$ 449,7 mi; 2025 R$ 1,83 bi (ajustado R$ 1,57 bi). JCP de 2025: R$ 560 mi = 30,5% do lucro (DFP 2025). Nenhum JCP no 1S26. Ações: 2,30 bi ex-tesouraria (composição acionária do RI).",
-        "risco": "Empresa de crescimento; vendas nas mesmas lojas −8% e lucro do 1S26 bem abaixo do ritmo de 2025.",
+        "base": "Estimativa própria: lucro 9M26 R$ 761,8 mi (−38,6% ajustado) → 2026E ~R$ 1,1 bi; 2027E R$ 1,1 bi. JCP de 2025: 30,5% do lucro (DFP 2025); nenhum JCP em 9M26. Ações: 2,30 bi ex-tesouraria.",
+        "risco": "Lucro caindo e JCP suspenso em 2026; vendas nas mesmas lojas ainda negativas (−4,7% no 3T26).",
         "fontes": [
           [
-            "Grupo Mateus RI — Release 2T26",
-            "https://api.mziq.com/mzfilemanager/v2/d/8ea287f8-ae0a-4b88-b20b-80c1f1b86a1e/759380ab-906c-cfb2-3d52-43e262f436d1?origin=2"
+            "Grupo Mateus RI — Release 3T26",
+            "https://filemanager-cdn.mziq.com/published/8ea287f8-ae0a-4b88-b20b-80c1f1b86a1e/6db97805-1d4d-4cdc-8c51-3b8939bf9a95"
           ],
           [
             "Grupo Mateus RI — DFP 2025",
@@ -14664,7 +14664,7 @@ const RADAR_RENDA_ESTUDOS = {
       "Custo do crédito acima de 3,8%.",
       "Inadimplência > 90 dias acima de 5%."
     ],
-    "encaixe": "Flavia tem 4.000 ações (≈ R$ 53 mil, ~3% do casal). Mesmo ciclo de ITUB3 e BBAS3 — se for aumentar, faz sentido no lugar de outro banco, não além deles.",
+    "encaixe": "Flavia tem 5.100 ações (≈ R$ 68 mil, ~4% do casal; comprou 1.100 a R$ 13,23 em 12/11). Mesmo ciclo de ITUB3 e BBAS3 — se for aumentar, faz sentido no lugar de outro banco, não além deles.",
     "qualidade": [
       "Lucro, ROAE, eficiência, custo do crédito, inadimplência, guidance e payout: Relatório de Análise Econômica e Financeira 3T26 (site de RI).",
       "Proventos por ação (BBDC3): página \"Remuneração aos Acionistas\" do RI. Ações: página \"Estrutura Acionária\" (11.175.564.781 após o aumento).",
@@ -15597,130 +15597,130 @@ const RADAR_RENDA_ESTUDOS = {
     ]
   },
   IRBR3: {
-    "atualizado": "12/11/2026",
-    "base": "Release, ITR e histórico de dividendos do 2T26 (site de RI). ⚠️ O 3T26 sai hoje (12/11) após o fechamento — este estudo será refeito em 13/11.",
+    "atualizado": "13/11/2026",
+    "base": "Release de Resultados 3T26 (12/11/2026) — site de RI",
     "cotacaoRef": 58.18,
     "setor": "Resseguradora · motor de valuation: P/VP × ROE (metodologia) — aqui o teto é por dividendo (Bazin).",
     "resumo": [
       [
         "Veredicto do agente",
-        "🔴 Muito acima do teto — margem de −102% no cenário base; nem o otimista chega ao teto (−12%)."
+        "🔴 Muito acima do teto — margem de −102% no cenário base; nem o otimista chega ao teto (−4%)."
       ],
       [
         "Convicção",
-        "★★☆☆☆ como renda — a operação está se recuperando, mas a empresa paga pouco do lucro e o lucro do balanço oficial (IFRS 17) é bem menor que o que ela destaca."
+        "★☆☆☆☆ como renda — prejuízo de R$ 456 mi no 3T26 (baixa de créditos tributários, sem efeito caixa), subscrição piorou (índice combinado de 110,6%) e o dividendo sobre 2026 fica improvável."
       ],
       [
         "Em uma frase",
-        "Voltou a pagar dividendos em 2026 (R$ 1,52/ação, ~2,6% ao ano) depois de 5 anos sem pagar; o preço embute crescimento, não renda."
+        "O ajuste tributário derrubou o lucro de 2026, mas a reforma reduz o imposto da empresa a partir de 2027; como renda, a ação não se sustenta no preço atual."
       ]
     ],
     "tese": [
-      "<b>Subscrição melhorando:</b> índice combinado de 95,1% no 1S26 (96,1% no 1S25) e 92% no 2T26, pelo critério da empresa.",
-      "<b>Resultado financeiro em alta:</b> R$ 196 mi no 2T26 (+26%) com o vencimento de investimentos antigos.",
-      "<b>Reforma tributária a favor:</b> resseguro com alíquota zero de IBS/CBS e PIS/COFINS zerado previsto para 2027.",
-      "<b>Expansão:</b> resseguradoras na Suíça e em Malta (aguardando aprovação) e seguradoras próprias no Brasil."
+      "<b>Imposto menor daqui para frente:</b> a Lei 15.525/2026 reduz a CSLL das resseguradoras de 15% para 9% a partir de 2027 e o IRPJ de 25% para 15% a partir de 2030 — por isso a empresa baixou créditos tributários agora.",
+      "<b>Capital forte:</b> índice de solvência de 333% e excesso de R$ 1,99 bi sobre o capital mínimo (set/26).",
+      "<b>Lucro ajustado ainda positivo:</b> R$ 74,1 mi no 3T26 e R$ 381 mi em 9M26 (+5,5%), sem os efeitos tributários.",
+      "<b>Expansão:</b> resseguradoras na Suíça e em Malta (aguardando autorização) e seguradoras próprias."
     ],
     "negocio": {
-      "texto": "Maior resseguradora do Brasil: é a \"seguradora das seguradoras\". Fica com parte do prêmio que as seguradoras cobram e, em troca, paga parte dos sinistros grandes. Ganha na <b>subscrição</b> (prêmio maior que sinistros e despesas) e no <b>resultado financeiro</b> das reservas. Rural, vida e patrimonial são linhas importantes.",
+      "texto": "Maior resseguradora do Brasil: é a \"seguradora das seguradoras\". Fica com parte do prêmio que as seguradoras cobram e, em troca, paga parte dos sinistros grandes. Ganha na <b>subscrição</b> (prêmio maior que sinistros e despesas) e no <b>resultado financeiro</b> das reservas.",
       "tabela": [
         [
-          "Resultado de subscrição (critério Susep)",
-          "R$ 430 mi",
+          "Prêmios emitidos 9M26",
+          "R$ 4,12 bi",
           "",
-          "1S26, +30% a/a"
+          "−8,7% a/a; 3T26 −12,8%"
         ],
         [
-          "Resultado financeiro",
-          "R$ 334 mi",
+          "Índice combinado 9M26",
+          "100%",
           "",
-          "1S26; 2T26: R$ 175,8 mi (+17,3%)"
+          "3T26: 110,6% (acima de 100% = subscrição dá prejuízo)"
         ],
         [
-          "Prêmios emitidos",
-          "R$ 2,44 bi",
+          "Resultado financeiro e patrimonial 9M26",
+          "R$ 515 mi",
           "",
-          "1S26, −6% a/a; 2T26 −14,1%"
+          "−8% a/a"
         ]
       ],
-      "nota": "Dados do 2T26/1S26 (release e ITR no site de RI). O 3T26 entra na atualização de 13/11."
+      "nota": "Visão Negócio (critério Susep), Release de Resultados 3T26 (RI)."
     },
     "resultado": {
       "tabela": [
         [
-          "Lucro (critério Susep, base dos dividendos) 2T26",
-          "R$ 157,5 mi",
-          "+9,7%",
+          "Lucro (critério Susep) 3T26",
+          "−R$ 456,1 mi",
+          "",
+          "3T25: +R$ 98,7 mi"
+        ],
+        [
+          "Lucro ajustado comparável 3T26",
+          "R$ 74,1 mi",
+          "−25%",
+          "Sem os efeitos tributários"
+        ],
+        [
+          "Lucro (critério Susep) 9M26",
+          "−R$ 197,0 mi",
+          "",
+          "Ajustado: R$ 381,0 mi (+5,5%)"
+        ],
+        [
+          "Lucro 12 meses até set/26",
+          "−R$ 53,8 mi",
+          "",
+          "Ajustado: R$ 561,2 mi"
+        ],
+        [
+          "Índice combinado 3T26",
+          "110,6%",
+          "+8,1 p.p.",
+          "Sinistralidade 64,4%"
+        ],
+        [
+          "Resultado financeiro 3T26",
+          "R$ 166,2 mi",
+          "−4%",
           ""
         ],
         [
-          "Lucro (critério Susep) 1S26",
-          "R$ 259 mi",
-          "−1%",
-          "R$ 307 mi sem a baixa de PIS/COFINS"
-        ],
-        [
-          "Lucro 12 meses até jun/26",
-          "R$ 501,1 mi",
+          "Patrimônio líquido (Susep)",
+          "R$ 4,61 bi",
           "",
-          ""
+          "R$ 5,13 bi em jun/26"
         ],
         [
-          "Lucro IFRS 17 (balanço oficial) 1S26",
-          "R$ 90,3 mi",
-          "−62%",
-          "2T26: −R$ 3 mi"
-        ],
-        [
-          "Índice combinado (Susep)",
-          "92,0% (2T26) · 95,1% (1S26)",
+          "Índice de solvência",
+          "333%",
           "",
-          "IFRS 17: 130% e 104% ⚠️"
-        ],
-        [
-          "Sinistralidade 2T26",
-          "41,8%",
-          "",
-          "2T25: 51,9%"
-        ],
-        [
-          "ROTE 1S26",
-          "20%",
-          "",
-          ""
-        ],
-        [
-          "Ações",
-          "81,84 mi",
-          "",
-          "674 mil em tesouraria"
+          "316% em jun/26"
         ]
       ],
-      "leitura": "Dois lucros muito diferentes: o que a empresa destaca (R$ 259 mi no semestre) e o do balanço IFRS 17 (R$ 90 mi). Os dividendos seguem as regras da Susep, então o número da empresa importa para o dividendo — mas a diferença é um alerta de qualidade."
+      "leitura": "O prejuízo é contábil (créditos tributários que valem menos com o imposto menor), mas a operação também piorou: o índice combinado de 110,6% significa que a resseguradora pagou mais em sinistros e despesas do que recebeu em prêmios no trimestre."
     },
     "naoRecorrentes": [
       [
-        "Baixa do crédito de PIS/COFINS (reforma tributária)",
-        "R$ 46 mi (2T26)",
+        "Baixa de créditos tributários de IRPJ/CSLL (Lei 15.525/2026)",
+        "R$ 505,6 mi",
         "Não caixa"
       ],
       [
-        "Encerramento da sucursal de Londres",
-        "R$ 21 mi",
-        "Pontual"
+        "Baixa de ativo diferido de PIS/COFINS (reforma tributária)",
+        "R$ 41,0 mi",
+        "Não caixa"
       ],
       [
-        "Ajuste atuarial no rural",
-        "R$ 140 mi",
-        "Pode se repetir se o agro piorar"
+        "Ajuste de IRPJ/CSLL",
+        "R$ 16,4 mi",
+        ""
       ],
       [
-        "Diferença lucro da empresa × IFRS 17 (1S26)",
-        "R$ 169 mi (≈ 65%)",
-        "Teste 1 reprovado"
+        "Total no resultado do 3T26",
+        "≈ R$ 530 mi",
+        "O lucro ajustado fica em R$ 74,1 mi"
       ]
     ],
-    "naoRecorrentesLeitura": "Muitos ajustes e dois critérios contábeis. Uso o lucro destacado pela empresa (base dos dividendos), mas com desconto.",
+    "naoRecorrentesLeitura": "Os ajustes não saem do caixa, mas reduzem o lucro que serve de base para dividendo em 2026. A empresa diz que o limite de JCP de 2026 já foi usado e que qualquer distribuição adicional será avaliada após o fechamento do ano.",
     "dividendos": {
       "tabela": [
         [
@@ -15744,6 +15744,11 @@ const RADAR_RENDA_ESTUDOS = {
           "2,6%"
         ],
         [
+          "Sobre o lucro de 2026",
+          "improvável ⚠️",
+          "prejuízo de R$ 197 mi em 9M26"
+        ],
+        [
           "2027 — estimativa base (30% de R$ 600 mi)",
           "R$ 2,22",
           "3,8%"
@@ -15751,16 +15756,16 @@ const RADAR_RENDA_ESTUDOS = {
       ],
       "payout": [
         [
-          "2026: R$ 126,5 mi ÷ lucro de 12 meses até jun/26 (R$ 501,1 mi)",
-          "≈ 25%"
-        ],
-        [
           "Política formal de dividendos",
           "não divulgada"
+        ],
+        [
+          "Limite de JCP de 2026",
+          "já atingido (release 3T26)"
         ]
       ],
-      "origem": "Paga do lucro, mas pouco: a empresa prioriza reconstruir capital e expandir (Suíça, Malta, seguradoras próprias).",
-      "conclusao": "Com payout de 25–35%, o yield fica em 3–4% mesmo com lucro maior. Para virar ação de renda, precisaria pagar ≥ 50% e o lucro IFRS 17 se aproximar do lucro destacado."
+      "origem": "Paga do lucro, mas o lucro de 2026 virou prejuízo contábil. Gravidade <b>alta</b> para renda em 2027: sem lucro em 2026, não há dividendo mínimo sobre esse ano.",
+      "conclusao": "Para 2027 em caixa, conte com pouco ou nada do IRB. A partir do lucro de 2027 (pago em 2028), o imposto menor ajuda — mas a subscrição precisa voltar a dar lucro."
     },
     "guidance": [
       [
@@ -15769,36 +15774,36 @@ const RADAR_RENDA_ESTUDOS = {
         "Não divulga projeções."
       ],
       [
-        "Mais rentabilidade com prêmios, índice combinado e resultado financeiro",
-        "🟡 Média",
-        "Combinado melhorando; prêmios caindo 6%."
+        "Comunicar efeitos da reforma tributária",
+        "⏳ 4T26",
+        "Prometido no release do 3T26."
       ],
       [
-        "PIS/COFINS zero em 2027",
-        "🟢 Alta",
-        "Previsto na reforma tributária, segundo a empresa."
+        "Resseguradoras na Suíça e em Malta",
+        "⏳ Pendente",
+        "Aguardando autorização."
       ]
     ],
     "premissas": [
       [
-        "Lucro IFRS 17 se aproximar do lucro destacado",
-        "❌ Não",
-        "R$ 90 mi × R$ 259 mi no 1S26."
-      ],
-      [
         "Índice combinado abaixo de 95%",
-        "🟡 No limite",
-        "95,1% no 1S26 (critério da empresa)."
-      ],
-      [
-        "Payout ≥ 50%",
         "❌ Não",
-        "≈ 25% em 2026."
+        "110,6% no 3T26; 100% em 9M26."
       ],
       [
         "Prêmios voltarem a crescer",
-        "❌ Ainda não",
-        "−6% no 1S26."
+        "❌ Não",
+        "−12,8% no 3T26."
+      ],
+      [
+        "Lucro positivo em 2026 (base do dividendo)",
+        "❌ Não",
+        "−R$ 197 mi em 9M26."
+      ],
+      [
+        "Capital suficiente",
+        "✅ Atendida",
+        "Solvência de 333%."
       ],
       [
         "Preço abaixo do teto",
@@ -15809,15 +15814,15 @@ const RADAR_RENDA_ESTUDOS = {
     "cenarios": [
       [
         "Pessimista",
-        "Lucro R$ 0,50 bi; payout 25% (igual a 2026)",
-        "R$ 1,54",
-        "2,6%",
-        "R$ 19,97",
-        "−191%"
+        "Lucro 2027 R$ 0,40 bi (subscrição ruim continua); payout 25%",
+        "R$ 1,23",
+        "2,1%",
+        "R$ 15,98",
+        "−264%"
       ],
       [
         "Base",
-        "R$ 0,60 bi (com PIS/COFINS zero em 2027); payout 30%",
+        "R$ 0,60 bi (CSLL cai de 15% para 9% em 2027); payout 30%",
         "R$ 2,22",
         "3,8%",
         "R$ 28,76",
@@ -15833,48 +15838,44 @@ const RADAR_RENDA_ESTUDOS = {
       ],
       [
         "Otimista",
-        "R$ 0,65 bi; payout 50%",
-        "R$ 4,00",
-        "6,9%",
-        "R$ 51,93",
-        "−12%"
+        "R$ 0,70 bi; payout 50%",
+        "R$ 4,31",
+        "7,4%",
+        "R$ 55,93",
+        "−4%"
       ]
     ],
-    "embutido": "Yield de ~4% no cenário base: o retorno depende de o lucro crescer forte (tese de recuperação/crescimento), não de dividendo. Pela metodologia, só bate a Selic real se o lucro crescer mais de ~10% ao ano.",
+    "embutido": "Yield de ~4% no cenário base, e quase nada em caixa em 2027. O retorno depende de recuperação do lucro, não de dividendo.",
     "riscos": [
-      "<b>Qualidade do lucro:</b> IFRS 17 muito abaixo do lucro destacado.",
-      "<b>Rural e clima:</b> ajuste atuarial de R$ 140 mi no 2T26.",
+      "<b>Subscrição:</b> índice combinado acima de 100% no 3T26.",
+      "<b>Sem dividendo sobre 2026</b> por causa do prejuízo contábil.",
       "<b>Concentração:</b> é a maior posição do casal (~13%).",
-      "<b>Evento catastrófico</b> grande (enchente, seca) bate direto no resultado."
+      "<b>Evento catastrófico</b> grande bate direto no resultado."
     ],
     "gatilhos": [
-      "3T26 hoje (12/11, após o fechamento) e teleconferência em 13/11 às 11h.",
-      "Política de dividendos de 2027.",
-      "Aprovação das resseguradoras na Suíça e em Malta."
+      "Decisão sobre distribuição após o fechamento de 2026.",
+      "4T26: comunicação sobre a reforma tributária.",
+      "Índice combinado de volta abaixo de 100%."
     ],
-    "encaixe": "Flavia 658 e Luiz 3.259 ações (≈ R$ 228 mil, ~13% do casal) — a <b>maior posição individual</b> e uma das que menos pagam em relação ao preço. Para a meta de renda, é o maior desvio da carteira. Não é sinal de venda por si só: a tese aqui é recuperação — mas vale ter claro que é isso.",
+    "encaixe": "Flavia 658 e Luiz 3.259 ações (≈ R$ 228 mil, ~13% do casal) — a <b>maior posição individual</b> e, agora, a que menos deve pagar em 2027. Para a meta de renda, é o maior desvio da carteira.",
     "qualidade": [
-      "Release e ITR do 2T26 e histórico de dividendos: site de RI. Os dados são do <b>2T26</b>; o 3T26 sai hoje.",
-      "O ITR traz R$ 0,619 e R$ 0,320 por ação; a página de dividendos do RI traz R$ 0,59 e R$ 0,31 — usei a página do RI ⚠️.",
-      "O release traz lucro recorrente de R$ 307 mi no texto e R$ 185 mi no infográfico ⚠️.",
-      "Estimativa própria (lucro e payout) — não copiada do especialista."
+      "Release de Resultados 3T26 oficial (site de RI). Números na \"Visão Negócio\" (critério Susep, base dos dividendos).",
+      "O lucro IFRS 17 do 3T26 está nas notas do ITR, não no release — não extraído ⚠️.",
+      "Que não haverá dividendo sobre 2026 é inferência a partir do prejuízo de 9M26 e do limite de JCP já atingido ⚠️.",
+      "Estimativa própria para 2027 — não copiada do especialista."
     ],
     "fontes": [
       [
-        "IRB RI — Release 2T26",
-        "https://api.mziq.com/mzfilemanager/v2/d/0d797649-90df-4c56-aa01-6ee9c8a13d75/b41b5ae3-2660-80fc-03ca-a4f683e5b125?origin=2"
+        "IRB RI — Release de Resultados 3T26",
+        "https://filemanager-cdn.mziq.com/published/0d797649-90df-4c56-aa01-6ee9c8a13d75/2c3485b7-95f2-48b3-8450-66e25b71d3ce"
       ],
       [
-        "IRB RI — ITR 2T26",
-        "https://api.mziq.com/mzfilemanager/v2/d/0d797649-90df-4c56-aa01-6ee9c8a13d75/97752132-41e6-2fb8-ab0a-77ccc1ef34ed?origin=2"
+        "IRB RI — ITR 3T26",
+        "https://filemanager-cdn.mziq.com/published/0d797649-90df-4c56-aa01-6ee9c8a13d75/137ff5cf-ed88-47fe-92c6-133794bd3b7f"
       ],
       [
         "IRB RI — Histórico de dividendos",
         "https://ri.irbre.com/servicos-aos-investidores/historico-de-dividendos-e-remuneracao-aos-acionistas/"
-      ],
-      [
-        "IRB RI — data do 3T26",
-        "https://filemanager-cdn.mziq.com/published/0d797649-90df-4c56-aa01-6ee9c8a13d75/c259e58a-c5f6-4ac5-9d51-f9d6f1bd3e3e"
       ]
     ]
   },
@@ -16171,8 +16172,8 @@ const RADAR_RENDA_ESTUDOS = {
     ]
   },
   GMAT3: {
-    "atualizado": "12/11/2026",
-    "base": "Release e ITR do 2T26, DFP e release do 4T25 e composição acionária (site de RI). ⚠️ O 3T26 ainda não saiu — dados do 2T26.",
+    "atualizado": "13/11/2026",
+    "base": "Release de Resultados 3T26 (12/11/2026), DFP 2025 e composição acionária — site de RI",
     "cotacaoRef": 4.08,
     "setor": "Varejo alimentar · motor de valuation: P/L e fluxo de caixa (metodologia) — aqui o teto é por dividendo (Bazin).",
     "resumo": [
@@ -16182,108 +16183,113 @@ const RADAR_RENDA_ESTUDOS = {
       ],
       [
         "Convicção",
-        "★★☆☆☆ como renda — varejista de crescimento que paga só JCP (~30% do lucro), não pagou nada no 1S26 e tem vendas nas mesmas lojas caindo 8%."
+        "★★☆☆☆ como renda — varejista de crescimento que paga só JCP (~30% do lucro), não pagou nada em 9M26 e tem lucro caindo 38,6% (ajustado)."
       ],
       [
         "Em uma frase",
-        "Boa empresa de expansão no Norte e Nordeste, mas não é ação de renda: o lucro do 1S26 (R$ 450 mi) está bem abaixo do ritmo de 2025 e o JCP parou."
+        "Boa empresa de expansão no Norte e Nordeste, mas não é ação de renda: lucro de R$ 762 mi em 9M26 (−38,6% ajustado) e nenhum JCP no ano."
       ]
     ],
     "tese": [
-      "<b>Cresce abrindo lojas:</b> receita +12,5% no 1S26 (R$ 19,3 bi); 10 lojas abertas no semestre.",
-      "<b>Dívida baixa:</b> 0,51x o EBITDA (2T26).",
-      "<b>Controle concentrado:</b> controladores com 79,6% das ações."
+      "<b>Margem bruta subindo:</b> 22,6% no 3T26 (+1,4 p.p.).",
+      "<b>Vendas nas mesmas lojas melhorando:</b> −4,7% no 3T26, chegando a −1,3% em setembro.",
+      "<b>Dívida baixa e capex menor:</b> 0,56x o EBITDA; investimento −42% em 9M26."
     ],
     "negocio": {
       "texto": "Varejo alimentar e atacarejo (Mix Mateus), eletro e food service, concentrado no Norte e Nordeste. Ganha na margem bruta (~23%) com giro alto de estoque e cresce abrindo lojas.",
       "tabela": [
         [
           "Lojas de varejo alimentar",
-          "234",
+          "236",
           "",
-          "10 aberturas no 1S26"
+          "+21 em 12 meses; 12 aberturas em 9M26"
         ],
         [
           "Unidades totais",
-          "313",
+          "315",
           "",
-          "Inclui atacarejo, eletro e food service"
+          "Inclui 78 de eletro e 1 farmácia"
         ],
         [
           "Centros de distribuição",
           "18",
           "",
-          ""
+          "(2T26)"
         ]
       ],
-      "nota": "Posição no fim do 2T26. Fonte: release 2T26 (RI)."
+      "nota": "Posição no fim do 3T26. Fonte: Release de Resultados 3T26 (RI)."
     },
     "resultado": {
       "tabela": [
         [
-          "Receita líquida 2T26",
-          "R$ 9,85 bi",
-          "+12,2%",
-          "1S26: R$ 19,25 bi (+12,5%)"
+          "Receita líquida 3T26",
+          "R$ 10,72 bi",
+          "−0,4%",
+          "9M26: R$ 29,97 bi (+7,5%)"
         ],
         [
-          "Vendas nas mesmas lojas (SSS) 2T26",
-          "−8,0%",
+          "Vendas nas mesmas lojas (SSS)",
+          "−4,7%",
           "",
-          "1S26: −7,7%"
+          "Setembro: −1,3%; 9M26: −6,7%"
         ],
         [
-          "Margem bruta 2T26",
-          "23,5%",
-          "",
+          "Margem bruta",
+          "22,6%",
+          "+1,4 p.p.",
           ""
         ],
         [
-          "EBITDA 2T26 (pós-IFRS 16)",
-          "R$ 681,6 mi",
-          "",
-          "Margem 6,9%"
+          "EBITDA (pós-IFRS 16)",
+          "R$ 767,7 mi",
+          "−9,5%",
+          "Margem 7,2%"
         ],
         [
-          "Lucro líquido (controladores) 1S26",
-          "R$ 449,7 mi",
-          "",
-          "2T26: R$ 236,8 mi"
+          "Lucro líquido (controladores) 3T26",
+          "R$ 312,1 mi",
+          "−38,6%",
+          "Contra o 3T25 ajustado; −63,1% contra o reportado"
         ],
         [
-          "Lucro 2025 (controladores)",
-          "R$ 1,83 bi",
-          "",
-          "Ajustado: R$ 1,57 bi (4T25)"
+          "Lucro líquido 9M26",
+          "R$ 761,8 mi",
+          "−38,6%",
+          "Ajustado 9M25: R$ 1,24 bi"
         ],
         [
-          "Dívida líquida 2T26",
-          "R$ 1,09 bi",
-          "",
-          "0,51x EBITDA"
+          "Caixa operacional 9M26 (após juros)",
+          "R$ 942,7 mi",
+          "+13,6%",
+          ""
         ],
         [
-          "Ações (composição acionária)",
-          "2,304 bi",
+          "Dívida líquida",
+          "R$ 1,14 bi",
           "",
-          "3,6 mi em tesouraria"
+          "0,56x EBITDA"
         ]
       ],
-      "leitura": "Cresce por abertura de lojas, mas as lojas antigas vendem 8% menos e o lucro do 1S26 está bem abaixo do ritmo de 2025 (R$ 1,57 bi ajustado no ano) ⚠️ — conferir no 3T26."
+      "leitura": "Receita parada no trimestre e lucro caindo forte: as lojas antigas vendem menos e a margem EBITDA recuou. A melhora do SSS em setembro (−1,3%) é o primeiro sinal positivo."
     },
     "naoRecorrentes": [
       [
-        "2025 — efeitos extraordinários líquidos",
-        "+R$ 290 mi no lucro",
-        "Ganhos tributários de anos anteriores e Refis; o ajustado é R$ 1,57 bi"
+        "3T25 (base de comparação)",
+        "−R$ 337,6 mi no lucro",
+        "Extraordinários do 3T25 — a comparação \"−63%\" exagera a queda; a ajustada é −38,6%"
       ],
       [
         "2T26 — ICMS de períodos anteriores",
         "−R$ 35,0 mi",
         "Despesa pontual"
+      ],
+      [
+        "3T26",
+        "nenhum item não recorrente identificado",
+        ""
       ]
     ],
-    "naoRecorrentesLeitura": "O lucro de 2025 (R$ 1,83 bi) tem ~R$ 290 mi de efeitos tributários pontuais. Base recorrente: R$ 1,57 bi — e o 1S26 roda bem abaixo disso.",
+    "naoRecorrentesLeitura": "Mesmo sem os extraordinários, o lucro caiu 38,6% no ano. A queda é operacional.",
     "dividendos": {
       "tabela": [
         [
@@ -16292,14 +16298,14 @@ const RADAR_RENDA_ESTUDOS = {
           "30,5% do lucro"
         ],
         [
-          "1S26",
+          "9M26",
           "R$ 0",
           "nenhum JCP declarado"
         ],
         [
-          "JCP a pagar em dez/2025",
-          "R$ 338,8 mi",
-          "zerado no 1S26; aumento de capital de mesmo valor ⚠️"
+          "Recompra no 3T26",
+          "R$ 12,6 mi",
+          ""
         ],
         [
           "2027 — estimativa base (30% de R$ 1,1 bi)",
@@ -16326,18 +16332,18 @@ const RADAR_RENDA_ESTUDOS = {
     "premissas": [
       [
         "Vendas nas mesmas lojas voltarem a crescer",
-        "❌ Não",
-        "−8,0% no 2T26."
+        "🟡 Melhorando",
+        "−4,7% no 3T26; −1,3% em setembro."
       ],
       [
         "Manter o JCP anual",
-        "🟡 Incerto",
-        "Nenhum JCP declarado no 1S26."
+        "❌ Não em 2026",
+        "Nenhum JCP em 9M26."
       ],
       [
         "Dívida baixa",
         "✅ Atendida",
-        "0,51x."
+        "0,56x."
       ],
       [
         "Preço abaixo do teto",
@@ -16374,29 +16380,29 @@ const RADAR_RENDA_ESTUDOS = {
     "embutido": "Yield de ~3–6% + receita crescendo ~12% — tese de <b>crescimento</b>, não de renda.",
     "riscos": [
       "<b>Consumo endividado</b> no Norte e Nordeste.",
-      "<b>Vendas nas mesmas lojas negativas.</b>",
-      "<b>Lucro do 1S26 abaixo do ritmo de 2025.</b>",
-      "<b>JCP suspenso</b> no 1S26."
+      "<b>Lucro caindo 38,6%</b> em 9M26.",
+      "<b>JCP suspenso</b> em 2026.",
+      "<b>Concorrência</b> no atacarejo."
     ],
     "gatilhos": [
-      "3T26 (data a confirmar no RI).",
-      "Declaração de JCP no 4T26."
+      "SSS positivo no 4T26.",
+      "Declaração de JCP sobre 2026."
     ],
     "encaixe": "Flavia tem 7.200 ações (≈ R$ 29 mil, ~1,7% do casal). Para a meta de renda, não é o perfil.",
     "qualidade": [
-      "Release e ITR do 2T26, DFP e release do 4T25 e composição acionária: site de RI. Dados do <b>2T26</b> (o 3T26 ainda não saiu).",
-      "JCP por ação de 2025 (≈ R$ 0,25) é cálculo meu: R$ 559,9 mi (DMPL 2025) ÷ 2,245 bi de ações. A rodada anterior usava R$ 0,249 de um agregador.",
-      "Que o JCP a pagar de R$ 338,8 mi virou aumento de capital é inferência a partir dos valores iguais ⚠️.",
-      "Lucro 2026E/2027E é estimativa própria ⚠️."
+      "Release de Resultados 3T26, DFP 2025 e composição acionária: site de RI.",
+      "O release traz EBITDA do 3T25 diferente no resumo (R$ 848,6 mi) e no anexo (R$ 826,7 mi) ⚠️.",
+      "JCP por ação de 2025 (≈ R$ 0,25) é cálculo meu: R$ 559,9 mi ÷ 2,245 bi de ações.",
+      "Lucro 2026E (~R$ 1,1 bi = 9M26 + 4T parecido com o de 2025) e 2027E são estimativas próprias ⚠️."
     ],
     "fontes": [
       [
-        "Grupo Mateus RI — Release 2T26",
-        "https://api.mziq.com/mzfilemanager/v2/d/8ea287f8-ae0a-4b88-b20b-80c1f1b86a1e/759380ab-906c-cfb2-3d52-43e262f436d1?origin=2"
+        "Grupo Mateus RI — Release 3T26",
+        "https://filemanager-cdn.mziq.com/published/8ea287f8-ae0a-4b88-b20b-80c1f1b86a1e/6db97805-1d4d-4cdc-8c51-3b8939bf9a95"
       ],
       [
-        "Grupo Mateus RI — ITR 2T26",
-        "https://api.mziq.com/mzfilemanager/v2/d/8ea287f8-ae0a-4b88-b20b-80c1f1b86a1e/bd4a2608-b719-c378-c9e6-048e239d0bab?origin=2"
+        "Grupo Mateus RI — ITR 3T26",
+        "https://filemanager-cdn.mziq.com/published/8ea287f8-ae0a-4b88-b20b-80c1f1b86a1e/a8d46612-044c-4075-b70a-d12d5eec51b9"
       ],
       [
         "Grupo Mateus RI — DFP 2025",
@@ -16590,7 +16596,7 @@ const RPJ = {
     BBSE3: { pesos: { 2:0.568, 8:0.432 }, fonte: 'Semestral: mar (2º semestre) e set (1º semestre) — página Dividendos e Recompras' },
     CXSE3: { pesos: { 0:0.25, 3:0.25, 6:0.25, 9:0.25 }, fonte: 'Trimestral; o do 3T26 sai em 13/01/2027 (aviso aos acionistas); demais meses aproximados ⚠️' },
     BBAS3: { pesos: { 2:1 }, fonte: 'Sem intermediários em 2027 (fato relevante 11/11/2026): o complemento de 2026 sai em 10/03/2027; o de 2027 só em 2028' },
-    IRBR3: { pesos: { 3:0.388, 4:0.204, 5:0.204, 6:0.204 }, fonte: 'Padrão de 2026: dividendo em abr e JCP em mai, jun e jul (histórico de dividendos do RI)' },
+    IRBR3: { pesos: { 3:0.388, 4:0.204, 5:0.204, 6:0.204 }, fonte: 'Padrão de 2026: dividendo em abr e JCP em mai, jun e jul. ⚠️ Com prejuízo em 2026, o dividendo de abr/2027 é improvável — o calendário pode estar superestimado' },
     FIQE3: { pesos: { 2:1/3, 7:1/3, 9:1/3 }, fonte: 'Padrão de 2026: mar, ago e out (página Remuneração aos Acionistas)' },
     GMAT3: { pesos: { 11:1 }, fonte: 'Datas de JCP não divulgadas no RI — coloquei em dez ⚠️' },
   },
@@ -16614,9 +16620,9 @@ const RPJ = {
     ITUB3: ['🟢', 'Payout base (70%) igual ao histórico; CET1 com folga.'],
     CXSE3: ['🟢', 'ROE de ~70% e payout de ~91% sustentáveis.'],
     BBAS3: ['🔴', 'Payout cortado para 25%; pagamento de 2027 condicionado ao capital e só em 2028.'],
-    IRBR3: ['🔴', 'Sem política de dividendos; lucro IFRS 17 muito abaixo do lucro Susep.'],
+    IRBR3: ['🔴', 'Prejuízo contábil de R$ 197 mi em 9M26 e limite de JCP de 2026 já usado: pouca ou nenhuma renda em caixa em 2027.'],
     FIQE3: ['🔴', 'OPA do controlador pode tirar a ação da bolsa — a renda pode acabar.'],
-    GMAT3: ['🔴', 'Nenhum JCP no 1S26 e lucro abaixo do ritmo de 2025.'],
+    GMAT3: ['🔴', 'Nenhum JCP em 9M26 e lucro −38,6% (ajustado).'],
   },
 };
 const _RPJ_MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
