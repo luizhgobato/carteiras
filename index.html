@@ -379,8 +379,12 @@ thead tr.col-header,#fundTable thead tr{overflow:visible;}
 .cc-body{padding:0.6rem 0.9rem 0.7rem;}
 .cc-row{display:grid;grid-template-columns:82px 1fr auto;align-items:baseline;gap:6px;padding:4px 0;}
 .cc-lbl{font-size:12px;color:#888;}
-.cc-val{font-size:14px;font-weight:700;white-space:nowrap;}
+.cc-val{font-size:14px;font-weight:700;white-space:normal;word-break:break-word;}
 .cc-pct{font-size:12.5px;font-weight:600;white-space:nowrap;text-align:right;}
+.rr-ic{display:inline-block;cursor:pointer;color:#9ca3af;font-size:11px;margin-left:2px;-webkit-tap-highlight-color:transparent;}
+.rr-ic:hover{color:#6366f1;}
+.rr-note{display:none;font-size:10.5px;color:#888;line-height:1.4;padding:0 0 4px;}
+.rr-note.show{display:block;}
 .cons-card.cons-card-total{background:#1e1a2e;border-color:#1e1a2e;}
 .cons-card.cons-card-total .cc-head{background:#28233d;}
 .cons-card.cons-card-total .cc-ticker{color:#fff;}
@@ -16564,6 +16568,13 @@ function _rrSinal(m) {
   if (m >= -0.05) return { e: '🟡', t: 'perto do teto', c: '#b7791f' };
   return { e: '🔴', t: 'acima do teto', c: '#d13b3b' };
 }
+// Clique no ⓘ ao lado de um rótulo abre/fecha a nota explicativa logo abaixo (a .rr-note
+// que vem como próximo irmão da linha .cc-row) — tap-friendly, sem depender de :hover (que
+// não funciona bem em touch).
+function _rrToggleInfo(btn) {
+  const note = btn.closest('.cc-row')?.nextElementSibling;
+  if (note && note.classList.contains('rr-note')) note.classList.toggle('show');
+}
 function renderRadarRenda() {
   const box = document.getElementById('rrCards');
   if (!box) return;
@@ -16608,8 +16619,8 @@ function renderRadarRenda() {
         ${linha('Cotação', val(l.cot, _consR), '')}
         ${linha('Div./ação', val(l.dA, _consR), val(l.dE, _consR))}
         ${linha('Div. yield', (l.dA && l.cot) ? pctR(l.dA / l.cot) : '—', (l.dE && l.cot) ? pctR(l.dE / l.cot) : '—')}
-        ${linha('Preço teto', val(l.tA, _consR), val(l.tE, _consR))}
-        <div style="font-size:10.5px;color:#999;margin:-2px 0 2px 102px;line-height:1.35;">= div./ação ÷ ${(R * 100).toFixed(2).replace('.', ',')}% — preço máximo para render isso em dividendos</div>
+        ${linha('Preço teto <span class="rr-ic" onclick="_rrToggleInfo(this)">ⓘ</span>', val(l.tA, _consR), val(l.tE, _consR))}
+        <div class="rr-note">= div./ação ÷ ${(R * 100).toFixed(2).replace('.', ',')}% — preço máximo pra render isso em dividendos</div>
         ${linha('Margem', val(l.mA, sgn), l.mE === null ? '—' : sE.e + ' ' + sgn(l.mE), s.c, sE.c)}
         <div class="cc-row" style="grid-template-columns:96px 1fr;"><span class="cc-lbl">Vocês têm</span><span style="font-weight:600;font-size:12.5px;color:#444;white-space:normal;line-height:1.45;">${posTxt}</span></div>
         ${notas.length ? `<div style="font-size:11.5px;line-height:1.5;color:#7a5a00;background:#fff8e6;border-radius:6px;padding:6px 8px;margin-top:6px;">${notas.join('<br>')}</div>` : ''}
