@@ -976,12 +976,20 @@ tbody tr:nth-child(n){animation-delay:calc(var(--i,0)*0.02s);}
     <div class="nav-tab active" onclick="showPage('familia')">
       <span class="nav-tab-icon">👨‍👩‍👧</span> Consolidada
     </div>
+    <!-- Abas "Carteira da Flavia" e "Carteira Luiz" removidas a pedido do usuário (13/11/2026) —
+         ele não edita Qtd/PM/Preço na mão, só pede pro Claude. As páginas (#page-flavia,
+         #page-resumoluiz) e as tabelas #flaviaPosBody/#luizPosBody continuam intactas e
+         escondidas no HTML: a Consolidada ainda lê delas (coletarConsolidado) e o Claude
+         segue editando esse HTML direto quando o usuário reporta uma operação. Para
+         restaurar o acesso por aba, descomentar o bloco abaixo. -->
+    <!--
     <div class="nav-tab" onclick="showPage('flavia')">
       <span class="nav-tab-icon">👩</span> Carteira da Flavia
     </div>
     <div class="nav-tab" onclick="showPage('resumoluiz')">
       <span class="nav-tab-icon">📋</span> Carteira Luiz
     </div>
+    -->
     <div class="nav-tab" onclick="showPage('radar')">
       <span class="nav-tab-icon">🔭</span> Radar
     </div>
