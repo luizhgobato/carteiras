@@ -10360,12 +10360,21 @@ function atualizarDivDY(row, cotacao) {
 // por atualizarDivDY) e escreve: cell 19 (Preço teto), .margem-cell (Margem + veredicto),
 // row.dataset.veredicto (usado pelos filtros 🟢/🟡 e pela badge Carteira).
 const RADAR_TETO_REGUA = 0.0771;
+// valorCurto = só o número (sem texto colado, mesmo padrão da Radar de Renda); valorLongo
+// (opcional) entra na tooltip junto da explicação da fonte, quando difere do curto.
+function _setCelRadarRenda(cell, valorCurto, statusTxt, valorLongo) {
+  if (!cell) return;
+  let tip = 'Fonte: mesmo dado da aba Radar de Renda (estudo completo, ' + statusTxt + ') — não vem mais da regressão automática desta tabela.';
+  if (valorLongo && valorLongo !== valorCurto) tip = valorLongo + '\n\n' + tip;
+  cell.innerHTML = valorCurto + ` <span class="col-tip" data-tip="${tip.replace(/"/g, '&quot;').replace(/\n/g, '&#10;')}">ⓘ</span>`;
+}
 function calcularPrecoTetoRadar(row, cells, cotacao) {
   const margemCell = row.querySelector('.margem-cell');
   if (!cells[19] || !margemCell || !cotacao) return;
   // Pra quem já tem "estudo completo" na Radar de Renda (release oficial lido linha a linha),
-  // usa o MESMO Div./Ação de lá em vez do da tabela grande (regressão automática) — sem isso
-  // a mesma empresa mostrava dois tetos diferentes em duas abas que dizem seguir a mesma lógica.
+  // usa os MESMOS Lucro/Payout/Div.Ação/Div.Yield de lá em vez dos da tabela grande (regressão
+  // automática) — sem isso a mesma empresa mostrava números (e teto) diferentes em duas abas
+  // que dizem seguir a mesma lógica (usuário reportou 14/11/2026).
   let divAcao = 0;
   try {
     // RADAR_RENDA é declarado mais abaixo no arquivo — na primeira passada (calcularDerivadosRadar
@@ -10374,7 +10383,23 @@ function calcularPrecoTetoRadar(row, cells, cotacao) {
     if (typeof RADAR_RENDA !== 'undefined' && typeof _rrDps === 'function') {
       const tk = (row.dataset.ticker || '').replace(/\.SA$/i, '');
       const item = RADAR_RENDA.itens.find(it => it.tk === tk);
-      if (item) divAcao = _rrDps(item.agente) || 0;
+      if (item) {
+        divAcao = _rrDps(item.agente) || 0;
+        const ag = item.agente;
+        if (divAcao) {
+          const fmtLucroRR = v => v >= 1e9 ? 'R$ ' + (v / 1e9).toFixed(v < 1e10 ? 2 : 1).replace('.', ',') + ' bi' : 'R$ ' + Math.round(v / 1e6) + ' mi';
+          const lucroLongo = ag.lucroTxt || (ag.lucro ? fmtLucroRR(ag.lucro) : '—');
+          const mLucro = lucroLongo.match(/R\$\s*[\d.,]+\s*(?:bi|mi)/);
+          const lucroCurto = mLucro ? mLucro[0] : lucroLongo;
+          const payoutLongo = ag.payoutTxt || (ag.payout ? (ag.payout * 100).toFixed(0) + '%' : '—');
+          const mPayout = payoutLongo.match(/^~?\d+(?:,\d+)?%/);
+          const payoutCurto = mPayout ? mPayout[0] : payoutLongo;
+          _setCelRadarRenda(cells[5], lucroCurto, item.status, lucroLongo);
+          _setCelRadarRenda(cells[8], payoutCurto, item.status, payoutLongo);
+          _setCelRadarRenda(cells[9], `R$ ${divAcao.toFixed(2).replace('.', ',')}`, item.status);
+          if (cotacao) _setCelRadarRenda(cells[10], `${((divAcao / cotacao) * 100).toFixed(2).replace('.', ',')}%`, item.status);
+        }
+      }
     }
   } catch (e) { /* ainda não declarado nesta passada — cai no fallback abaixo */ }
   if (!divAcao) divAcao = parseFloat((cells[9]?.textContent || '').replace(/[^0-9,.-]/g, '').replace(',', '.')) || 0;
