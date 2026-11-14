@@ -10453,7 +10453,7 @@ function calcularPrecoTetoRadar(row, cells, cotacao) {
     : (ag.lucro > 0 && ag.payout > 0 && ag.acoes > 0) ? ag.lucro * ag.payout / ag.acoes : 0;
   const fmtLucroRR = v => v >= 1e9 ? 'R$ ' + (v / 1e9).toFixed(v < 1e10 ? 2 : 1).replace('.', ',') + ' bi' : 'R$ ' + Math.round(v / 1e6) + ' mi';
   const lucroLongo = ag.lucroTxt || (ag.lucro ? fmtLucroRR(ag.lucro) : '—');
-  const mLucro = lucroLongo.match(/(?:R|US)\$\s*[\d.,]+\s*(?:bi|mi)/);
+  const mLucro = lucroLongo.match(/[−-]?\s*(?:R|US)\$\s*[\d.,]+\s*(?:bi|mi)/);
   const payoutLongo = ag.payoutTxt || (ag.payout ? (ag.payout * 100).toFixed(0) + '%' : '—');
   const mPayout = payoutLongo.match(/^~?\d+(?:,\d+)?%/);
   _setCelRadarRenda(cells[5], mLucro ? mLucro[0] : '—', item.status, lucroLongo);
@@ -13846,25 +13846,25 @@ const RADAR_RENDA = {
     {
       "tk": "TIMS3",
       "nome": "TIM",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · RI oficial",
       "agente": {
-        "lucro": 4900000000.0,
-        "payout": 1.0,
-        "acoes": 2421000000.0,
-        "base": "Lucro normalizado 3T26 R$ 1,11 bi (−7,8%). Remuneração prometida para 2026: R$ 5,3–5,5 bi (inclui recompra); até set/26 saiu R$ 1,56 bi. Consenso de lucro 2027: R$ 5,09 bi — uso R$ 4,9 bi. Payout 100% só em JCP/dividendo (a TIM paga mais que o lucro somando recompra; a recompra fica fora).",
-        "risco": "Só 29% da remuneração de 2026 foi anunciada até setembro — o resto depende do 4T. Lucro caiu no 3T26 por mais IR e menos JCP.",
+        "lucro": 3990000000.0,
+        "payout": 0.928,
+        "acoes": 2388700000.0,
+        "base": "Release 3T26: lucro normalizado R$ 1.113 mi no 3T26; remuneração de 9M26 R$ 1.557 mi = 52% do lucro → lucro 9M26 ≈ R$ 2,99 bi, anualizado R$ 3,99 bi. Payout 92,8%: em 2025 a remuneração foi R$ 4.748 mi (109% do lucro), dos quais R$ 748 mi em recompra; só dividendo+JCP = R$ 4,0 bi sobre lucro de R$ 4,31 bi (DFP). Guidance oficial 2026: R$ 5,3–5,5 bi (inclui recompra). Ações: 2.388,7 mi (ITR).",
+        "risco": "Até setembro só 29% da remuneração prometida para 2026 tinha sido anunciada; parte do retorno vem como recompra, não dinheiro.",
         "fontes": [
           [
-            "Visno — TIM lucro normalizado 3T26",
-            "https://visnoinvest.com.br/news/16334/tim-tims3-registra-lucro-liquido-normalizado-de-r-11-bi-no-3t26"
+            "TIM RI — Release de Resultados 3T26",
+            "https://filemanager-cdn.mziq.com/published/4c4aa51f-1235-4aa1-8b83-adc92e8dacc3/7c118d87-f887-4cb9-a2c3-e144ce9ddce0"
           ],
           [
-            "TIM anunciou 29% dos R$ 5,3 bi até set/26",
-            "https://investirecocaresocomecar.com.br/tims3-tim-remuneracao-acionistas-3t26/"
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
           ],
           [
-            "A Revista — consenso de lucro 2026–28",
-            "https://arevista.com.br/investimentos/dividendos/tims3-perde-cerca-de-30-da-maxima-e-dividendos-podem-superar-10/"
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -13873,21 +13873,25 @@ const RADAR_RENDA = {
     {
       "tk": "CPFE3",
       "nome": "CPFL Energia",
-      "status": "3T26 · imprensa",
+      "status": "1S26 · CVM oficial",
       "agente": {
-        "lucro": 6000000000.0,
-        "payout": 0.7,
-        "acoes": 1152000000.0,
-        "base": "Lucro 9M26 R$ 4,6 bi (+11%); 3T26 R$ 1,29 bi (−6,4%, efeito contábil não caixa da renovação das concessões). 2027E R$ 6,0 bi, estável. Payout 70%: proventos dos últimos 12 meses R$ 3,74/ação ≈ 70% do lucro.",
-        "risco": "Inadimplência na conta de luz subiu (0,91% → 1,16%); efeito contábil da renovação pesa mais três trimestres.",
+        "lucro": 6390000000.0,
+        "payout": 0.784,
+        "acoes": 1152250000.0,
+        "base": "ITR 2T26: lucro dos controladores no 1S26 R$ 3.196 mi → anualizado R$ 6,39 bi (2025: R$ 5,48 bi, DFP). Payout 78,4%: dividendos do exercício 2025 = R$ 4.299,7 mi (aviso aos acionistas de 29/04/2026) sobre lucro de R$ 5.484 mi. Ações: 1.152,25 mi.",
+        "risco": "Anualizei o 1º semestre: se o 2º semestre for mais fraco, o lucro de 2026 fica abaixo de R$ 6,39 bi. O release do 3T26 no RI não abriu desta sessão.",
         "fontes": [
           [
-            "InfoMoney — CPFL 3T26",
-            "https://www.infomoney.com.br/mercados/cpfl-cpfe3-resultados-terceiro-trimestre-2026/"
+            "CPFL — Aviso aos acionistas: dividendos de R$ 4.299,7 mi (29/04/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1510817&numSequencia=1035523&numVersao=1"
           ],
           [
-            "Cenário Energia — CPFL 3T26",
-            "https://cenarioenergia.com.br/2026/11/13/cpfl-energia-registra-lucro-de-r-129-bilhao-no-3t26-com-impacto-contabil-da-renovacao-de-concessoes/"
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -13898,19 +13902,27 @@ const RADAR_RENDA = {
       "nome": "Mahle Metal Leve",
       "status": "3T26 · RI oficial",
       "agente": {
-        "lucro": 680000000.0,
-        "payout": 0.55,
-        "acoes": 136700000.0,
-        "base": "Lucro 9M26 R$ 531 mi (+12,4%); 3T26 R$ 157,5 mi (−15,9%) com receita −2,4%. 2027E R$ 680 mi (estável). Payout 55%: proventos de 12 meses ≈ R$ 2,8/ação ÷ lucro de 12 meses. JCP do 3T26: R$ 0,76/ação (pago 18/12/2026).",
-        "risco": "Receita caindo e lucro do 3T26 em queda; depende da indústria automotiva e de exportação.",
+        "lucro": 708000000.0,
+        "payout": 0.635,
+        "acoes": 135540000.0,
+        "base": "Release 3T26: lucro 9M26 R$ 531,3 mi (+12,4%); 3T26 R$ 157,5 mi (−15,9%) → anualizado R$ 708 mi. Payout 63,5%: exercício 2025 = JCP R$ 110,5 mi + dividendo mínimo R$ 34,3 mi + adicionais R$ 241,7 mi = R$ 386,5 mi sobre lucro de R$ 608,6 mi (DFP). JCP de 9M26: R$ 0,767/ação (aviso de 10/11/2026). Ações: 135,54 mi.",
+        "risco": "Receita caindo no 3T26; depende de montadoras e exportação.",
         "fontes": [
           [
             "Mahle RI — Release 3T26/9M26",
             "https://filemanager-cdn.mziq.com/published/6b90b8ef-4914-4021-8296-c5aca7b388eb/8a9c5488-51cf-45b8-b804-797e43787af9"
           ],
           [
-            "InfoMoney — Mahle 3T26",
-            "https://www.infomoney.com.br/mercados/mahle-leve3-resultados-terceiro-trimestre-2026/"
+            "Mahle RI — Aviso aos acionistas (JCP 10/11/2026)",
+            "https://api.mziq.com/mzfilemanager/v2/d/6b90b8ef-4914-4021-8296-c5aca7b388eb/b0e4875a-3fd9-4ce1-5957-96e0c15abeb6?origin=2"
+          ],
+          [
+            "Mahle RI — Histórico de proventos",
+            "https://ri.mahle.com.br/acoes/historico-de-proventos/"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -13919,21 +13931,25 @@ const RADAR_RENDA = {
     {
       "tk": "RANI3",
       "nome": "Irani",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · RI oficial",
       "agente": {
-        "lucro": 160000000.0,
-        "payout": 0.3,
-        "acoes": 229000000.0,
-        "base": "Lucro 9M26 R$ 107 mi (−50%); 3T26 R$ 56,5 mi, mas R$ 39,6 mi sem ativo biológico. 2027E R$ 160 mi recorrente. Payout 30%: dividendo intercalar do 3T26 foi 25% do lucro (R$ 0,061/ação). Ações ≈ 229 mi (R$ 13,98 mi ÷ R$ 0,061).",
-        "risco": "Lucro inflado por reavaliação de florestas; dívida líquida ~R$ 1 bi. Não é ação de renda hoje.",
+        "lucro": 143000000.0,
+        "payout": 0.49,
+        "acoes": 228890000.0,
+        "base": "Release 3T26: lucro 9M26 R$ 106,9 mi → anualizado R$ 143 mi (UDM R$ 144,9 mi; recorrente UDM R$ 95,6 mi, sem reavaliação de florestas). Payout 49%: exercício 2025 = R$ 119,4 mi sobre lucro de R$ 242,1 mi (DFP). Política: 25% do lucro por trimestre + complemento anual. Dividendos pagos em 12 meses: R$ 0,4023/ação. Ações: 228,89 mi (aviso de 04/11/2026).",
+        "risco": "Parte do lucro é reavaliação de florestas (sem caixa); sem ela o lucro cai ~1/3.",
         "fontes": [
           [
-            "BP Money — Irani dividendos 3T26",
-            "https://bpmoney.com.br/mercado/irani-rani3-anuncia-r-14-milhoes-em-dividendos-veja-datas/"
+            "Irani RI — Release de Resultados 3T26",
+            "https://api.mziq.com/mzfilemanager/v2/d/516eff19-62b9-464f-af20-6d866d6fefd5/d0471129-c90f-c433-a72a-1a1fabca553d?origin=2"
           ],
           [
-            "SpaceMoney — Irani 3T26",
-            "https://www.spacemoney.com.br/investimentos/acoes/irani-lucro-3t26-receita-recorde"
+            "Irani RI — Aviso aos acionistas 04/11/2026",
+            "https://api.mziq.com/mzfilemanager/v2/d/516eff19-62b9-464f-af20-6d866d6fefd5/27c9ab83-dc8f-939a-ed3e-5800513ed483?origin=2"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -13942,25 +13958,25 @@ const RADAR_RENDA = {
     {
       "tk": "PASS3",
       "nome": "Compass Gás e Energia",
-      "status": "3T26 · imprensa",
+      "status": "1S26 · CVM oficial",
       "agente": {
-        "lucro": 1400000000.0,
-        "payout": 0.45,
-        "acoes": 711000000.0,
-        "base": "Lucro 1T26 R$ 382 mi + 2T26 R$ 287 mi + 3T26 R$ 548 mi ≈ R$ 1,22 bi em 9M26 (soma minha). O 3T26 teve R$ 328 mi de otimização de carga da Edge (pontual). 2027E R$ 1,4 bi recorrente. Payout 45%: dividendo de R$ 495 mi (R$ 0,70/ação) sobre o lucro 9M26 = 41%.",
-        "risco": "Dívida líquida R$ 11,5 bi (2,2x EBITDA); parte do lucro de 2026 é pontual.",
+        "lucro": 1148000000.0,
+        "payout": 0.316,
+        "acoes": 714190000.0,
+        "base": "ITR 2T26: lucro dos controladores no 1S26 R$ 574,2 mi → anualizado R$ 1,15 bi. Payout 31,6%: dividendos do exercício 2025 = R$ 405,5 mi (R$ 0,5678/ação, aviso de 15/06/2026) sobre lucro de R$ 1.283,8 mi (DFP). Ações: 714,19 mi.",
+        "risco": "O RI da Compass não abriu desta sessão, então o 3T26 ainda não entrou; dívida alta no grupo.",
         "fontes": [
           [
-            "Trademap — Compass 3T26",
-            "https://trademap.com.br/noticias/news-8600008"
+            "Compass — Aviso aos acionistas: dividendos R$ 405,5 mi (15/06/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1534821&numSequencia=1059527&numVersao=1"
           ],
           [
-            "Visno — Compass dividendos R$ 0,6958",
-            "https://visnoinvest.com.br/news/16525/dividendos-de-pass3-compass-aprova-r-06958-por-acao"
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
           ],
           [
-            "Análise de Ações — dividendos exerc. 2025",
-            "https://www.analisedeacoes.com/noticias/compass-pass3-pagara-405-5-milhoes-em-dividendos-em-junho-de-2026/"
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -13969,21 +13985,21 @@ const RADAR_RENDA = {
     {
       "tk": "MULT3",
       "nome": "Multiplan",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · RI oficial",
       "agente": {
-        "lucro": 1400000000.0,
-        "payout": 0.4,
-        "acoes": 491000000.0,
-        "base": "Lucro ajustado 3T26 R$ 371 mi (o contábil de R$ 383 mi inclui venda de fatia do ParkShopping Barigui); FFO ajustado R$ 405 mi. 2027E R$ 1,4 bi. Payout 40%: JCP de 2026 até set R$ 419 mi (R$ 0,285/ação por trimestre) ≈ R$ 1,14/ação no ano.",
-        "risco": "Paga pouco em dinheiro e prefere recompra; ação caiu 28% em 30 dias.",
+        "dps": 1.16,
+        "lucroTxt": "Lucro 9M26 R$ 1,13 bi (inclui venda de shopping)",
+        "payoutTxt": "JCP R$ 569 mi em 12 meses",
+        "base": "Relatório 3T26: lucro 9M26 R$ 1.126,7 mi, inflado pela venda de 9,33% do ParkShopping Barigui. Por isso uso o provento oficial: JCP de 12 meses até set/26 = R$ 569,0 mi = R$ 1,16/ação (relatório da empresa). Ações: 489,2 mi.",
+        "risco": "Prefere recompra a dividendo; JCP depende do limite legal (TJLP × patrimônio).",
         "fontes": [
           [
-            "Money Times — Multiplan 3T26",
-            "https://www.moneytimes.com.br/lucro-liquido-da-multiplan-mult3-sobe-733-no-3t26-para-r-3832-milhoes-bdap/"
+            "Multiplan RI — Relatório de Resultados 3T26",
+            "https://filemanager-cdn.mziq.com/published/08dd2899-a019-4531-a90c-f00c9f91b0ff/44012371-21e3-4e38-b7fa-be3e26f81c16"
           ],
           [
-            "Eu Quero Investir — JCP 2026",
-            "https://euqueroinvestir.com/acoes/multiplan-anuncia-r-139-milhoes-em-juros-sobre-capital-proprio"
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
           ]
         ]
       },
@@ -13992,21 +14008,25 @@ const RADAR_RENDA = {
     {
       "tk": "BMEB4",
       "nome": "Banco Mercantil",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · CVM oficial",
       "agente": {
-        "lucro": 1200000000.0,
-        "payout": 0.35,
-        "acoes": 105000000.0,
-        "base": "Lucro 3T26 R$ 279 mi (+10%, 16º recorde seguido); carteira R$ 25,3 bi (+17%), Basileia 18,5%. 2027E R$ 1,2 bi. Payout 35%: proventos de 12 meses ≈ R$ 3,51/ação ÷ lucro de 12 meses.",
-        "risco": "Banco médio focado em aposentados do INSS; crescimento de crédito rápido pode pressionar provisões.",
+        "dps": 3.43,
+        "lucroTxt": "Lucro 2026 anualizado R$ 1,13 bi",
+        "payoutTxt": "35% (JCP do 1S26)",
+        "base": "ITR 3T26: lucro 9M26 R$ 850,5 mi → anualizado R$ 1,13 bi. Payout 35%: JCP do 1S26 = R$ 1,6375/PN e R$ 1,4887/ON (fato relevante de 04/08/2026) ≈ 35% do lucro do semestre. PN recebe 10% a mais: R$ 1,13 bi × 35% ÷ (84,05 mi ON + 1,1 × 38,98 mi PN) × 1,1 = R$ 3,43/PN.",
+        "risco": "Banco médio focado em crédito a aposentados; crescimento rápido da carteira.",
         "fontes": [
           [
-            "Monitor Mercantil — 3T26",
-            "https://monitormercantil.com.br/banco-mercantil-tem-lucro-liquido-de-r-279-milhoes-no-3t26/"
+            "Mercantil — Fato relevante: JCP do 1S26 (04/08/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1551995&numSequencia=1076701&numVersao=1"
           ],
           [
-            "Status Invest — proventos BMEB4",
-            "https://statusinvest.com.br/acoes/bmeb4"
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14015,25 +14035,29 @@ const RADAR_RENDA = {
     {
       "tk": "VALE3",
       "nome": "Vale",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · CVM oficial",
       "agente": {
-        "dps": 4.0,
-        "lucroTxt": "Lucro 3T26 US$ 1,25 bi (−53%)",
-        "payoutTxt": "Mínimo da política (30% de EBITDA − capex de manutenção)",
-        "base": "Em 2026 a Vale pagou R$ 1,24 (jan) + R$ 2,34 (mar) + R$ 2,03 (set) por ação, com parte extraordinária. Com a dívida líquida expandida em US$ 16,4 bi (acima dos US$ 15 bi), extraordinário fica improvável: 2027E = dois pagamentos ordinários ≈ R$ 4,00/ação.",
-        "risco": "Dividendo segue o minério e o câmbio; lucro do 3T26 caiu 53% com impairment e Brumadinho.",
+        "dps": 4.06,
+        "lucroTxt": "Lucro 9M26 R$ 23,2 bi",
+        "payoutTxt": "Política: 30% de EBITDA − capex",
+        "base": "ITR 3T26: lucro 9M26 R$ 23,2 bi. Proventos: R$ 8,64 bi = R$ 2,0307/ação no 1S26 (JCP R$ 1,5687 + dividendo R$ 0,4620, ata do conselho de 30/07/2026). 2027E = dois pagamentos ordinários ≈ R$ 4,06/ação, sem extraordinário. Em 2025 houve extra (R$ 32,5 bi declarados, DFP).",
+        "risco": "Dividendo segue minério e câmbio; o extraordinário de 2025 não se repete na estimativa.",
         "fontes": [
           [
-            "InfoMoney — Vale 3T26",
-            "https://www.infomoney.com.br/mercados/vale-vale3-balanco-3t26/"
+            "Vale — Ata do conselho: proventos de R$ 8,64 bi (30/07/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1549986&numSequencia=1074692&numVersao=1"
           ],
           [
-            "Status Invest — R$ 3,58/ação jan–mar/26",
-            "https://statusinvest.com.br/noticias/vale3-dividendos-358-por-acao-2025-2026/amp/"
+            "Vale RI — Desempenho 3T26 (BRGAAP)",
+            "https://filemanager-cdn.mziq.com/published/53207d1c-63b4-48f1-96b7-19869fae19fe/3e2d8324-13ae-4bd8-b0f2-67d0e37c80a8"
           ],
           [
-            "O Petróleo — R$ 2,03/ação set/26",
-            "https://opetroleo.com.br/vale-vale3-acoes-a-r-6202-lucro-cai-53-e-dividendos-chamam-atencao/"
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14042,21 +14066,29 @@ const RADAR_RENDA = {
     {
       "tk": "PETR4",
       "nome": "Petrobras",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · RI oficial",
       "agente": {
-        "dps": 3.0,
-        "lucroTxt": "Lucro 3T26 R$ 39,8 bi (+21,5%)",
+        "dps": 4.75,
+        "lucroTxt": "Lucro 1S26 R$ 85,1 bi",
         "payoutTxt": "45% do fluxo de caixa livre (política)",
-        "base": "Remuneração do 3T26: R$ 15,3 bi = R$ 1,19/ação (pago fev–mar/2027), ≈ 45% do caixa livre. Capex de 2026 revisado para cima. 2027E ≈ R$ 3,00/ação (≈ R$ 39 bi), abaixo do ritmo de 2026 por capex maior.",
-        "risco": "Capex maior come o caixa livre; interferência política e petróleo mais barato cortam o dividendo direto.",
+        "base": "Fato relevante de 10/11/2026: R$ 15,3 bi = R$ 1,1873/ação sobre o 3T26 (pago fev–mar/2027), pela política de 45% do fluxo de caixa livre. 2027E = 4 trimestres nesse ritmo ≈ R$ 4,75/ação. Referência: em 2025 declarou R$ 42,3 bi (38% do lucro de R$ 110,1 bi, DFP).",
+        "risco": "Fato relevante de 10/11/2026 elevou o capex de 2026 de US$ 19,4 bi para US$ 24–25,5 bi: menos caixa livre, dividendo menor. Petróleo mais barato corta o dividendo direto.",
         "fontes": [
           [
-            "Eu Quero Investir — Petrobras 3T26",
-            "https://euqueroinvestir.com/acoes/petrobras-registra-lucro-liquido-de-r-398-bilhoes-no-3t26-e-anuncia-r-153-bi-em-dividendos"
+            "Petrobras RI — Fato relevante: remuneração aos acionistas (10/11/2026)",
+            "https://filemanager-cdn.mziq.com/published/25fdf098-34f5-4608-b7fa-17d60b2de47d/4781522d-478a-4eb9-a8dc-5c79d76e03ca"
           ],
           [
-            "Money Times — capex e dividendos",
-            "https://www.moneytimes.com.br/petrobras-petr4-vai-pagar-menos-dividendos-acoes-lideram-quedas-do-ibovespa-apos-aumento-do-capex-no-3t26-bdap/"
+            "Petrobras RI — Fato relevante: projeções 2026 (10/11/2026)",
+            "https://filemanager-cdn.mziq.com/published/25fdf098-34f5-4608-b7fa-17d60b2de47d/f89895af-55a9-4ad9-b44c-22f2c8af36fd"
+          ],
+          [
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14065,21 +14097,29 @@ const RADAR_RENDA = {
     {
       "tk": "SBSP3",
       "nome": "Sabesp",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · RI oficial",
       "agente": {
-        "lucro": 6500000000.0,
-        "payout": 0.5,
-        "acoes": 3520000000.0,
-        "base": "Lucro 3T26 R$ 1,39 bi (ajustado R$ 1,11 bi, −13,8%). JCP = 50% do lucro 9M26 (≈ R$ 2,6 bi, R$ 0,75/ação). 2027E R$ 6,5 bi. Payout 50% (o que pagou em 2026). Ações ≈ 3,52 bi (R$ 2,64 bi ÷ R$ 0,75).",
-        "risco": "Dívida líquida saltou para R$ 37 bi (era R$ 23 bi) com o plano de universalização — capex alto limita dividendo.",
+        "lucro": 6107000000.0,
+        "payout": 0.28,
+        "acoes": 3506700000.0,
+        "base": "ITR/release 3T26: lucro contábil 9M26 R$ 4.580 mi → anualizado R$ 6,11 bi (o ajustado do 3T26 foi R$ 1.107 mi; uso o contábil porque o payout é calculado sobre ele). Payout 28%: JCP do exercício 2025 = R$ 1.798 mi + R$ 583,6 mi = R$ 2.381,6 mi (avisos de 01 e 03/2026) sobre lucro de R$ 8.462 mi (DFP). Ações: 3.506,7 mi.",
+        "risco": "Investimento pesado na universalização (R$ 4,5 bi no 3T26) segura o dividendo.",
         "fontes": [
           [
-            "InfoMoney — Sabesp 3T26",
-            "https://www.infomoney.com.br/mercados/sabesp-sbsp3-resultados-terceiro-trimestre-2026/"
+            "Sabesp RI — Release de Resultados 3T26",
+            "https://filemanager-cdn.mziq.com/published/9e47ee51-f833-4a23-af98-2bac9e54e0b3/0893b718-acaa-4fb8-af6e-629cd24dd620"
           ],
           [
-            "Investidor10 — JCP R$ 0,75",
-            "https://investidor10.com.br/noticias/sabesp-sbsp3-lucra-r-1-4-bilhao-no-3t26-e-paga-jcp-de-r-0-75-por-acao-123722/"
+            "Sabesp — Aviso aos acionistas: JCP R$ 583,6 mi (03/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1491016&numSequencia=1015722&numVersao=1"
+          ],
+          [
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14088,21 +14128,21 @@ const RADAR_RENDA = {
     {
       "tk": "KLBN11",
       "nome": "Klabin",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · RI oficial",
       "agente": {
-        "dps": 0.85,
-        "lucroTxt": "Lucro 9M26 R$ 283 mi (−81%)",
-        "payoutTxt": "Paga pelo caixa, não pelo lucro",
-        "base": "Lucro contábil distorcido pelo câmbio (prejuízo de R$ 497 mi no 1T26). Dividendos de 2026: R$ 1,11 bi em 4 parcelas ≈ R$ 0,91/unit. 2027E R$ 0,85/unit (mesmo patamar, um pouco abaixo pela dívida).",
-        "risco": "Dívida líquida R$ 24 bi; nenhum dividendo extra confirmado para 2027.",
+        "dps": 0.91,
+        "lucroTxt": "Lucro 9M26 R$ 283 mi",
+        "payoutTxt": "Política: 10–20% do EBITDA ajustado",
+        "base": "Release 3T26: a política paga 10–20% do EBITDA ajustado, não do lucro (que oscila com o câmbio). Para 2026 a Klabin declarou R$ 1,112 bi = R$ 0,912/unit, em 4 parcelas de R$ 278 mi. 2027E: mesmo valor.",
+        "risco": "Nenhum dividendo de 2027 declarado ainda; dívida alta.",
         "fontes": [
           [
-            "InfoMoney — Klabin 3T26",
-            "https://www.infomoney.com.br/mercados/klabin-klbn11-analise-resultados-terceiro-trimestre-2026-desempenho-acoes/"
+            "Klabin RI — Release de Resultados 3T26",
+            "https://filemanager-cdn.mziq.com/published/1c41fa99-efe7-4e72-81dd-5b571f5aa376/3fd7f60a-7250-421a-801a-e1ef432b515c"
           ],
           [
-            "A Revista — dividendos 2026",
-            "https://arevista.com.br/dividendos/klbn11-ainda-pode-pagar-novos-dividendos-veja-o-que-mudou/"
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
           ]
         ]
       },
@@ -14111,21 +14151,29 @@ const RADAR_RENDA = {
     {
       "tk": "ITSA4",
       "nome": "Itaúsa",
-      "status": "3T26 · imprensa",
+      "status": "1S26 · CVM oficial",
       "agente": {
-        "lucro": 19500000000.0,
-        "payout": 0.6,
-        "acoes": 10690000000.0,
-        "base": "Lucro recorrente 9M26 R$ 13,85 bi (+16%); 3T26 R$ 5,1 bi (+25%). 2027E R$ 19,5 bi. Payout 60%: proventos brutos de 12 meses R$ 1,10/ação ≈ 65% do lucro (inclui extra de dezembro).",
-        "risco": "92% do resultado vem do Itaú; dividendo extra de fim de ano não é garantido.",
+        "lucro": 17500000000.0,
+        "payout": 0.75,
+        "acoes": 11207400000.0,
+        "base": "ITR 2T26: lucro dos controladores no 1S26 R$ 9.654 mi, dos quais ~R$ 0,9 bi de proventos extraordinários de subsidiária (fato relevante de 01/07/2026) → anualizado sem isso R$ 17,5 bi. Payout 75%: proventos do exercício 2025 = R$ 12.446 mi sobre lucro de R$ 16.487 mi (DFP). 2026 até ago: JCP de R$ 0,116 + R$ 0,138 + R$ 0,254/ação (fatos relevantes). Ações: 11.207 mi.",
+        "risco": "Mais de 90% do resultado vem do Itaú; parte do provento costuma vir como extra no fim do ano.",
         "fontes": [
           [
-            "InfoMoney — Itaúsa 3T26",
-            "https://www.infomoney.com.br/mercados/resultados-itausa-itsa4-terceiro-trimestre-2026/"
+            "Itaúsa — Fato relevante: JCP R$ 2,8 bi (10/08/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1555260&numSequencia=1079966&numVersao=1"
           ],
           [
-            "Money Times — Itaúsa 3T26",
-            "https://www.moneytimes.com.br/itausa-itsa4-tem-alta-de-25-no-lucro-recorrente-para-r-51-bi-no-3t26/"
+            "Itaúsa — Fato relevante: proventos extraordinários de subsidiária (01/07/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1540729&numSequencia=1065435&numVersao=1"
+          ],
+          [
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14134,21 +14182,25 @@ const RADAR_RENDA = {
     {
       "tk": "BRAP4",
       "nome": "Bradespar",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · CVM oficial",
       "agente": {
-        "dps": 1.4,
-        "lucroTxt": "Lucro 9M26 R$ 979 mi (−19,5%)",
+        "dps": 1.2,
+        "lucroTxt": "Lucro 1S26 R$ 806 mi",
         "payoutTxt": "Repassa o que recebe da Vale",
-        "base": "Holding da Vale (3,68%). Proventos de nov/26: R$ 0,84/PN. Em 2026 recebeu também a parte extraordinária da Vale. 2027E R$ 1,40/PN, em linha com a queda esperada do dividendo da Vale (de ~R$ 5,6 para ~R$ 4,0).",
-        "risco": "Depende 100% da Vale; desconto de holding.",
+        "base": "Proventos oficiais por PN: R$ 0,8146 (jan/2026) e R$ 0,8435 (fato relevante de 30/10/2026) = R$ 1,66 em 2026, ano em que a Vale pagou R$ 5,61/ação com extraordinário. 2027E proporcional à Vale sem extra (R$ 4,06): R$ 1,66 × 4,06 ÷ 5,61 ≈ R$ 1,20/PN.",
+        "risco": "Depende 100% da Vale.",
         "fontes": [
           [
-            "InfoMoney — Bradespar R$ 321 mi",
-            "https://www.infomoney.com.br/mercados/bradespar-brap4-aprova-r-321-milhoes-em-proventos-veja-quem-tem-direito/"
+            "Bradespar — Fato relevante: dividendos e JCP (30/10/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1582435&numSequencia=1107141&numVersao=1"
           ],
           [
-            "Eu Quero Investir — Bradespar 3T26",
-            "https://euqueroinvestir.com/mercados/bradespar-balanco-3t26-proventos"
+            "Bradespar — Ata do conselho: R$ 310 mi (05/01/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1463414&numSequencia=988120&numVersao=2"
+          ],
+          [
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
           ]
         ]
       },
@@ -14157,21 +14209,29 @@ const RADAR_RENDA = {
     {
       "tk": "SANB11",
       "nome": "Santander Brasil",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · CVM oficial",
       "agente": {
-        "lucro": 13000000000.0,
-        "payout": 0.45,
-        "acoes": 3750000000.0,
-        "base": "Lucro gerencial 9M26 R$ 9,7 bi (−16%); 3T26 R$ 2,9 bi (−28%), ROAE 11,9%. 2027E R$ 13 bi. Payout 45%: JCP de 2026 R$ 0,54 + 0,53 + 0,40 = R$ 1,47/unit ≈ 44% do lucro.",
-        "risco": "Rentabilidade em queda e custo de crédito alto; recuperação adiada.",
+        "lucro": 11861000000.0,
+        "payout": 0.59,
+        "acoes": 3743800000.0,
+        "base": "ITR 3T26: lucro dos controladores 9M26 R$ 8.896 mi → anualizado R$ 11,86 bi. Payout 59%: dividendos do exercício 2025 = R$ 7.620 mi sobre lucro de R$ 12.965 mi (DFP). JCP de 2026 por unit: R$ 0,536 + 0,535 + 0,535 + 0,401 = R$ 2,01 (avisos de jan, abr, jul e out). Units: 3.743,8 mi.",
+        "risco": "Rentabilidade em queda; o JCP de outubro foi menor que os anteriores.",
         "fontes": [
           [
-            "Money Times — Santander 3T26",
-            "https://www.moneytimes.com.br/santander-sanb11-lucro-3t26-acima-abaixo-do-esperado-roae-miql/"
+            "Santander — Aviso aos acionistas: JCP (09/10/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1576237&numSequencia=1100943&numVersao=1"
           ],
           [
-            "Money Times — JCP R$ 2 bi",
-            "https://www.moneytimes.com.br/santander-sanb11-aprova-r-2-bilhoes-em-jcp-veja-quem-tem-direito-pads/"
+            "Santander — Aviso aos acionistas: JCP (10/07/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1544118&numSequencia=1068824&numVersao=1"
+          ],
+          [
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14180,21 +14240,25 @@ const RADAR_RENDA = {
     {
       "tk": "BPAC11",
       "nome": "BTG Pactual",
-      "status": "3T26 · imprensa",
+      "status": "1S26 · CVM oficial",
       "agente": {
-        "lucro": 22500000000.0,
-        "payout": 0.24,
-        "acoes": 3840000000.0,
-        "base": "Lucro ajustado 9M26 R$ 15,3 bi (+26%); 3T26 R$ 5,3 bi, ROAE 26,4%. 2027E R$ 22,5 bi. Payout 24%: JCP de 2026 R$ 0,49 + R$ 0,78 = R$ 1,27/unit. Recompra de até R$ 2 bi aprovada.",
-        "risco": "Ação de crescimento: reinveste o lucro; dividendo baixo.",
+        "lucro": 19327000000.0,
+        "payout": 0.3,
+        "acoes": 3862600000.0,
+        "base": "ITR 2T26: lucro dos controladores no 1S26 R$ 9.663 mi → anualizado R$ 19,3 bi. Payout 30%: JCP do exercício 2025 = R$ 4.750 mi sobre lucro de R$ 16.006 mi (DFP). JCP de ago/2026: R$ 0,7767/unit (aviso de 05/08/2026). Units: 3.862,6 mi.",
+        "risco": "Banco de crescimento: retém a maior parte do lucro.",
         "fontes": [
           [
-            "InfoMoney — BTG 3T26",
-            "https://www.infomoney.com.br/mercados/btg-pactual-bpac11-resultado-terceiro-trimestre-2026/"
+            "BTG — Aviso aos acionistas: JCP (05/08/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1552909&numSequencia=1077615&numVersao=1"
           ],
           [
-            "Investidor10 — JCP R$ 0,77/unit",
-            "https://investidor10.com.br/noticias/btg-pactual-bpac11-pagara-ate-r-0-77-por-unit-em-jcp-121885/"
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14203,21 +14267,25 @@ const RADAR_RENDA = {
     {
       "tk": "BRSR6",
       "nome": "Banrisul",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · RI oficial",
       "agente": {
-        "lucro": 900000000.0,
-        "payout": 0.4,
-        "acoes": 409000000.0,
-        "base": "Lucro 9M26 R$ 705 mi (−25,7%); 3T26 R$ 158 mi (−52%), ROE 5,4%. 2027E R$ 900 mi. Payout 40%: JCP trimestral R$ 0,22 + dividendo R$ 0,07 em 2026 ≈ 40% do lucro.",
-        "risco": "Rentabilidade muito baixa; renegociações e provisões do RS.",
+        "lucro": 940000000.0,
+        "payout": 0.38,
+        "acoes": 408970000.0,
+        "base": "Apresentação 3T26: lucro 9M26 R$ 704,8 mi (−25,7%), 3T26 R$ 157,8 mi → anualizado R$ 940 mi. Payout 38%: JCP R$ 620 mi + dividendos R$ 29 mi sobre lucro de R$ 1.714,6 mi em 2025 (DFP). 2026: JCP de R$ 0,22/ação por trimestre (fatos relevantes) + dividendo de R$ 0,0709. Ações: 408,97 mi.",
+        "risco": "ROE de 5,4% no 3T26; provisões e renegociações altas.",
         "fontes": [
           [
-            "Genial — Banrisul 3T26",
-            "https://analisa.genialinvestimentos.com.br/acoes/BRSR6/Banrisul-BRSR6--Resultado-3T26-Carteira-Volta-a-Crescer-mas-Renegociacoes-e-Provisoes-Levam-o-ROE-a-54/"
+            "Banrisul RI — Apresentação de Resultados 3T26",
+            "https://filemanager-cdn.mziq.com/published/fafdeaf3-7820-4ec2-9477-ce501c563c96/31ac8af4-0595-4051-ace7-8be4020ce42f"
           ],
           [
-            "Visno — Banrisul 3T26",
-            "https://visnoinvest.com.br/news/16467/lucro-de-r-1578-mi-banrisul-brsr6-divulga-resultado-do-3t26"
+            "Banrisul — Fato relevante: JCP do 2T26 (09/06/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1532540&numSequencia=1057246&numVersao=1"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14226,21 +14294,29 @@ const RADAR_RENDA = {
     {
       "tk": "PSSA3",
       "nome": "Porto Seguro",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · RI oficial",
       "agente": {
-        "lucro": 3600000000.0,
-        "payout": 0.4,
-        "acoes": 647000000.0,
-        "base": "Lucro recorrente 9M26 R$ 2,6 bi (+0,7%); 3T26 recorrente R$ 713 mi (−14%). 2027E R$ 3,6 bi. Payout 40%: proventos de 12 meses R$ 2,06/ação ≈ 40% do lucro.",
-        "risco": "Lucro recorrente parado; o contábil do 3T26 foi inflado por crédito tributário.",
+        "lucro": 3620000000.0,
+        "payout": 0.545,
+        "acoes": 634220000.0,
+        "base": "ITR 3T26: lucro dos controladores 9M26 R$ 2.852,5 mi; tiro ~R$ 135 mi de crédito tributário do 3T26 → anualizado R$ 3,62 bi. Payout 54,5%: dividendos e JCP do exercício 2025 = R$ 957,5 mi + R$ 885,8 mi adicionais sobre lucro de R$ 3.380,9 mi (DFP); o release mostra payout de 55% em 2025 e 43% em 2024. Ações: 634,22 mi.",
+        "risco": "Fato relevante de 05/11/2026 mudou as projeções divulgadas; lucro recorrente parado.",
         "fontes": [
           [
-            "Visno — Porto 3T26",
-            "https://visnoinvest.com.br/news/16182/lucro-de-r-839-mi-porto-seguro-pssa3-divulga-resultado-do-3t26"
+            "Porto RI — Release de Resultados 3T26",
+            "https://filemanager-cdn.mziq.com/published/b77a3922-d280-4451-b3ee-0afec4577834/0bc9a5a3-01e1-4c3f-ae12-9d086e7ad1f7"
           ],
           [
-            "Investidor10 — Porto 3T26",
-            "https://investidor10.com.br/noticias/porto-seguro-pssa3-recua-mais-de-2-apos-resultado-do-3t26-veja-123706/"
+            "Porto RI — Fato relevante: projeções (05/11/2026)",
+            "https://filemanager-cdn.mziq.com/published/b77a3922-d280-4451-b3ee-0afec4577834/5e411119-33c6-410b-b35a-68d07d4ada1d"
+          ],
+          [
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14249,21 +14325,29 @@ const RADAR_RENDA = {
     {
       "tk": "SAUD3",
       "nome": "Bradsaúde",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · CVM oficial",
       "agente": {
-        "lucro": 4300000000.0,
-        "payout": 0.55,
-        "acoes": 2927000000.0,
-        "base": "Lucro 3T26 R$ 1,08 bi (+14%). Dividendo de R$ 1 bi sobre o 3T26 (R$ 0,34/ação, pago 30/03/2027). Política: mínimo 30%; Santander projeta ~50% em 2026. 2027E R$ 4,3 bi com payout 55%.",
-        "risco": "Sinistralidade voltou a subir (84,5%); empresa recém-listada, histórico curto.",
+        "lucro": 2627000000.0,
+        "payout": 0.76,
+        "acoes": 2923470000.0,
+        "base": "ITR 3T26: lucro dos controladores 9M26 R$ 1.970,5 mi → anualizado R$ 2,63 bi. Payout 76%: proventos de 2025 = R$ 443,6 mi sobre lucro de R$ 582,6 mi (DFP; ano parcial, empresa listada em 2025). 2026: JCP R$ 0,0787 (jun) e R$ 0,0855 (set) + dividendo R$ 0,3421 (out, R$ 1 bi) = R$ 0,51/ação (avisos). Ações: 2.923,5 mi.",
+        "risco": "Histórico curto; o lucro de 2026 saltou no 3T26 e precisa se repetir.",
         "fontes": [
           [
-            "Seu Dinheiro — Bradsaúde 3T26",
-            "https://www.seudinheiro.com/2026/empresas/bradsaude-saud3-lucro-sobe-144-e-dividendos-chegam-a-r-1-bilhao-mas-dor-de-cabeca-volta-a-atacar-rnda/"
+            "Bradsaúde — Aviso aos acionistas: dividendos R$ 1 bi (21/10/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1579115&numSequencia=1103821&numVersao=1"
           ],
           [
-            "Auvp — política de dividendos",
-            "https://analitica.auvp.com.br/noticias/bradsaude-anuncia-primeiro-provento-com-jcp-de-r-230-milhoes-apos-ipo"
+            "Bradsaúde — Aviso aos acionistas: JCP (21/09/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1570045&numSequencia=1094751&numVersao=1"
+          ],
+          [
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14272,21 +14356,25 @@ const RADAR_RENDA = {
     {
       "tk": "FLRY3",
       "nome": "Fleury",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · RI oficial",
       "agente": {
-        "lucro": 930000000.0,
-        "payout": 0.6,
-        "acoes": 543000000.0,
-        "base": "Lucro 9M26 R$ 687 mi (+33%); 3T26 R$ 264 mi (+43%). 2027E R$ 930 mi. Payout 60%: JCP de R$ 218 mi (ago/26) + dividendos de R$ 362 mi aprovados em nov/25.",
-        "risco": "Margem pressionada pela integração da Femme.",
+        "lucro": 917000000.0,
+        "payout": 0.84,
+        "acoes": 543630000.0,
+        "base": "Release 3T26: lucro 9M26 R$ 687,4 mi (+33,1%), 3T26 R$ 264,3 mi → anualizado R$ 917 mi. Payout 84%: dividendos R$ 219,5 mi + JCP R$ 297,0 mi sobre lucro de R$ 612,8 mi em 2025 (DFP). Ações: 543,63 mi.",
+        "risco": "Payout alto para uma empresa que ainda compra laboratórios.",
         "fontes": [
           [
-            "InfoMoney — Fleury 3T26",
-            "https://www.infomoney.com.br/mercados/resultados-fleury-flry3-terceiro-trimestre-2026/"
+            "Fleury RI — Earnings Release 3T26",
+            "https://filemanager-cdn.mziq.com/published/0b0dbf21-b60a-4ced-a675-18049e9abc9c/e296181e-fbd8-48c3-b7e3-81e155fc3f98"
           ],
           [
-            "Money Times — JCP R$ 217,8 mi",
-            "https://www.moneytimes.com.br/fleury-flry3-aprova-pagamento-de-r-2178-milhoes-em-jcp-veja-quem-recebe-pads/"
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14295,21 +14383,21 @@ const RADAR_RENDA = {
     {
       "tk": "CLSC4",
       "nome": "Celesc",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · RI oficial",
       "agente": {
-        "dps": 10.5,
-        "lucroTxt": "Lucro 2027E R$ 1,1 bi",
-        "payoutTxt": "~35% do lucro",
-        "base": "Lucro 9M26 R$ 825 mi (+44%); 3T26 R$ 278 mi (+64%). 2027E R$ 1,1 bi × 35% ÷ 38,6 mi ações, com o prêmio de 10% da PN ≈ R$ 10,50/PN. JCP de 2026 por PN: R$ 2,09 + 1,13 + 1,08 + 2,12 + dividendo complementar.",
-        "risco": "Valores por ação divergem entre sites; estatal de SC com risco político.",
+        "dps": 13.3,
+        "lucroTxt": "Lucro 2026 anualizado R$ 1,0 bi (sem não recorrente)",
+        "payoutTxt": "49,5% (exercício 2025)",
+        "base": "Release 3T26: lucro 9M26 R$ 824,9 mi (+44,4%); o 3T26 tem ~R$ 118 mi de não recorrente no EBITDA → anualizado sem isso ≈ R$ 1,0 bi. Payout 49,5%: JCP R$ 284,1 mi + dividendos R$ 77,3 mi sobre lucro de R$ 729,5 mi em 2025 (DFP). PN recebe 10% a mais: R$ 495 mi ÷ (15,53 mi ON + 1,1 × 23,04 mi PN) × 1,1 ≈ R$ 13,30/PN.",
+        "risco": "Estatal de SC; revisão tarifária de 2026 define o lucro dos próximos anos.",
         "fontes": [
           [
-            "Visno — Celesc 3T26",
-            "https://visnoinvest.com.br/news/16545/celesc-clsc3-registra-lucro-de-r-278-mi-no-3t26"
+            "Celesc RI — Release 3T26",
+            "https://filemanager-cdn.mziq.com/published/137b4414-3d0c-493e-8b59-0d02bc3e4072/6444860d-19ce-42a5-a6ac-53ed48ffbf77"
           ],
           [
-            "Auvp — 4º provento de 2026",
-            "https://analitica.auvp.com.br/noticias/celesc-aprova-quarto-provento-de-2026-e-reforca-atratividade-para-investidores"
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14318,25 +14406,25 @@ const RADAR_RENDA = {
     {
       "tk": "AXIA3",
       "nome": "Axia Energia",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · RI oficial",
       "agente": {
-        "lucro": 9500000000.0,
-        "payout": 0.45,
-        "acoes": 2797000000.0,
-        "base": "Lucro ajustado 9M26 R$ 7,07 bi; 3T26 R$ 1,76 bi (−19%). 2027E R$ 9,5 bi. Política: 40–50% do lucro (uso 45%). Em 2026 distribuiu R$ 11,7 bi com reservas; o CFO diz preferir resgate de ações a dividendo. Ações: 2,797 bi (fato relevante de out/26).",
-        "risco": "Remuneração pode vir como resgate/recompra, não dividendo; reservas de ~R$ 40 bi podem gerar extraordinário (não contado).",
+        "lucro": 6576000000.0,
+        "payout": 0.95,
+        "acoes": 2822100000.0,
+        "base": "ITR 3T26: lucro dos controladores 9M26 R$ 4.931,7 mi → anualizado R$ 6,58 bi. Payout 95%: dividendos do exercício 2025 = R$ 1.557,6 mi + R$ 4.682,2 mi adicionais sobre lucro de R$ 6.558,5 mi (DFP). Ações: 2.822 mi (ITR, 30/09).",
+        "risco": "Em 2026 a remuneração veio sobretudo como resgate das PNC (release 3T26: 'Dividendos, Recompra de Ações e Resgate' R$ 3,8 bi no 9M26), que não vai para quem tem ON. O dividendo de 2027 pode ficar bem abaixo disso.",
         "fontes": [
           [
-            "Money Times — Axia 3T26",
-            "https://www.moneytimes.com.br/lucro-liquido-da-axia-axia3-cai-19-para-r-1759-bilhao-no-3t26-veja-os-numeros-bdap/"
+            "Axia RI — Release de Resultados 3T26",
+            "https://filemanager-cdn.mziq.com/published/abb77a17-3348-4bc7-849a-154998e06ca3/6f66b8db-362e-4a8a-abae-e9689c11e903"
           ],
           [
-            "Money Times — CFO prioriza resgate",
-            "https://www.moneytimes.com.br/axia-energia-axia3-prioriza-resgate-de-acoes-como-forma-de-remunerar-acionistas-diz-cfo/"
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
           ],
           [
-            "Cenário Energia — ações após resgates",
-            "https://cenarioenergia.com.br/2026/08/18/axia-energia-converte-e-resgata-474-milhoes-de-acoes-pnc-para-simplificar-capital/"
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14345,21 +14433,25 @@ const RADAR_RENDA = {
     {
       "tk": "SHUL4",
       "nome": "Schulz",
-      "status": "3T26 · imprensa",
+      "status": "1S26 · CVM oficial",
       "agente": {
-        "lucro": 220000000.0,
-        "payout": 0.5,
-        "acoes": 356000000.0,
-        "base": "Lucro 3T26 R$ 54 mi (−21,5%). 2027E R$ 220 mi. Payout 50%: JCP trimestral ~R$ 0,08 + dividendo de R$ 0,09 em 2026 ≈ R$ 0,32/ação.",
-        "risco": "Indústria cíclica (compressores e autopeças), lucro em queda.",
+        "lucro": 233000000.0,
+        "payout": 0.7,
+        "acoes": 356550000.0,
+        "base": "ITR 2T26: lucro 1S26 R$ 116,3 mi → anualizado R$ 233 mi. Payout 70%: dividendos R$ 100 mi + JCP R$ 103,4 mi sobre lucro de R$ 289,0 mi em 2025 (DFP). 2026: JCP de R$ 0,077–0,080/PN por trimestre (atas de mar, jun e set). Ações: 356,55 mi.",
+        "risco": "Indústria cíclica; o RI da Schulz não abriu desta sessão, então o 3T26 não entrou.",
         "fontes": [
           [
-            "Trademap — Schulz 3T26",
-            "https://trademap.com.br/noticias/news-8590814"
+            "Schulz — Ata do conselho: JCP (24/09/2026)",
+            "https://www.rad.cvm.gov.br/ENET/frmDownloadDocumento.aspx?Tela=ext&descTipo=IPE&CodigoInstituicao=1&numProtocolo=1571112&numSequencia=1095818&numVersao=2"
           ],
           [
-            "HG Brasil — proventos SHUL4",
-            "https://hgbrasil.com/finance/tickers/B3:SHUL4"
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14368,21 +14460,21 @@ const RADAR_RENDA = {
     {
       "tk": "VIVA3",
       "nome": "Vivara",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · CVM oficial",
       "agente": {
-        "lucro": 650000000.0,
-        "payout": 0.3,
-        "acoes": 236000000.0,
-        "base": "Lucro ajustado 9M26 R$ 368 mi (−15%); 3T26 R$ 120 mi (−22%). 2027E R$ 650 mi. Payout 30%: em 2025 pagou R$ 41 mi de JCP + R$ 0,70/ação de dividendo ≈ 30% do lucro.",
-        "risco": "Margem caindo e ação −40% em 30 dias; nenhum JCP de 2026 encontrado.",
+        "lucro": 452000000.0,
+        "payout": 0.265,
+        "acoes": 236100000.0,
+        "base": "ITR 3T26: lucro 9M26 R$ 338,9 mi → anualizado R$ 452 mi (2025: R$ 619,5 mi, DFP). Payout 26,5%: dividendos de R$ 164,0 mi sobre o lucro de 2025 (DFP). Ações: ~236 mi.",
+        "risco": "Lucro caindo em 2026; o RI da Vivara não abriu (erro de certificado do site).",
         "fontes": [
           [
-            "Money Times — Vivara 3T26",
-            "https://www.moneytimes.com.br/vivara-viva3-registra-lucro-liquido-ajustado-de-r-1199-milhoes-no-3t26-recuo-de-222-lmrs/"
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
           ],
           [
-            "Status Invest — proventos VIVA3",
-            "https://statusinvest.com.br/acoes/VIVA3"
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14391,17 +14483,25 @@ const RADAR_RENDA = {
     {
       "tk": "ASAI3",
       "nome": "Assaí",
-      "status": "3T26 · imprensa",
+      "status": "3T26 · RI oficial",
       "agente": {
-        "dps": 0,
-        "lucroTxt": "Lucro recorrente 3T26 R$ 248 mi (+55%)",
-        "payoutTxt": "Não paga — prioriza reduzir dívida",
-        "base": "Lucro recorrente 3T26 R$ 248 mi (o contábil de R$ 427 mi inclui R$ 179 mi de crédito de PIS/Cofins). Dívida/EBITDA caiu para 2,15x. Sem dividendos em 2026; aprovou recompra.",
-        "risco": "Não é ação de renda enquanto desalavanca.",
+        "lucro": 1345000000.0,
+        "payout": 0.28,
+        "acoes": 1332200000.0,
+        "base": "ITR 3T26 (individual): lucro 9M26 R$ 1.188 mi, dos quais R$ 179 mi de crédito extemporâneo de PIS/Cofins (release) → anualizado sem isso R$ 1,35 bi. Payout 28%: JCP de R$ 140 mi sobre lucro de R$ 497 mi em 2025 (DFP). Alavancagem caiu para 2,15x. Ações: 1.332,2 mi.",
+        "risco": "Prioridade é reduzir dívida e recomprar ações (novo programa em 05/11/2026); dividendo pequeno.",
         "fontes": [
           [
-            "Money Times — Assaí 3T26",
-            "https://www.moneytimes.com.br/assai-asai3-reduz-alavancagem-e-apresenta-lucro-liquido-contabil-de-r-427-milhoes-mlem/"
+            "Assaí RI — Release de Resultados 3T26",
+            "https://filemanager-cdn.mziq.com/published/ec14f0ab-c5d4-4b12-a413-b6cc7475ed98/211530d9-1ca7-4b97-8f47-426f2b5cfcac"
+          ],
+          [
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
+          ],
+          [
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14410,21 +14510,21 @@ const RADAR_RENDA = {
     {
       "tk": "AURE3",
       "nome": "Auren Energia",
-      "status": "3T26 · imprensa",
+      "status": "1S26 · CVM oficial",
       "agente": {
-        "lucro": 400000000.0,
-        "payout": 0.25,
-        "acoes": 1040000000.0,
-        "base": "Lucro 3T26 R$ 150 mi, com R$ 357 mi de ressarcimento de curtailment (pontual). Dívida/EBITDA 4,7x. 2027E R$ 400 mi recorrente; payout mínimo de 25% do estatuto. Yield de 2025 abaixo de 1%.",
-        "risco": "Alavancagem alta e cortes de geração (curtailment); não é ação de renda hoje.",
+        "dps": 0,
+        "lucroTxt": "Prejuízo 1S26 −R$ 1,03 bi",
+        "payoutTxt": "Sem dividendo (prejuízo)",
+        "base": "ITR 2T26: prejuízo dos controladores de R$ 1.032 mi no 1S26; 2025 também fechou com prejuízo de R$ 664 mi (DFP), sem dividendo aos acionistas da Auren. Sem lucro, não há dividendo a estimar.",
+        "risco": "Não é ação de renda enquanto der prejuízo.",
         "fontes": [
           [
-            "BP Money — Auren 3T26",
-            "https://bpmoney.com.br/negocios/empresas/auren-aure3-lucro-150-milhoes-reverte-prejuizo-3t26/"
+            "CVM — ITR 2026 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-itr"
           ],
           [
-            "A Revista — dividendos Auren",
-            "https://arevista.com.br/acoes/dividendos-da-auren-energia-aure3-o-que-esperar-apos-queda-nos-proventos/"
+            "CVM — DFP 2025 (dados abertos, entregue pela empresa)",
+            "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
           ]
         ]
       },
@@ -14438,7 +14538,7 @@ const RADAR_RENDA = {
         "dps": 0,
         "lucroTxt": "—",
         "payoutTxt": "Não paga — reinveste tudo",
-        "base": "O Nubank não distribui dividendos: reinveste o lucro para crescer. Fora da lógica de renda.",
+        "base": "O Nubank não distribui dividendos: reinveste o lucro. É BDR, sem documentos na CVM brasileira.",
         "risco": "Não é ação de renda.",
         "fontes": []
       },
