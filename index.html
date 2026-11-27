@@ -9196,8 +9196,9 @@ const RP_PATRIMONIO_CFG = {
     // R$200k da academia (R$100k de cada) NÃO está mais dentro do saldo do LFTB11 — era essa a
     // premissa até 19/10/2026, mas as vendas de 780 cotas de LFTB11 de cada um em 20/10/2026
     // tiraram exatamente esse dinheiro de lá pra financiar o aporte. Vira fixo próprio agora.
+    // 27/11/2026: +R$50k de aporte de cada um (vendas de LFTB11 de 26/11) -> R$150k cada, R$300k no total.
     fixos: [
-      { label: 'Academia', valor: 100000, investido: 100000, classe: 'Participação Societária', segmento: 'Participação Societária', grupo: 'fora' },
+      { label: 'Academia', valor: 150000, investido: 150000, classe: 'Participação Societária', segmento: 'Participação Societária', grupo: 'fora' },
     ],
     // FIQE3 é Crescimento (telecom em expansão), não Dividendos — reclassificado a pedido do usuário
     dividendosBaseline: 153582.85,
@@ -9234,7 +9235,8 @@ const RP_PATRIMONIO_CFG = {
       // R$100k aportados numa academia (participação societária, não ação negociada em bolsa) —
       // financiado pela venda de 780 cotas de LFTB11 em 20/10/2026. Classe própria, fora da
       // régua 65/20/15 (não é nem dividendo de ação nem CDI) — pedido do usuário em 20/10/2026.
-      { label: 'Academia', valor: 100000, investido: 100000, classe: 'Participação Societária', segmento: 'Participação Societária', grupo: 'fora' },
+      // 27/11/2026: +R$50k de aporte (vendas de LFTB11 de 26/11) -> R$150k.
+      { label: 'Academia', valor: 150000, investido: 150000, classe: 'Participação Societária', segmento: 'Participação Societária', grupo: 'fora' },
       // Apartamento (imóvel físico) — R$150k, pedido do usuário em 28/10/2026. Sem Qtd/PM/
       // cotação (não é ativo negociado), classe própria "Imóvel", fora da régua 65/20/15 (mesmo
       // tratamento dado à Academia: participação ilíquida fora da alocação-alvo de papéis).
